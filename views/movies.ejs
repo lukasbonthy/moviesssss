@@ -37,7 +37,7 @@
       pointer-events: none;
       position: fixed;
       inset: 0;
-      opacity: 0.16;
+      opacity: 0.18;
       mix-blend-mode: soft-light;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
     }
@@ -50,21 +50,23 @@
     <!-- NAVBAR -->
     <header class="fixed top-0 left-0 right-0 z-30 bg-gradient-to-b from-black via-black/80 to-transparent">
       <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-6">
+        <div class="flex items-center gap-8">
           <a href="/movies" class="flex items-center">
             <span class="text-2xl md:text-3xl font-black tracking-tight text-netflixRed">
               DARKFLIX
             </span>
           </a>
-          <ul class="hidden md:flex items-center gap-4 text-sm">
+          <ul class="hidden md:flex items-center gap-5 text-sm">
             <li><span class="font-semibold">Home</span></li>
+            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">TV Shows</li>
             <li class="text-slate-300 hover:text-slate-100 cursor-pointer">Movies</li>
             <li class="text-slate-300 hover:text-slate-100 cursor-pointer">My List</li>
           </ul>
         </div>
 
         <div class="flex items-center gap-4">
-          <form id="searchForm" class="hidden sm:flex items-center bg-black/60 rounded px-2 py-1 border border-white/10">
+          <!-- Search -->
+          <form id="searchForm" class="hidden sm:flex items-center bg-black/70 rounded px-2 py-1 border border-white/10">
             <svg class="w-4 h-4 text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -73,8 +75,8 @@
             <input
               id="searchInput"
               type="text"
-              placeholder="Titles"
-              class="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-400 px-2 w-32"
+              placeholder="Titles, people, genres"
+              class="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-400 px-2 w-40"
             />
           </form>
           <button id="mobileSearchBtn" class="sm:hidden text-slate-100">
@@ -85,48 +87,61 @@
             </svg>
           </button>
 
-          <% if (currentUser) { %>
-            <a href="/profile" class="hidden sm:inline text-xs text-slate-200 hover:text-white">
-              Profile
-            </a>
-            <form action="/logout" method="POST">
-              <button
-                type="submit"
-                class="text-xs px-3 py-1 rounded bg-white/10 hover:bg-white/20">
-                Logout
-              </button>
-            </form>
-          <% } else { %>
-            <a href="/login" class="text-xs text-slate-200 hover:text-white">Login</a>
-          <% } %>
+          <!-- Profile -->
+          <div class="flex items-center gap-3">
+            <% if (currentUser) { %>
+              <a href="/profile" class="hidden sm:flex items-center gap-2 text-xs text-slate-200 hover:text-white">
+                <span class="inline-flex h-7 w-7 rounded overflow-hidden bg-white/10 items-center justify-center text-[10px] font-semibold">
+                  <%= currentUser.name.charAt(0).toUpperCase() %>
+                </span>
+                <span><%= currentUser.name %></span>
+              </a>
+              <form action="/logout" method="POST" class="hidden sm:block">
+                <button
+                  type="submit"
+                  class="text-xs px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 border border-white/10">
+                  Sign out
+                </button>
+              </form>
+            <% } else { %>
+              <a href="/login" class="text-xs text-slate-200 hover:text-white">
+                Sign In
+              </a>
+            <% } %>
+          </div>
         </div>
       </nav>
     </header>
 
     <!-- MAIN -->
     <main class="flex-1">
-      <!-- HERO / FEATURED -->
-      <section id="heroSection" class="relative h-[70vh] min-h-[400px] max-h-[760px]">
+      <!-- HERO -->
+      <section id="heroSection" class="relative h-[70vh] min-h-[430px] max-h-[780px]">
         <div id="heroBackdrop" class="absolute inset-0 bg-cover bg-center"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-netflixBlack via-netflixBlack/30 to-black/40"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-netflixBlack via-netflixBlack/40 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
 
         <div class="relative z-10 max-w-6xl mx-auto h-full px-4 flex items-end pb-16 md:pb-24">
-          <div class="max-w-lg">
-            <h1 id="heroTitle" class="text-3xl md:text-5xl font-black drop-shadow-lg mb-3">
+          <div class="max-w-xl">
+            <p class="text-xs uppercase tracking-[0.3em] text-red-500 mb-2">
+              Darkflix Original
+            </p>
+            <h1 id="heroTitle" class="text-3xl md:text-5xl lg:text-6xl font-black drop-shadow-2xl mb-3">
               Featured Title
             </h1>
             <p id="heroMeta" class="text-xs md:text-sm text-slate-200 mb-2"></p>
-            <p id="heroOverview" class="hidden sm:block text-sm text-slate-200/90 mb-5 line-clamp-3"></p>
+            <p id="heroOverview" class="hidden sm:block text-sm md:text-[0.95rem] text-slate-200/90 mb-5 line-clamp-3"></p>
+
             <div class="flex flex-wrap items-center gap-3">
               <button id="heroPlayBtn"
-                      class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-base px-5 py-2 rounded hover:bg-slate-200">
+                      class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-base px-5 py-2.5 rounded hover:bg-slate-200">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6 4.5v11l8-5.5-8-5.5z" />
                 </svg>
                 Play
               </button>
               <button id="heroMoreBtn"
-                      class="flex items-center gap-2 bg-slate-500/70 text-white font-semibold text-xs md:text-sm px-4 py-2 rounded hover:bg-slate-400/80">
+                      class="flex items-center gap-2 bg-slate-500/70 text-white font-semibold text-xs md:text-sm px-4 py-2.5 rounded hover:bg-slate-400/80">
                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -140,13 +155,20 @@
       </section>
 
       <!-- CONTENT ROWS -->
-      <section class="bg-netflixBlack pt-4 pb-16">
+      <section class="bg-netflixBlack pt-6 pb-16">
         <div class="max-w-6xl mx-auto px-4">
           <!-- Search Row -->
-          <div id="searchSection" class="hidden mb-6">
-            <h2 id="searchTitle" class="text-base md:text-lg font-semibold mb-2">
-              Search Results
-            </h2>
+          <div id="searchSection" class="hidden mb-8">
+            <div class="flex items-center justify-between mb-2">
+              <h2 id="searchTitle" class="text-base md:text-lg font-semibold">
+                Search Results
+              </h2>
+              <button
+                id="clearSearchBtn"
+                class="text-xs text-slate-300 hover:text-white">
+                Clear
+              </button>
+            </div>
             <div id="searchRow" class="row-scroll flex gap-2 overflow-x-auto pb-2">
               <!-- search cards -->
             </div>
@@ -172,28 +194,29 @@
     const TMDB_BACKDROP = "https://image.tmdb.org/t/p/original";
 
     const CATEGORIES = [
-      { key: "popular",     title: "Popular on Darkflix", path: "/movie/popular" },
-      { key: "top_rated",   title: "Top Rated",           path: "/movie/top_rated" },
-      { key: "now_playing", title: "Now Playing",         path: "/movie/now_playing" },
-      { key: "upcoming",    title: "Upcoming",            path: "/movie/upcoming" },
+      { key: "trending",   title: "Trending Now",            path: "/trending/movie/week" },
+      { key: "popular",    title: "Popular on Darkflix",     path: "/movie/popular" },
+      { key: "top_rated",  title: "Top Rated",               path: "/movie/top_rated" },
+      { key: "now_playing",title: "Now Playing",             path: "/movie/now_playing" },
+      { key: "upcoming",   title: "Coming Soon",             path: "/movie/upcoming" },
     ];
 
     // ====== DOM ======
-    const rowsContainer  = document.getElementById("rowsContainer");
-    const statusEl       = document.getElementById("statusMessage");
-    const heroBackdropEl = document.getElementById("heroBackdrop");
-    const heroTitleEl    = document.getElementById("heroTitle");
-    const heroMetaEl     = document.getElementById("heroMeta");
-    const heroOverviewEl = document.getElementById("heroOverview");
-    const heroPlayBtn    = document.getElementById("heroPlayBtn");
-    const heroMoreBtn    = document.getElementById("heroMoreBtn");
-
-    const searchSection  = document.getElementById("searchSection");
-    const searchTitleEl  = document.getElementById("searchTitle");
-    const searchRowEl    = document.getElementById("searchRow");
-    const searchForm     = document.getElementById("searchForm");
-    const searchInput    = document.getElementById("searchInput");
+    const rowsContainer   = document.getElementById("rowsContainer");
+    const statusEl        = document.getElementById("statusMessage");
+    const heroBackdropEl  = document.getElementById("heroBackdrop");
+    const heroTitleEl     = document.getElementById("heroTitle");
+    const heroMetaEl      = document.getElementById("heroMeta");
+    const heroOverviewEl  = document.getElementById("heroOverview");
+    const heroPlayBtn     = document.getElementById("heroPlayBtn");
+    const heroMoreBtn     = document.getElementById("heroMoreBtn");
+    const searchSection   = document.getElementById("searchSection");
+    const searchTitleEl   = document.getElementById("searchTitle");
+    const searchRowEl     = document.getElementById("searchRow");
+    const searchForm      = document.getElementById("searchForm");
+    const searchInput     = document.getElementById("searchInput");
     const mobileSearchBtn = document.getElementById("mobileSearchBtn");
+    const clearSearchBtn  = document.getElementById("clearSearchBtn");
 
     let currentHeroMovie = null;
     let heroSet = false;
@@ -239,32 +262,32 @@
       const date = release_date || first_air_date || "";
       const year = date ? date.split("-")[0] : "";
       const rating = vote_average ? vote_average.toFixed(1) : "";
-      const imgPath = backdrop_path || poster_path;
+      const imgPath = poster_path || backdrop_path;
       const imgSrc = imgPath
         ? TMDB_IMG + imgPath
-        : "https://via.placeholder.com/500x281/000000/ffffff?text=No+Image";
+        : "https://via.placeholder.com/500x750/000000/ffffff?text=No+Image";
 
       const card = document.createElement("article");
       card.className =
-        "group relative flex-shrink-0 w-[45vw] sm:w-[180px] md:w-[210px] lg:w-[230px] cursor-pointer";
+        "group relative flex-shrink-0 w-[42vw] sm:w-[150px] md:w-[170px] lg:w-[190px] cursor-pointer";
 
       card.innerHTML = `
-        <div class="relative rounded-md overflow-hidden bg-slate-900">
+        <div class="relative rounded-sm overflow-hidden bg-slate-900">
           <img src="${imgSrc}" alt="${displayTitle}"
-               class="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-300" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+               class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-          <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
-            <div class="flex items-center gap-1">
-              <span class="font-semibold line-clamp-1 max-w-[120px]">${displayTitle}</span>
-            </div>
-            <div class="flex items-center gap-1">
-              ${rating ? `<span class="px-1.5 py-0.5 rounded bg-black/70 text-[9px]">★ ${rating}</span>` : ""}
+          <div class="absolute bottom-1.5 left-1.5 right-1.5 flex flex-col gap-0.5 text-[10px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span class="font-semibold line-clamp-1">${displayTitle}</span>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                ${rating ? `<span class="px-1.5 py-0.5 rounded bg-black/70 text-[9px]">★ ${rating}</span>` : ""}
+              </div>
               ${year ? `<span class="text-slate-400">${year}</span>` : ""}
             </div>
           </div>
         </div>
-      `;
+      ";
 
       card.addEventListener("click", () => {
         const url = new URL("/watch", window.location.origin);
@@ -308,26 +331,31 @@
       heroMetaEl.textContent = metaParts.join("  •  ");
       heroOverviewEl.textContent = overview || "";
 
-      heroPlayBtn.onclick = () => {
+      const goToWatch = () => {
         if (!currentHeroMovie) return;
         const url = new URL("/watch", window.location.origin);
         url.searchParams.set("type", "movie");
         url.searchParams.set("tmdbId", currentHeroMovie.id);
         window.location.href = url.toString();
       };
-      heroMoreBtn.onclick = heroPlayBtn.onclick;
+
+      heroPlayBtn.onclick = goToWatch;
+      heroMoreBtn.onclick = goToWatch;
     }
 
     // ====== LOAD CATEGORY ROWS ======
     async function loadCategoryRow(category) {
       const rowEl = createRowElement(category.title, category.key);
       try {
-        const url = `${TMDB_BASE}${category.path}?api_key=${TMDB_API_KEY}&page=1`;
-        const data = await fetchJson(url);
+        const path = category.path.startsWith("/trending")
+          ? `${TMDB_BASE}${category.path}?api_key=${TMDB_API_KEY}`
+          : `${TMDB_BASE}${category.path}?api_key=${TMDB_API_KEY}&page=1`;
+        const data = await fetchJson(path);
         const results = data.results || [];
         if (!results.length) return;
 
-        if (!heroSet && category.key === "popular") {
+        // Set hero from trending if possible, else from first category
+        if (!heroSet && (category.key === "trending" || category.key === "popular")) {
           setHero(results[0]);
           heroSet = true;
         }
@@ -379,24 +407,30 @@
     }
 
     // ====== EVENTS ======
-    searchForm.addEventListener("submit", (e) => {
+    searchForm?.addEventListener("submit", (e) => {
       e.preventDefault();
       handleSearch(searchInput.value);
     });
 
-    searchInput.addEventListener("input", () => {
+    searchInput?.addEventListener("input", () => {
       if (!searchInput.value.trim()) {
         searchSection.classList.add("hidden");
         searchRowEl.innerHTML = "";
       }
     });
 
-    mobileSearchBtn.addEventListener("click", () => {
+    mobileSearchBtn?.addEventListener("click", () => {
       const q = prompt("Search titles:");
       if (q !== null) {
-        searchInput.value = q;
+        searchInput && (searchInput.value = q);
         handleSearch(q);
       }
+    });
+
+    clearSearchBtn?.addEventListener("click", () => {
+      searchInput && (searchInput.value = "");
+      searchSection.classList.add("hidden");
+      searchRowEl.innerHTML = "";
     });
 
     // ====== INIT ======
