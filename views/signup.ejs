@@ -2,91 +2,65 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Sign up • DarkAuth</title>
+  <title>Sign Up • Darkflix</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      background:
-        radial-gradient(circle at 0% 0%, rgba(248, 113, 113, 0.18), transparent 60%),
-        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.16), transparent 60%),
-        #020617;
-    }
-  </style>
 </head>
-<body class="min-h-screen text-slate-100 antialiased">
-  <div class="min-h-screen flex items-center justify-center px-4">
-    <div class="w-full max-w-md bg-slate-950/80 border border-slate-800 rounded-2xl shadow-xl shadow-black/70 p-6">
-      <%- include('partials/header') %>
+<body class="min-h-screen font-sans text-white bg-black">
+  <div class="fixed inset-0 bg-[url('https://images.pexels.com/photos/799137/pexels-photo-799137.jpeg')] bg-cover bg-center opacity-30"></div>
+  <div class="fixed inset-0 bg-gradient-to-b from-black via-black/70 to-black"></div>
 
-      <section>
-        <h2 class="text-lg font-semibold mb-2">Create an account</h2>
-        <p class="text-xs text-slate-300 mb-4">
-          Sign up to create your profile.
+  <header class="relative z-10 max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+    <a href="/movies" class="flex items-center">
+      <span class="text-3xl md:text-4xl font-black tracking-tight text-red-600">
+        DARKFLIX
+      </span>
+    </a>
+    <a href="/login"
+       class="hidden sm:inline text-sm px-4 py-1.5 rounded bg-black/60 hover:bg-black/40 border border-white/20">
+      Sign In
+    </a>
+  </header>
+
+  <main class="relative z-10 flex items-center justify-center px-4 pt-10 pb-16">
+    <div class="w-full max-w-md bg-black/80 rounded-md px-8 py-10 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+      <h1 class="text-2xl md:text-3xl font-bold mb-6">Sign Up</h1>
+      <% if (error) { %>
+        <p class="mb-4 text-sm bg-[#e87c03] text-white rounded px-3 py-2">
+          <%= error %>
         </p>
-
-        <% if (error) { %>
-          <p class="mb-3 text-xs text-red-400"><%= error %></p>
-        <% } %>
-
-        <form action="/signup" method="POST" class="space-y-3">
-          <div>
-            <label class="block text-xs mb-1">Name</label>
-            <input
-              type="text"
-              name="name"
-              value="<%= values && values.name ? values.name : '' %>"
-              required
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-red-500 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label class="block text-xs mb-1">Email</label>
-            <input
-              type="email"
-              name="email"
-              value="<%= values && values.email ? values.email : '' %>"
-              required
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-red-500 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label class="block text-xs mb-1">Password</label>
-            <input
-              type="password"
-              name="password"
-              required
-              minlength="6"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-red-500 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label class="block text-xs mb-1">Confirm password</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              required
-              minlength="6"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-red-500 focus:outline-none"
-            />
-          </div>
-
-          <button
-            type="submit"
-            class="w-full mt-2 bg-red-600 hover:bg-red-500 text-xs font-semibold py-2 rounded">
-            Create account
-          </button>
-        </form>
-
-        <p class="mt-4 text-xs text-slate-300">
-          Already have an account?
-          <a href="/login" class="text-red-400 hover:text-red-300">Log in</a>
-        </p>
-      </section>
+      <% } %>
+      <form action="/signup" method="POST" class="space-y-4">
+        <input type="text" name="name"
+               value="<%= values && values.name ? values.name : '' %>"
+               placeholder="Name"
+               required
+               class="w-full bg-[#333] text-sm rounded px-3.5 py-3 outline-none focus:ring-2 focus:ring-red-600 placeholder:text-slate-400" />
+        <input type="email" name="email"
+               value="<%= values && values.email ? values.email : '' %>"
+               placeholder="Email"
+               required
+               class="w-full bg-[#333] text-sm rounded px-3.5 py-3 outline-none focus:ring-2 focus:ring-red-600 placeholder:text-slate-400" />
+        <input type="password" name="password"
+               placeholder="Password"
+               minlength="6"
+               required
+               class="w-full bg-[#333] text-sm rounded px-3.5 py-3 outline-none focus:ring-2 focus:ring-red-600 placeholder:text-slate-400" />
+        <input type="password" name="confirmPassword"
+               placeholder="Confirm password"
+               minlength="6"
+               required
+               class="w-full bg-[#333] text-sm rounded px-3.5 py-3 outline-none focus:ring-2 focus:ring-red-600 placeholder:text-slate-400" />
+        <button type="submit"
+                class="mt-2 w-full bg-red-600 hover:bg-red-700 text-sm font-semibold py-3 rounded">
+          Create account
+        </button>
+      </form>
+      <div class="mt-6 text-[13px] text-slate-300">
+        <span class="text-slate-400">Already have an account?</span>
+        <a href="/login" class="ml-1 text-white hover:underline">Sign in</a>
+      </div>
     </div>
-  </div>
+  </main>
 </body>
 </html>
