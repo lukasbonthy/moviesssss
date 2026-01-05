@@ -4,7 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");    
 const session = require("express-session");
 
 const app = express();
