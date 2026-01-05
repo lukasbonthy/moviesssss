@@ -15,39 +15,47 @@
             sans: ["system-ui", "SF Pro Text", "Inter", "sans-serif"],
           },
           colors: {
-            dfBg: "#050816",
+            dfBg: "#020617",
+            dfBgSoft: "#050816",
             dfSurface: "#0b1020",
             dfSurfaceSoft: "#0f172a",
-            dfAccent: "#e11d48",   // pink/red
-            dfAccentSoft: "#6366f1" // indigo
+            dfAccent: "#e11d48",   // main accent (rose/red)
+            dfAccent2: "#6366f1",  // indigo
+            dfAccent3: "#22c55e",  // green accent
           },
           borderRadius: {
-            "xl2": "1.1rem"
+            "2xl-plus": "1.25rem",
           },
           boxShadow: {
-            "df-soft": "0 18px 40px rgba(0,0,0,0.7)"
+            "df-soft": "0 18px 40px rgba(0,0,0,0.7)",
+            "df-hero": "0 40px 120px rgba(0,0,0,0.9)",
           },
           keyframes: {
             "fade-up": {
               "0%": { opacity: 0, transform: "translateY(12px)" },
-              "100%": { opacity: 1, transform: "translateY(0)" }
+              "100%": { opacity: 1, transform: "translateY(0)" },
             },
             "hero-glow": {
               "0%,100%": { opacity: 0.7, transform: "scale(1)" },
-              "50%": { opacity: 1, transform: "scale(1.02)" }
+              "50%": { opacity: 1, transform: "scale(1.04)" },
             },
             "nav-blur": {
               "0%": { backdropFilter: "blur(0px)" },
-              "100%": { backdropFilter: "blur(18px)" }
-            }
+              "100%": { backdropFilter: "blur(18px)" },
+            },
+            "pulse-soft": {
+              "0%,100%": { opacity: 0.65 },
+              "50%": { opacity: 1 },
+            },
           },
           animation: {
             "fade-up": "fade-up 0.5s ease-out forwards",
             "hero-glow": "hero-glow 4s ease-in-out infinite",
-            "nav-blur": "nav-blur 0.3s ease-out forwards"
-          }
-        }
-      }
+            "nav-blur": "nav-blur 0.3s ease-out forwards",
+            "pulse-soft": "pulse-soft 2.5s ease-in-out infinite",
+          },
+        },
+      },
     };
   </script>
 
@@ -56,6 +64,7 @@
       background:
         radial-gradient(circle at 0% 0%, rgba(248, 113, 113, 0.16), transparent 60%),
         radial-gradient(circle at 100% 0%, rgba(129, 140, 248, 0.18), transparent 55%),
+        radial-gradient(circle at 0% 100%, rgba(45, 212, 191, 0.16), transparent 55%),
         #020617;
     }
     .row-scroll {
@@ -75,27 +84,39 @@
   </style>
 </head>
 <body class="min-h-screen font-sans text-white antialiased bg-dfBg">
+  <!-- Global noise overlay -->
   <div class="noise-layer -z-10"></div>
 
   <div class="min-h-screen flex flex-col">
     <!-- NAVBAR -->
     <header id="mainNav"
-            class="fixed top-0 left-0 right-0 z-30 transition-all duration-300 bg-gradient-to-b from-black/80 via-black/50 to-transparent">
+            class="fixed top-0 left-0 right-0 z-30 transition-all duration-300 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
       <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <!-- Left: Logo + primary nav -->
         <div class="flex items-center gap-6">
           <a href="/movies" class="flex items-center">
-            <span class="text-2xl md:text-3xl font-black tracking-tight text-white">
+            <span class="text-2xl md:text-3xl font-black tracking-tight text-white select-none">
               <span class="text-dfAccent">DARK</span>FLIX
             </span>
           </a>
+
           <ul class="hidden md:flex items-center gap-5 text-sm">
-            <li><span class="font-semibold">Home</span></li>
-            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">TV Shows</li>
-            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">Movies</li>
-            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">My List</li>
+            <li>
+              <span class="font-semibold text-white">Home</span>
+            </li>
+            <li class="text-slate-300 hover:text-slate-100 cursor-pointer transition-colors">
+              TV Shows
+            </li>
+            <li class="text-slate-300 hover:text-slate-100 cursor-pointer transition-colors">
+              Movies
+            </li>
+            <li class="text-slate-300 hover:text-slate-100 cursor-pointer transition-colors">
+              My List
+            </li>
           </ul>
         </div>
 
+        <!-- Right: Search + profile -->
         <div class="flex items-center gap-4">
           <!-- Search -->
           <form id="searchForm"
@@ -112,6 +133,8 @@
               class="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-400 px-2 w-40"
             />
           </form>
+
+          <!-- Mobile search icon -->
           <button id="mobileSearchBtn" class="sm:hidden text-slate-100">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
@@ -120,12 +143,12 @@
             </svg>
           </button>
 
-          <!-- Profile -->
+          <!-- Profile dropdown -->
           <div class="flex items-center gap-3">
             <% if (currentUser) { %>
               <div class="relative group">
                 <button type="button" class="flex items-center gap-2 text-xs text-slate-200 hover:text-white">
-                  <span class="inline-flex h-8 w-8 rounded-full overflow-hidden bg-gradient-to-br from-dfAccent to-dfAccentSoft items-center justify-center text-[11px] font-semibold border border-white/10 shadow shadow-black/60">
+                  <span class="inline-flex h-8 w-8 rounded-full overflow-hidden bg-gradient-to-br from-dfAccent to-dfAccent2 items-center justify-center text-[11px] font-semibold border border-white/10 shadow shadow-black/60">
                     <%= currentUser.name.charAt(0).toUpperCase() %>
                   </span>
                   <span class="hidden sm:inline"><%= currentUser.name %></span>
@@ -135,13 +158,18 @@
                           d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div class="absolute right-0 mt-1 w-44 bg-[#050816]/95 border border-white/10 rounded-xl shadow-xl shadow-black/80 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all origin-top-right backdrop-blur">
-                  <a href="/profile" class="block px-3 py-2 hover:bg-white/10 rounded-t-xl">Account</a>
-                  <a href="/movies" class="block px-3 py-2 hover:bg-white/10">Home</a>
+
+                <div class="absolute right-0 mt-1 w-44 bg-[#050816]/98 border border-white/10 rounded-2xl shadow-xl shadow-black/80 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all origin-top-right backdrop-blur">
+                  <a href="/profile" class="block px-3 py-2 hover:bg-white/10 rounded-t-2xl">
+                    Account
+                  </a>
+                  <a href="/movies" class="block px-3 py-2 hover:bg-white/10">
+                    Home
+                  </a>
                   <form action="/logout" method="POST" class="border-t border-white/10 mt-1">
                     <button
                       type="submit"
-                      class="w-full text-left px-3 py-2 hover:bg-white/10 text-rose-300 rounded-b-xl">
+                      class="w-full text-left px-3 py-2 hover:bg-white/10 text-rose-300 rounded-b-2xl">
                       Sign out
                     </button>
                   </form>
@@ -158,29 +186,43 @@
       </nav>
     </header>
 
-    <!-- MAIN -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1">
-      <!-- HERO -->
+      <!-- HERO SECTION -->
       <section id="heroSection" class="relative h-[70vh] min-h-[430px] max-h-[780px] overflow-hidden">
+        <!-- Backdrop -->
         <div id="heroBackdrop"
-             class="absolute inset-0 bg-cover bg-center scale-110 transition-transform duration-[1400ms] ease-out blur-[1px]"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-black via-dfBg/60 to-dfBg"></div>
+             class="absolute inset-0 bg-cover bg-center scale-115 transition-transform duration-[1600ms] ease-out blur-[1px]"></div>
+
+        <!-- Dark overlays -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black via-dfBg/55 to-dfBg"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
 
+        <!-- Floating gradient orbs -->
+        <div class="pointer-events-none">
+          <div class="absolute -left-24 top-16 w-72 h-72 bg-dfAccent/30 rounded-full blur-3xl opacity-40"></div>
+          <div class="absolute right-0 -bottom-16 w-72 h-72 bg-dfAccent2/25 rounded-full blur-3xl opacity-40"></div>
+        </div>
+
+        <!-- Hero content -->
         <div class="relative z-10 max-w-6xl mx-auto h-full px-4 flex items-end pb-16 md:pb-24">
           <div class="max-w-xl animate-fade-up">
             <p class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-rose-300 mb-3">
-              <span class="inline-flex h-1.5 w-6 rounded-full bg-gradient-to-r from-dfAccent to-dfAccentSoft animate-hero-glow"></span>
+              <span class="inline-flex h-1.5 w-6 rounded-full bg-gradient-to-r from-dfAccent to-dfAccent2 animate-hero-glow"></span>
               Featured on Darkflix
             </p>
+
             <h1 id="heroTitle" class="text-3xl md:text-5xl lg:text-6xl font-black drop-shadow-2xl mb-3">
               Featured Title
             </h1>
+
             <p id="heroMeta" class="text-xs md:text-sm text-slate-200 mb-2"></p>
+
             <p id="heroOverview"
                class="hidden sm:block text-sm md:text-[0.95rem] text-slate-200/90 mb-5 line-clamp-3">
             </p>
 
+            <!-- Hero action buttons -->
             <div class="flex flex-wrap items-center gap-3">
               <button id="heroPlayBtn"
                       class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-base px-5 py-2.5 rounded-full hover:bg-slate-200 shadow-md shadow-black/50">
@@ -189,6 +231,7 @@
                 </svg>
                 Play
               </button>
+
               <button id="heroMoreBtn"
                       class="flex items-center gap-2 bg-white/10 text-white font-semibold text-xs md:text-sm px-4 py-2.5 rounded-full hover:bg-white/20 border border-white/20 backdrop-blur">
                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
@@ -198,20 +241,80 @@
                 </svg>
                 More Info
               </button>
+
+              <span class="inline-flex items-center gap-1 text-[11px] text-slate-200 bg-black/40 rounded-full px-3 py-1 border border-white/10">
+                <span class="w-1.5 h-1.5 rounded-full bg-dfAccent3 animate-pulse-soft"></span>
+                Live sync ready
+              </span>
+            </div>
+
+            <!-- Hero meta pills -->
+            <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-slate-200">
+              <span class="px-2 py-1 rounded-full bg-white/10 border border-white/10 backdrop-blur">
+                HD
+              </span>
+              <span class="px-2 py-1 rounded-full bg-white/10 border border-white/10 backdrop-blur">
+                Multi-language
+              </span>
+              <span class="px-2 py-1 rounded-full bg-white/10 border border-white/10 backdrop-blur">
+                Party mode
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- CONTENT ROWS -->
+      <!-- CONTENT AREA -->
       <section class="bg-gradient-to-b from-dfBg via-[#020617] to-black pt-6 pb-16">
         <div class="max-w-6xl mx-auto px-4">
-          <!-- Search Row -->
+          <!-- Quick filters row -->
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-wrap items-center gap-2 text-[11px] md:text-xs">
+              <button
+                data-row-target="trending"
+                class="quick-filter inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 border border-white/15 hover:bg-white/20 text-slate-100">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                Trending
+              </button>
+              <button
+                data-row-target="popular"
+                class="quick-filter inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-slate-200">
+                Popular
+              </button>
+              <button
+                data-row-target="top_rated"
+                class="quick-filter inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-slate-200">
+                Top Rated
+              </button>
+              <button
+                data-row-target="now_playing"
+                class="quick-filter hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-slate-200">
+                Now Playing
+              </button>
+              <button
+                data-row-target="upcoming"
+                class="quick-filter hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-slate-200">
+                Coming Soon
+              </button>
+            </div>
+
+            <p class="hidden md:flex items-center gap-1 text-[11px] text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Auto-refreshed from TMDB
+            </p>
+          </div>
+
+          <!-- Search Results Row -->
           <div id="searchSection" class="hidden mb-8">
             <div class="flex items-center justify-between mb-2">
-              <h2 id="searchTitle" class="text-base md:text-lg font-semibold">
-                Search Results
-              </h2>
+              <div class="flex flex-col gap-0.5">
+                <h2 id="searchTitle" class="text-base md:text-lg font-semibold">
+                  Search Results
+                </h2>
+                <p class="text-[11px] text-slate-400">
+                  Showing matches across movies.
+                </p>
+              </div>
               <button
                 id="clearSearchBtn"
                 class="text-xs text-slate-300 hover:text-white">
@@ -223,12 +326,12 @@
             </div>
           </div>
 
-          <!-- Status -->
+          <!-- Status message -->
           <p id="statusMessage" class="text-sm text-slate-300 mb-3 hidden"></p>
 
           <!-- Dynamic rows -->
           <div id="rowsContainer" class="space-y-8">
-            <!-- rows injected -->
+            <!-- "Continue watching" row will be injected here -->
           </div>
         </div>
       </section>
@@ -236,11 +339,15 @@
   </div>
 
   <script>
-    // ====== CONFIG ======
+    // =========================
+    // CONFIG & CONSTANTS
+    // =========================
     const TMDB_API_KEY = "<%= tmdbApiKey %>";
     const TMDB_BASE = "https://api.themoviedb.org/3";
     const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
     const TMDB_BACKDROP = "https://image.tmdb.org/t/p/original";
+
+    const RECENT_STORAGE_KEY = "darkflix_recent";
 
     const CATEGORIES = [
       { key: "trending",    title: "Trending Now",         path: "/trending/movie/week" },
@@ -250,7 +357,9 @@
       { key: "upcoming",    title: "Coming Soon",          path: "/movie/upcoming" }
     ];
 
-    // ====== DOM ======
+    // =========================
+    // DOM REFERENCES
+    // =========================
     const rowsContainer   = document.getElementById("rowsContainer");
     const statusEl        = document.getElementById("statusMessage");
     const heroBackdropEl  = document.getElementById("heroBackdrop");
@@ -271,7 +380,33 @@
     let currentHeroMovie = null;
     let heroSet = false;
 
-    // ====== NAV SCROLL EFFECT ======
+    // =========================
+    // UTILITIES
+    // =========================
+    async function fetchJson(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Network error");
+      return res.json();
+    }
+
+    function setStatus(msg, show = true) {
+      statusEl.textContent = msg;
+      statusEl.classList.toggle("hidden", !show);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // =========================
+    // NAVBAR SCROLL EFFECT
+    // =========================
     window.addEventListener("scroll", () => {
       if (window.scrollY > 40) {
         mainNav.classList.add(
@@ -292,50 +427,110 @@
       }
     });
 
-    // ====== UTILS ======
-    async function fetchJson(url) {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Network error");
-      return res.json();
-    }
-
-    function setStatus(msg, show = true) {
-      statusEl.textContent = msg;
-      statusEl.classList.toggle("hidden", !show);
-    }
-
-    function createRowElement(title, rowKey) {
+    // =========================
+    // ROW CREATION / RENDERING
+    // =========================
+    function createRowElement(title, rowKey, description) {
       const wrapper = document.createElement("section");
       wrapper.className = "space-y-2 js-row opacity-0 translate-y-3 transition-all duration-500";
-      wrapper.innerHTML = `
-        <div class="flex items-center justify-between">
-          <h2 class="text-base md:text-lg font-semibold">${title}</h2>
-        </div>
-        <div id="row-${rowKey}"
-             class="row-scroll flex gap-3 overflow-x-auto pb-2">
-        </div>
-      `;
+
+      const headingHtml =
+        '<div class="flex items-center justify-between">' +
+          '<div class="flex flex-col gap-0.5">' +
+            '<h2 class="text-base md:text-lg font-semibold">' + escapeHtml(title) + '</h2>';
+
+      const descHtml = description
+        ? '<p class="text-[11px] text-slate-400">' + escapeHtml(description) + "</p>"
+        : "";
+
+      const headingClose =
+          '</div>' +
+          '<button type="button" class="hidden sm:inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-slate-100">' +
+            '<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>' +
+            'Explore all' +
+          "</button>" +
+        "</div>";
+
+      wrapper.innerHTML =
+        headingHtml + descHtml + headingClose +
+        '<div id="row-' + rowKey + '" class="row-scroll flex gap-3 overflow-x-auto pb-2"></div>';
+
       rowsContainer.appendChild(wrapper);
-      return document.getElementById(`row-${rowKey}`);
+      return document.getElementById("row-" + rowKey);
     }
 
-    function createCard(movie) {
-      const {
-        id,
-        title,
-        name,
-        release_date,
-        first_air_date,
-        vote_average,
-        poster_path,
-        backdrop_path
-      } = movie;
+    // =========================
+    // RECENT / CONTINUE WATCHING
+    // =========================
+    function loadRecentMoviesFromStorage() {
+      try {
+        const raw = window.localStorage.getItem(RECENT_STORAGE_KEY);
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        if (!Array.isArray(arr)) return [];
+        return arr;
+      } catch (err) {
+        console.error("Error reading recent movies", err);
+        return [];
+      }
+    }
 
-      const displayTitle = title || name || "Untitled";
-      const date = release_date || first_air_date || "";
+    function saveRecentMoviesToStorage(list) {
+      try {
+        const trimmed = Array.isArray(list) ? list.slice(0, 12) : [];
+        window.localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(trimmed));
+      } catch (err) {
+        console.error("Error saving recent movies", err);
+      }
+    }
+
+    function saveRecentMovie(movie) {
+      if (!movie || !movie.id) return;
+      const recent = loadRecentMoviesFromStorage();
+      const filtered = recent.filter((m) => m && m.id !== movie.id);
+      filtered.unshift({
+        id: movie.id,
+        title: movie.title || movie.name || "",
+        name: movie.name || "",
+        release_date: movie.release_date || "",
+        first_air_date: movie.first_air_date || "",
+        vote_average: movie.vote_average || 0,
+        poster_path: movie.poster_path || movie.backdrop_path || "",
+        backdrop_path: movie.backdrop_path || "",
+      });
+      saveRecentMoviesToStorage(filtered);
+    }
+
+    function renderContinueWatchingRow() {
+      const recent = loadRecentMoviesFromStorage();
+      if (!recent || !recent.length) return;
+
+      const rowEl = createRowElement(
+        "Continue Watching",
+        "continue",
+        "Pick up where you left off."
+      );
+
+      // Show up to 10 recent items
+      recent.slice(0, 10).forEach(function (m) {
+        rowEl.appendChild(createCard(m, true));
+      });
+    }
+
+    // =========================
+    // CARD CREATION
+    // =========================
+    function createCard(movie, fromRecent) {
+      const id = movie.id;
+      const title = movie.title || movie.name || "Untitled";
+      const date = movie.release_date || movie.first_air_date || "";
       const year = date ? date.split("-")[0] : "";
+      const vote_average = movie.vote_average || 0;
       const rating = vote_average ? vote_average.toFixed(1) : "";
+      const poster_path = movie.poster_path || movie.backdrop_path || "";
+      const backdrop_path = movie.backdrop_path || movie.poster_path || "";
       const imgPath = poster_path || backdrop_path;
+
       const imgSrc = imgPath
         ? TMDB_IMG + imgPath
         : "https://via.placeholder.com/500x750/020617/ffffff?text=No+Image";
@@ -344,30 +539,46 @@
       card.className =
         "group relative flex-shrink-0 w-[42vw] sm:w-[150px] md:w-[170px] lg:w-[190px] cursor-pointer";
 
-      card.innerHTML = `
-        <div class="relative rounded-xl2 overflow-hidden bg-slate-900/70 border border-white/5 shadow-md shadow-black/70">
-          <img src="${imgSrc}" alt="${displayTitle}"
-               class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-110" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      var ratingBadge = "";
+      if (rating) {
+        ratingBadge =
+          '<span class="px-1.5 py-0.5 rounded-full bg-black/80 text-[9px] border border-white/10">★ ' +
+          rating +
+          "</span>";
+      }
 
-          <div class="absolute bottom-1.5 left-1.5 right-1.5 flex flex-col gap-0.5 text-[10px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
-            <span class="font-semibold line-clamp-1">${displayTitle}</span>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1">
-                ${
-                  rating
-                    ? `<span class="px-1.5 py-0.5 rounded-full bg-black/80 text-[9px] border border-white/10">★ ${rating}</span>`
-                    : ""
-                }
-              </div>
-              ${year ? `<span class="text-slate-400">${year}</span>` : ""}
-            </div>
-          </div>
-        </div>
-      `;
+      var yearHtml = "";
+      if (year) {
+        yearHtml =
+          '<span class="text-slate-400">' + escapeHtml(year) + "</span>";
+      }
 
-      card.addEventListener("click", () => {
-        const url = new URL("/watch", window.location.origin);
+      var titleHtml = escapeHtml(title);
+
+      var innerHtml =
+        '<div class="relative rounded-2xl-plus overflow-hidden bg-slate-900/70 border border-white/5 shadow-md shadow-black/70">' +
+          '<img src="' + imgSrc + '" alt="' + titleHtml + '"' +
+               ' class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-110" />' +
+          '<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>' +
+          '<div class="absolute bottom-1.5 left-1.5 right-1.5 flex flex-col gap-0.5 text-[10px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">' +
+            '<span class="font-semibold line-clamp-1">' + titleHtml + "</span>" +
+            '<div class="flex items-center justify-between">' +
+              '<div class="flex items-center gap-1">' +
+                ratingBadge +
+              "</div>" +
+              yearHtml +
+            "</div>" +
+          "</div>" +
+        "</div>";
+
+      card.innerHTML = innerHtml;
+
+      card.addEventListener("click", function () {
+        // record recent only if not already from "Continue Watching" click
+        if (!fromRecent) {
+          saveRecentMovie(movie);
+        }
+        var url = new URL("/watch", window.location.origin);
         url.searchParams.set("type", "movie");
         url.searchParams.set("tmdbId", id);
         window.location.href = url.toString();
@@ -376,28 +587,28 @@
       return card;
     }
 
+    // =========================
+    // HERO SETUP
+    // =========================
     function setHero(movie) {
       currentHeroMovie = movie;
-      const {
-        title,
-        name,
-        overview,
-        backdrop_path,
-        poster_path,
-        release_date,
-        vote_average
-      } = movie;
 
-      const displayTitle = title || name || "Untitled";
-      const imgPath = backdrop_path || poster_path;
-      const imgSrc = imgPath ? TMDB_BACKDROP + imgPath : null;
-      const year = release_date ? release_date.split("-")[0] : "";
+      const title = movie.title || movie.name || "Untitled";
+      const overview = movie.overview || "";
+      const backdrop_path = movie.backdrop_path || movie.poster_path || "";
+      const poster_path = movie.poster_path || movie.backdrop_path || "";
+      const date = movie.release_date || movie.first_air_date || "";
+      const year = date ? date.split("-")[0] : "";
+      const vote_average = movie.vote_average || 0;
       const rating = vote_average ? vote_average.toFixed(1) : "";
 
+      const imgPath = backdrop_path || poster_path;
+      const imgSrc = imgPath ? TMDB_BACKDROP + imgPath : null;
+
       if (imgSrc) {
-        heroBackdropEl.style.backgroundImage = `url(${imgSrc})`;
-        heroBackdropEl.style.transform = "scale(1.15)";
-        setTimeout(() => {
+        heroBackdropEl.style.backgroundImage = "url(" + imgSrc + ")";
+        heroBackdropEl.style.transform = "scale(1.2)";
+        setTimeout(function () {
           heroBackdropEl.style.transform = "scale(1.08)";
         }, 900);
       } else {
@@ -405,16 +616,18 @@
         heroBackdropEl.style.backgroundColor = "#020617";
       }
 
-      heroTitleEl.textContent = displayTitle;
-      const metaParts = [];
+      heroTitleEl.textContent = title;
+
+      var metaParts = [];
       if (year) metaParts.push(year);
-      if (rating) metaParts.push(`★ ${rating}`);
+      if (rating) metaParts.push("★ " + rating);
+
       heroMetaEl.textContent = metaParts.join("  •  ");
       heroOverviewEl.textContent = overview || "";
 
-      const goToWatch = () => {
+      var goToWatch = function () {
         if (!currentHeroMovie) return;
-        const url = new URL("/watch", window.location.origin);
+        var url = new URL("/watch", window.location.origin);
         url.searchParams.set("type", "movie");
         url.searchParams.set("tmdbId", currentHeroMovie.id);
         window.location.href = url.toString();
@@ -424,15 +637,27 @@
       heroMoreBtn.onclick = goToWatch;
     }
 
-    // ====== LOAD CATEGORY ROWS ======
+    // =========================
+    // CATEGORY ROW LOADING
+    // =========================
     async function loadCategoryRow(category) {
-      const rowEl = createRowElement(category.title, category.key);
+      var rowEl = createRowElement(
+        category.title,
+        category.key,
+        category.key === "trending"
+          ? "What everyone else is watching right now."
+          : ""
+      );
+
       try {
-        const path = category.path.startsWith("/trending")
-          ? `${TMDB_BASE}${category.path}?api_key=${TMDB_API_KEY}`
-          : `${TMDB_BASE}${category.path}?api_key=${TMDB_API_KEY}&page=1`;
-        const data = await fetchJson(path);
-        const results = data.results || [];
+        var path;
+        if (category.path.indexOf("/trending") === 0) {
+          path = TMDB_BASE + category.path + "?api_key=" + TMDB_API_KEY;
+        } else {
+          path = TMDB_BASE + category.path + "?api_key=" + TMDB_API_KEY + "&page=1";
+        }
+        var data = await fetchJson(path);
+        var results = data.results || [];
         if (!results.length) return;
 
         if (!heroSet && (category.key === "trending" || category.key === "popular")) {
@@ -440,17 +665,19 @@
           heroSet = true;
         }
 
-        results.forEach((m) => {
-          rowEl.appendChild(createCard(m));
+        results.forEach(function (m) {
+          rowEl.appendChild(createCard(m, false));
         });
       } catch (err) {
         console.error("Error loading category", category.key, err);
       }
     }
 
-    // ====== SEARCH ======
+    // =========================
+    // SEARCH LOGIC
+    // =========================
     async function handleSearch(query) {
-      const trimmed = query.trim();
+      var trimmed = (query || "").trim();
       if (!trimmed) {
         searchSection.classList.add("hidden");
         searchRowEl.innerHTML = "";
@@ -459,25 +686,27 @@
 
       try {
         setStatus("Searching...", true);
-        const params = new URLSearchParams({
+        var params = new URLSearchParams({
           api_key: TMDB_API_KEY,
           query: trimmed,
-          page: "1"
+          page: "1",
         });
-        const url = `${TMDB_BASE}/search/movie?${params.toString()}`;
-        const data = await fetchJson(url);
-        const results = data.results || [];
+        var url = TMDB_BASE + "/search/movie?" + params.toString();
+        var data = await fetchJson(url);
+        var results = data.results || [];
 
         searchRowEl.innerHTML = "";
         if (!results.length) {
-          searchTitleEl.textContent = `No results for "${trimmed}"`;
+          searchTitleEl.textContent = 'No results for "' + trimmed + '"';
           searchSection.classList.remove("hidden");
           setStatus("", false);
           return;
         }
 
-        searchTitleEl.textContent = `Search results for "${trimmed}"`;
-        results.forEach((m) => searchRowEl.appendChild(createCard(m)));
+        searchTitleEl.textContent = 'Search results for "' + trimmed + '"';
+        results.forEach(function (m) {
+          searchRowEl.appendChild(createCard(m, false));
+        });
         searchSection.classList.remove("hidden");
         setStatus("", false);
       } catch (err) {
@@ -486,57 +715,121 @@
       }
     }
 
-    // ====== ROW ENTRANCE ANIMATION ======
-    const rowObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.remove("opacity-0", "translate-y-3");
-            entry.target.classList.add("animate-fade-up");
-            rowObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-
-    function observeRows() {
-      document.querySelectorAll(".js-row").forEach((row) => rowObserver.observe(row));
+    // =========================
+    // ROW ENTRANCE ANIMATION
+    // =========================
+    var rowObserver;
+    if ("IntersectionObserver" in window) {
+      rowObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.remove("opacity-0", "translate-y-3");
+              entry.target.classList.add("animate-fade-up");
+              rowObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15 }
+      );
     }
 
-    // ====== EVENTS ======
-    searchForm?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      handleSearch(searchInput.value);
-    });
+    function observeRows() {
+      if (!rowObserver) return;
+      var rows = document.querySelectorAll(".js-row");
+      Array.prototype.forEach.call(rows, function (row) {
+        rowObserver.observe(row);
+      });
+    }
 
-    searchInput?.addEventListener("input", () => {
-      if (!searchInput.value.trim()) {
+    // =========================
+    // QUICK FILTERS (SCROLL TO ROW)
+    // =========================
+    function setupQuickFilters() {
+      var buttons = document.querySelectorAll(".quick-filter");
+      Array.prototype.forEach.call(buttons, function (btn) {
+        btn.addEventListener("click", function () {
+          var targetKey = btn.getAttribute("data-row-target");
+          if (!targetKey) return;
+          var section = document.querySelector('#row-' + targetKey);
+          if (!section) return;
+          var wrapper = section.closest("section");
+          if (!wrapper) return;
+          window.scrollTo({
+            top: wrapper.getBoundingClientRect().top + window.scrollY - 96,
+            behavior: "smooth",
+          });
+
+          // Update active visual
+          Array.prototype.forEach.call(buttons, function (b) {
+            b.classList.remove("bg-white/10", "text-slate-100");
+            b.classList.add("bg-white/5", "text-slate-200");
+          });
+          btn.classList.remove("bg-white/5", "text-slate-200");
+          btn.classList.add("bg-white/10", "text-slate-100");
+        });
+      });
+    }
+
+    // =========================
+    // EVENT LISTENERS
+    // =========================
+    if (searchForm && searchInput) {
+      searchForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        handleSearch(searchInput.value);
+      });
+
+      searchInput.addEventListener("input", function () {
+        if (!searchInput.value.trim()) {
+          searchSection.classList.add("hidden");
+          searchRowEl.innerHTML = "";
+        }
+      });
+    }
+
+    if (mobileSearchBtn) {
+      mobileSearchBtn.addEventListener("click", function () {
+        var q = window.prompt("Search titles:");
+        if (q !== null) {
+          if (searchInput) searchInput.value = q;
+          handleSearch(q);
+        }
+      });
+    }
+
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener("click", function () {
+        if (searchInput) searchInput.value = "";
         searchSection.classList.add("hidden");
         searchRowEl.innerHTML = "";
-      }
-    });
+      });
+    }
 
-    mobileSearchBtn?.addEventListener("click", () => {
-      const q = prompt("Search titles:");
-      if (q !== null) {
-        if (searchInput) searchInput.value = q;
-        handleSearch(q);
-      }
-    });
-
-    clearSearchBtn?.addEventListener("click", () => {
-      if (searchInput) searchInput.value = "";
-      searchSection.classList.add("hidden");
-      searchRowEl.innerHTML = "";
-    });
-
-    // ====== INIT ======
+    // =========================
+    // INITIALIZATION
+    // =========================
     (async function init() {
-      setStatus("Loading titles...", true);
-      await Promise.all(CATEGORIES.map(loadCategoryRow));
-      observeRows();
-      setStatus("", false);
+      try {
+        setStatus("Loading titles...", true);
+
+        // Render "Continue watching" first (if available)
+        renderContinueWatchingRow();
+
+        // Load categories in parallel
+        await Promise.all(
+          CATEGORIES.map(function (cat) {
+            return loadCategoryRow(cat);
+          })
+        );
+
+        observeRows();
+        setupQuickFilters();
+        setStatus("", false);
+      } catch (err) {
+        console.error(err);
+        setStatus("Failed to load titles. Please refresh.", true);
+      }
     })();
   </script>
 </body>
