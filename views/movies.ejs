@@ -12,37 +12,51 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ["system-ui", "ui-sans-serif", "SF Pro Text", "Inter", "sans-serif"],
+            sans: ["system-ui", "SF Pro Text", "Inter", "sans-serif"],
           },
           colors: {
-            netflixBlack: "#141414",
-            netflixRed: "#e50914",
+            dfBg: "#050816",
+            dfSurface: "#0b1020",
+            dfSurfaceSoft: "#0f172a",
+            dfAccent: "#e11d48",   // pink/red
+            dfAccentSoft: "#6366f1" // indigo
+          },
+          borderRadius: {
+            "xl2": "1.1rem"
+          },
+          boxShadow: {
+            "df-soft": "0 18px 40px rgba(0,0,0,0.7)"
           },
           keyframes: {
-            'fade-up': {
-              '0%': { opacity: 0, transform: 'translateY(12px)' },
-              '100%': { opacity: 1, transform: 'translateY(0)' },
+            "fade-up": {
+              "0%": { opacity: 0, transform: "translateY(12px)" },
+              "100%": { opacity: 1, transform: "translateY(0)" }
             },
-            'hero-glow': {
-              '0%, 100%': { opacity: 0.7 },
-              '50%': { opacity: 1 },
+            "hero-glow": {
+              "0%,100%": { opacity: 0.7, transform: "scale(1)" },
+              "50%": { opacity: 1, transform: "scale(1.02)" }
             },
+            "nav-blur": {
+              "0%": { backdropFilter: "blur(0px)" },
+              "100%": { backdropFilter: "blur(18px)" }
+            }
           },
           animation: {
-            'fade-up': 'fade-up 0.6s ease-out forwards',
-            'hero-glow': 'hero-glow 4s ease-in-out infinite',
-          },
-        },
-      },
+            "fade-up": "fade-up 0.5s ease-out forwards",
+            "hero-glow": "hero-glow 4s ease-in-out infinite",
+            "nav-blur": "nav-blur 0.3s ease-out forwards"
+          }
+        }
+      }
     };
   </script>
 
   <style>
     body {
       background:
-        radial-gradient(circle at 0% 0%, rgba(248, 113, 113, 0.18), transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.16), transparent 55%),
-        #000;
+        radial-gradient(circle at 0% 0%, rgba(248, 113, 113, 0.16), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(129, 140, 248, 0.18), transparent 55%),
+        #020617;
     }
     .row-scroll {
       scrollbar-width: none;
@@ -50,27 +64,28 @@
     .row-scroll::-webkit-scrollbar {
       display: none;
     }
-    .noise {
+    .noise-layer {
       pointer-events: none;
       position: fixed;
       inset: 0;
-      opacity: 0.16;
       mix-blend-mode: soft-light;
+      opacity: 0.16;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
     }
   </style>
 </head>
-<body class="min-h-screen font-sans text-white antialiased bg-black">
-  <div class="noise -z-10"></div>
+<body class="min-h-screen font-sans text-white antialiased bg-dfBg">
+  <div class="noise-layer -z-10"></div>
 
   <div class="min-h-screen flex flex-col">
     <!-- NAVBAR -->
-    <header id="mainNav" class="fixed top-0 left-0 right-0 z-30 transition-colors duration-300 bg-gradient-to-b from-black via-black/70 to-transparent">
+    <header id="mainNav"
+            class="fixed top-0 left-0 right-0 z-30 transition-all duration-300 bg-gradient-to-b from-black/80 via-black/50 to-transparent">
       <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-8">
+        <div class="flex items-center gap-6">
           <a href="/movies" class="flex items-center">
-            <span class="text-2xl md:text-3xl font-black tracking-tight text-netflixRed">
-              DARKFLIX
+            <span class="text-2xl md:text-3xl font-black tracking-tight text-white">
+              <span class="text-dfAccent">DARK</span>FLIX
             </span>
           </a>
           <ul class="hidden md:flex items-center gap-5 text-sm">
@@ -83,7 +98,8 @@
 
         <div class="flex items-center gap-4">
           <!-- Search -->
-          <form id="searchForm" class="hidden sm:flex items-center bg-black/70 rounded-full px-3 py-1 border border-white/10 shadow-sm shadow-black/40">
+          <form id="searchForm"
+                class="hidden sm:flex items-center bg-black/50 rounded-full px-3 py-1 border border-white/10 shadow-sm shadow-black/40 backdrop-blur">
             <svg class="w-4 h-4 text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -92,7 +108,7 @@
             <input
               id="searchInput"
               type="text"
-              placeholder="Titles, people, genres"
+              placeholder="Search titles..."
               class="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-400 px-2 w-40"
             />
           </form>
@@ -108,8 +124,8 @@
           <div class="flex items-center gap-3">
             <% if (currentUser) { %>
               <div class="relative group">
-                <button class="flex items-center gap-2 text-xs text-slate-200 hover:text-white">
-                  <span class="inline-flex h-7 w-7 rounded overflow-hidden bg-white/10 items-center justify-center text-[10px] font-semibold border border-white/10">
+                <button type="button" class="flex items-center gap-2 text-xs text-slate-200 hover:text-white">
+                  <span class="inline-flex h-8 w-8 rounded-full overflow-hidden bg-gradient-to-br from-dfAccent to-dfAccentSoft items-center justify-center text-[11px] font-semibold border border-white/10 shadow shadow-black/60">
                     <%= currentUser.name.charAt(0).toUpperCase() %>
                   </span>
                   <span class="hidden sm:inline"><%= currentUser.name %></span>
@@ -119,20 +135,21 @@
                           d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div class="absolute right-0 mt-1 w-40 bg-[#141414] border border-white/10 rounded-md shadow-lg shadow-black/70 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all">
-                  <a href="/profile" class="block px-3 py-2 hover:bg-white/10">Account</a>
+                <div class="absolute right-0 mt-1 w-44 bg-[#050816]/95 border border-white/10 rounded-xl shadow-xl shadow-black/80 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all origin-top-right backdrop-blur">
+                  <a href="/profile" class="block px-3 py-2 hover:bg-white/10 rounded-t-xl">Account</a>
                   <a href="/movies" class="block px-3 py-2 hover:bg-white/10">Home</a>
                   <form action="/logout" method="POST" class="border-t border-white/10 mt-1">
                     <button
                       type="submit"
-                      class="w-full text-left px-3 py-2 hover:bg-white/10 text-red-300">
+                      class="w-full text-left px-3 py-2 hover:bg-white/10 text-rose-300 rounded-b-xl">
                       Sign out
                     </button>
                   </form>
                 </div>
               </div>
             <% } else { %>
-              <a href="/login" class="text-xs px-4 py-1.5 rounded bg-netflixRed hover:bg-[#f6121d] font-semibold">
+              <a href="/login"
+                 class="text-xs px-4 py-1.5 rounded-full bg-dfAccent hover:bg-rose-600 font-semibold shadow shadow-black/60">
                 Sign In
               </a>
             <% } %>
@@ -145,32 +162,35 @@
     <main class="flex-1">
       <!-- HERO -->
       <section id="heroSection" class="relative h-[70vh] min-h-[430px] max-h-[780px] overflow-hidden">
-        <div id="heroBackdrop" class="absolute inset-0 bg-cover bg-center scale-105 transition-transform duration-[1200ms] ease-out"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-netflixBlack via-netflixBlack/40 to-transparent"></div>
+        <div id="heroBackdrop"
+             class="absolute inset-0 bg-cover bg-center scale-110 transition-transform duration-[1400ms] ease-out blur-[1px]"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-black via-dfBg/60 to-dfBg"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
 
         <div class="relative z-10 max-w-6xl mx-auto h-full px-4 flex items-end pb-16 md:pb-24">
           <div class="max-w-xl animate-fade-up">
-            <p class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-red-400 mb-3">
-              <span class="h-3 w-1 bg-red-500 rounded-full animate-hero-glow"></span>
-              Darkflix Original
+            <p class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-rose-300 mb-3">
+              <span class="inline-flex h-1.5 w-6 rounded-full bg-gradient-to-r from-dfAccent to-dfAccentSoft animate-hero-glow"></span>
+              Featured on Darkflix
             </p>
             <h1 id="heroTitle" class="text-3xl md:text-5xl lg:text-6xl font-black drop-shadow-2xl mb-3">
               Featured Title
             </h1>
             <p id="heroMeta" class="text-xs md:text-sm text-slate-200 mb-2"></p>
-            <p id="heroOverview" class="hidden sm:block text-sm md:text-[0.95rem] text-slate-200/90 mb-5 line-clamp-3"></p>
+            <p id="heroOverview"
+               class="hidden sm:block text-sm md:text-[0.95rem] text-slate-200/90 mb-5 line-clamp-3">
+            </p>
 
             <div class="flex flex-wrap items-center gap-3">
               <button id="heroPlayBtn"
-                      class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-base px-5 py-2.5 rounded hover:bg-slate-200 shadow-md shadow-black/50">
+                      class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-base px-5 py-2.5 rounded-full hover:bg-slate-200 shadow-md shadow-black/50">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6 4.5v11l8-5.5-8-5.5z" />
                 </svg>
                 Play
               </button>
               <button id="heroMoreBtn"
-                      class="flex items-center gap-2 bg-slate-500/70 text-white font-semibold text-xs md:text-sm px-4 py-2.5 rounded hover:bg-slate-400/80 border border-white/20">
+                      class="flex items-center gap-2 bg-white/10 text-white font-semibold text-xs md:text-sm px-4 py-2.5 rounded-full hover:bg-white/20 border border-white/20 backdrop-blur">
                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -184,7 +204,7 @@
       </section>
 
       <!-- CONTENT ROWS -->
-      <section class="bg-gradient-to-b from-black via-netflixBlack to-black pt-6 pb-16">
+      <section class="bg-gradient-to-b from-dfBg via-[#020617] to-black pt-6 pb-16">
         <div class="max-w-6xl mx-auto px-4">
           <!-- Search Row -->
           <div id="searchSection" class="hidden mb-8">
@@ -198,7 +218,7 @@
                 Clear
               </button>
             </div>
-            <div id="searchRow" class="row-scroll flex gap-2 overflow-x-auto pb-2">
+            <div id="searchRow" class="row-scroll flex gap-3 overflow-x-auto pb-2">
               <!-- search cards -->
             </div>
           </div>
@@ -207,7 +227,7 @@
           <p id="statusMessage" class="text-sm text-slate-300 mb-3 hidden"></p>
 
           <!-- Dynamic rows -->
-          <div id="rowsContainer" class="space-y-7">
+          <div id="rowsContainer" class="space-y-8">
             <!-- rows injected -->
           </div>
         </div>
@@ -223,11 +243,11 @@
     const TMDB_BACKDROP = "https://image.tmdb.org/t/p/original";
 
     const CATEGORIES = [
-      { key: "trending",    title: "Trending Now",            path: "/trending/movie/week" },
-      { key: "popular",     title: "Popular on Darkflix",     path: "/movie/popular" },
-      { key: "top_rated",   title: "Top Rated",               path: "/movie/top_rated" },
-      { key: "now_playing", title: "Now Playing",             path: "/movie/now_playing" },
-      { key: "upcoming",    title: "Coming Soon",             path: "/movie/upcoming" },
+      { key: "trending",    title: "Trending Now",         path: "/trending/movie/week" },
+      { key: "popular",     title: "Popular on Darkflix",  path: "/movie/popular" },
+      { key: "top_rated",   title: "Top Rated",            path: "/movie/top_rated" },
+      { key: "now_playing", title: "Now Playing",          path: "/movie/now_playing" },
+      { key: "upcoming",    title: "Coming Soon",          path: "/movie/upcoming" }
     ];
 
     // ====== DOM ======
@@ -254,9 +274,21 @@
     // ====== NAV SCROLL EFFECT ======
     window.addEventListener("scroll", () => {
       if (window.scrollY > 40) {
-        mainNav.classList.add("bg-black/90", "shadow-lg", "shadow-black/60");
+        mainNav.classList.add(
+          "bg-black/90",
+          "shadow-lg",
+          "shadow-black/60",
+          "backdrop-blur-md",
+          "animate-nav-blur"
+        );
       } else {
-        mainNav.classList.remove("bg-black/90", "shadow-lg", "shadow-black/60");
+        mainNav.classList.remove(
+          "bg-black/90",
+          "shadow-lg",
+          "shadow-black/60",
+          "backdrop-blur-md",
+          "animate-nav-blur"
+        );
       }
     });
 
@@ -280,7 +312,7 @@
           <h2 class="text-base md:text-lg font-semibold">${title}</h2>
         </div>
         <div id="row-${rowKey}"
-             class="row-scroll flex gap-2 overflow-x-auto pb-2">
+             class="row-scroll flex gap-3 overflow-x-auto pb-2">
         </div>
       `;
       rowsContainer.appendChild(wrapper);
@@ -296,7 +328,7 @@
         first_air_date,
         vote_average,
         poster_path,
-        backdrop_path,
+        backdrop_path
       } = movie;
 
       const displayTitle = title || name || "Untitled";
@@ -306,14 +338,14 @@
       const imgPath = poster_path || backdrop_path;
       const imgSrc = imgPath
         ? TMDB_IMG + imgPath
-        : "https://via.placeholder.com/500x750/000000/ffffff?text=No+Image";
+        : "https://via.placeholder.com/500x750/020617/ffffff?text=No+Image";
 
       const card = document.createElement("article");
       card.className =
         "group relative flex-shrink-0 w-[42vw] sm:w-[150px] md:w-[170px] lg:w-[190px] cursor-pointer";
 
       card.innerHTML = `
-        <div class="relative rounded-sm overflow-hidden bg-slate-900">
+        <div class="relative rounded-xl2 overflow-hidden bg-slate-900/70 border border-white/5 shadow-md shadow-black/70">
           <img src="${imgSrc}" alt="${displayTitle}"
                class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-110" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -322,7 +354,11 @@
             <span class="font-semibold line-clamp-1">${displayTitle}</span>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1">
-                ${rating ? `<span class="px-1.5 py-0.5 rounded bg-black/80 text-[9px]">★ ${rating}</span>` : ""}
+                ${
+                  rating
+                    ? `<span class="px-1.5 py-0.5 rounded-full bg-black/80 text-[9px] border border-white/10">★ ${rating}</span>`
+                    : ""
+                }
               </div>
               ${year ? `<span class="text-slate-400">${year}</span>` : ""}
             </div>
@@ -349,7 +385,7 @@
         backdrop_path,
         poster_path,
         release_date,
-        vote_average,
+        vote_average
       } = movie;
 
       const displayTitle = title || name || "Untitled";
@@ -360,13 +396,13 @@
 
       if (imgSrc) {
         heroBackdropEl.style.backgroundImage = `url(${imgSrc})`;
-        heroBackdropEl.style.transform = "scale(1.08)";
+        heroBackdropEl.style.transform = "scale(1.15)";
         setTimeout(() => {
-          heroBackdropEl.style.transform = "scale(1.02)";
-        }, 800);
+          heroBackdropEl.style.transform = "scale(1.08)";
+        }, 900);
       } else {
         heroBackdropEl.style.backgroundImage = "none";
-        heroBackdropEl.style.backgroundColor = "#000";
+        heroBackdropEl.style.backgroundColor = "#020617";
       }
 
       heroTitleEl.textContent = displayTitle;
@@ -399,7 +435,6 @@
         const results = data.results || [];
         if (!results.length) return;
 
-        // Set hero from trending/popular
         if (!heroSet && (category.key === "trending" || category.key === "popular")) {
           setHero(results[0]);
           heroSet = true;
@@ -427,7 +462,7 @@
         const params = new URLSearchParams({
           api_key: TMDB_API_KEY,
           query: trimmed,
-          page: "1",
+          page: "1"
         });
         const url = `${TMDB_BASE}/search/movie?${params.toString()}`;
         const data = await fetchJson(url);
