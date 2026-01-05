@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Watch • Dark Movie Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bgDark: "#050816",
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #020617 0, #020617 35%, #000 100%);
+    }
+    .backdrop-blur-custom {
+      backdrop-filter: blur(20px);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100">
+  <div class="min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <header class="fixed top-0 w-full z-20 bg-gradient-to-b from-black/80 via-black/60 to-transparent border-b border-white/5">
+      <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-amber-400 flex items-center justify-center text-xl font-black">
+            🎬
+          </div>
+          <span class="text-lg font-semibold tracking-wide">Dark Movie Hub</span>
+        </a>
+        <button onclick="window.history.back()"
+                class="text-xs px-3 py-1.5 rounded-full border border-slate-600 bg-black/60 hover:bg-slate-900 transition">
+          ← Back
+        </button>
+      </nav>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 max-w-6xl mx-auto px-4 pt-24 pb-10">
+      <!-- Player Section -->
+      <section id="playerSection"
+               class="relative rounded-3xl overflow-hidden border border-slate-800 bg-gradient-to-br from-slate-900/80 via-slate-900/40 to-slate-900/90 shadow-2xl shadow-black/60">
+        <div id="backdropLayer" class="absolute inset-0 opacity-50 blur-xl"></div>
+
+        <div class="relative z-10 grid md:grid-cols-[2fr,1.2fr] gap-6 p-4 md:p-6 lg:p-8">
+          <!-- Left: Player -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <p id="movieTitle" class="text-lg md:text-2xl font-bold"></p>
+                <p id="movieMeta" class="text-xs md:text-sm text-slate-300 mt-1"></p>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="text-xs text-slate-300 flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                  <span id="movieRating">0.0</span>
+                </div>
+
+                <!-- Optional language selection (ds_lang) -->
+                <select id="langSelect"
+                        class="text-xs bg-black/50 border border-slate-600 rounded-full px-3 py-1 outline-none focus:ring-1 focus:ring-red-500">
+                  <option value="">Default</option>
+                  <option value="en">English</option>
+                  <option value="es">Spanish</option>
+                  <option value="de">German</option>
+                  <option value="fr">French</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="aspect-video w-full rounded-2xl overflow-hidden border border-slate-800 bg-black">
+              <iframe
+                id="moviePlayer"
+                class="w-full h-full"
+                src=""
+                frameborder="0"
+                allowfullscreen
+                referrerpolicy="no-referrer">
+              </iframe>
+            </div>
+
+            <p class="text-[11px] text-slate-400 mt-2">
+              Content is played via an external provider using the selected movie’s identifier.
+            </p>
+          </div>
+
+          <!-- Right: Details -->
+          <aside class="space-y-3 md:space-y-4">
+            <div class="space-y-1.5">
+              <p id="movieTagline" class="text-sm italic text-slate-300"></p>
+              <p id="movieOverview" class="text-xs md:text-sm text-slate-200/90"></p>
+            </div>
+
+            <div id="genresRow" class="flex flex-wrap gap-1.5 text-[10px]"></div>
+
+            <div>
+              <h3 class="text-xs font-semibold text-slate-300 tracking-wide uppercase mb-1.5">
+                Top Cast
+              </h3>
+              <div id="castRow" class="flex flex-wrap gap-1.5 text-[11px]"></div>
+            </div>
+
+            <div>
+              <h3 class="text-xs font-semibold text-slate-300 tracking-wide uppercase mb-1.5">
+                Additional info
+              </h3>
+              <dl id="extraInfo" class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-300"></dl>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Error / Status -->
+      <p id="statusText" class="mt-4 text-sm text-slate-400"></p>
+    </main>
+
+    <footer class="border-t border-slate-800/80 bg-black/80">
+      <div class="max-w-6xl mx-auto px-4 py-4 text-xs text-slate-500 flex justify-between items-center">
+        <span>Watching mode engaged 🌒</span>
+        <span class="hidden sm:inline">TMDB for data • External embed for playback.</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // ====== CONFIG ======
+    const TMDB_API_KEY = "YOUR_TMDB_API_KEY"; // <- same as on index
+    const TMDB_BASE = "https://api.themoviedb.org/3";
+    const TMDB_IMG = "https://image.tmdb.org/t/p/original";
+
+    const statusText = document.getElementById("statusText");
+    const movieTitleEl = document.getElementById("movieTitle");
+    const movieMetaEl = document.getElementById("movieMeta");
+    const movieRatingEl = document.getElementById("movieRating");
+    const movieTaglineEl = document.getElementById("movieTagline");
+    const movieOverviewEl = document.getElementById("movieOverview");
+    const genresRow = document.getElementById("genresRow");
+    const castRow = document.getElementById("castRow");
+    const extraInfo = document.getElementById("extraInfo");
+    const moviePlayer = document.getElementById("moviePlayer");
+    const langSelect = document.getElementById("langSelect");
+    const backdropLayer = document.getElementById("backdropLayer");
+
+    let globalMovie = null;
+    let tmdbId = null;
+    let type = null;
+
+    function setStatus(msg) {
+      statusText.textContent = msg || "";
+    }
+
+    function parseQuery() {
+      const params = new URLSearchParams(window.location.search);
+      type = params.get("type") || "movie";
+      tmdbId = params.get("tmdbId");
+
+      if (!tmdbId) {
+        setStatus("No movie was selected. Return to the home page to choose one.");
+        return false;
+      }
+      return true;
+    }
+
+    async function fetchJson(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Network error");
+      return res.json();
+    }
+
+    async function loadMovieDetails() {
+      if (!tmdbId) return;
+
+      try {
+        setStatus("Loading movie details...");
+
+        const url = `${TMDB_BASE}/movie/${tmdbId}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
+        const data = await fetchJson(url);
+        globalMovie = data;
+        renderMovieDetails(data);
+        updatePlayerSrc(); // initial
+        setStatus("");
+      } catch (err) {
+        console.error(err);
+        setStatus("Failed to load details for this movie.");
+      }
+    }
+
+    function renderMovieDetails(movie) {
+      const {
+        title,
+        release_date,
+        runtime,
+        vote_average,
+        overview,
+        tagline,
+        genres = [],
+        credits = {},
+        status,
+        original_language,
+        budget,
+        revenue,
+        backdrop_path,
+      } = movie;
+
+      movieTitleEl.textContent = title || "Untitled";
+      const year = release_date ? release_date.split("-")[0] : "—";
+      const runtimeText = runtime ? `${runtime} min` : "—";
+      const ratingText = vote_average ? vote_average.toFixed(1) : "N/A";
+
+      movieMetaEl.textContent = `${year} • ${runtimeText}`;
+      movieRatingEl.textContent = ratingText;
+      movieTaglineEl.textContent = tagline || "";
+      movieOverviewEl.textContent = overview || "No overview available.";
+
+      // Backdrop in background
+      if (backdrop_path) {
+        backdropLayer.style.backgroundImage = `url(${TMDB_IMG + backdrop_path})`;
+        backdropLayer.style.backgroundSize = "cover";
+        backdropLayer.style.backgroundPosition = "center";
+      }
+
+      // Genres
+      genresRow.innerHTML = "";
+      genres.forEach((g) => {
+        const span = document.createElement("span");
+        span.className =
+          "px-2 py-1 rounded-full bg-slate-900/80 border border-slate-700 text-[10px] uppercase tracking-wide";
+        span.textContent = g.name;
+        genresRow.appendChild(span);
+      });
+
+      // Cast
+      castRow.innerHTML = "";
+      const cast = (credits.cast || []).slice(0, 8);
+      cast.forEach((c) => {
+        const pill = document.createElement("span");
+        pill.className =
+          "px-2 py-1 rounded-full bg-black/60 border border-slate-700 text-[11px]";
+        pill.textContent = c.name;
+        castRow.appendChild(pill);
+      });
+
+      // Extra info
+      extraInfo.innerHTML = "";
+      const infoEntries = [
+        ["Status", status || "—"],
+        ["Original language", (original_language || "").toUpperCase()],
+        ["Budget", budget ? `$${budget.toLocaleString()}` : "—"],
+        ["Revenue", revenue ? `$${revenue.toLocaleString()}` : "—"],
+      ];
+
+      infoEntries.forEach(([label, value]) => {
+        const dt = document.createElement("dt");
+        dt.textContent = label;
+        const dd = document.createElement("dd");
+        dd.textContent = value;
+        extraInfo.appendChild(dt);
+        extraInfo.appendChild(dd);
+
+        dt.className = "text-slate-400";
+        dd.className = "text-slate-100";
+      });
+    }
+
+    function buildEmbedUrl() {
+      // You’ll later swap this provider if needed.
+      const base = "https://vidsrc-embed.ru/embed/movie";
+      const params = new URLSearchParams();
+      params.set("tmdb", tmdbId);
+      params.set("autoplay", "1");
+
+      const lang = langSelect.value;
+      if (lang) {
+        params.set("ds_lang", lang);
+      }
+
+      return `${base}?${params.toString()}`;
+    }
+
+    function updatePlayerSrc() {
+      if (!tmdbId) return;
+      moviePlayer.src = buildEmbedUrl();
+    }
+
+    // Language change -> update ds_lang
+    langSelect.addEventListener("change", () => {
+      updatePlayerSrc();
+    });
+
+    // Init
+    if (parseQuery()) {
+      loadMovieDetails();
+    }
+  </script>
+</body>
+</html>
