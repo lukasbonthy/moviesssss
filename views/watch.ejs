@@ -49,7 +49,7 @@
         <div class="flex items-center gap-3">
           <% if (currentUser) { %>
             <a href="/profile" class="hidden sm:inline text-xs text-slate-200 hover:text-white">
-              Profile
+              <%= currentUser.name %>
             </a>
           <% } %>
           <button
@@ -90,7 +90,7 @@
                 <h1 id="movieTitle" class="text-2xl md:text-3xl font-black"></h1>
                 <p id="movieMeta" class="mt-1 text-xs md:text-sm text-slate-200"></p>
               </div>
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-3 flex-wrap">
                 <div class="flex items-center gap-1 text-xs bg-white/10 px-2.5 py-1 rounded">
                   <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
                   <span id="movieRating" class="font-semibold">0.0</span>
@@ -104,6 +104,12 @@
                   <option value="de">German</option>
                   <option value="fr">French</option>
                 </select>
+
+                <button
+                  id="startPartyBtn"
+                  class="text-xs px-3 py-1.5 rounded bg-netflixRed hover:bg-[#f6121d] font-semibold">
+                  Start Watch Party
+                </button>
               </div>
             </div>
           </div>
@@ -175,6 +181,7 @@
     const moviePlayer     = document.getElementById("moviePlayer");
     const langSelect      = document.getElementById("langSelect");
     const backdropLayer   = document.getElementById("backdropLayer");
+    const startPartyBtn   = document.getElementById("startPartyBtn");
 
     let tmdbId  = null;
     let type    = "movie"; // movie | tv
@@ -355,6 +362,55 @@
 
     langSelect.addEventListener("change", () => {
       updatePlayerSrc();
+    });
+
+    // ====== WATCH PARTY INTEGRATION ======
+    async function startWatchParty() {
+      if (!tmdbId) {
+        setStatus("No movie selected.");
+        return;
+      }
+
+      const username = "<%= currentUser ? currentUser.name.replace(/"/g, '&quot;') : '' %>";
+      if (!username) {
+        setStatus("You must be logged in to start a watch party.");
+        return;
+      }
+
+      try {
+        setStatus("Creating watch party...");
+        const movieTitle = movieTitleEl.textContent || "Untitled";
+        const embedUrl = buildEmbedUrl();
+
+        // 1) create room
+        const createRes = await fetch(`/create-room?username=${encodeURIComponent(username)}`);
+        const createData = await createRes.json();
+        if (!createRes.ok || !createData.roomCode) {
+          throw new Error("Failed to create room");
+        }
+
+        // 2) set room details
+        const roomCode = createData.roomCode;
+        const detailsRes = await fetch(
+          `/set-room-details/${roomCode}?url=${encodeURIComponent(embedUrl)}&movieTitle=${encodeURIComponent(movieTitle)}`
+        );
+        const detailsData = await detailsRes.json();
+        if (!detailsRes.ok || !detailsData.success) {
+          throw new Error("Failed to configure room");
+        }
+
+        // 3) redirect to party page
+        const url = new URL("/party", window.location.origin);
+        url.searchParams.set("code", roomCode);
+        window.location.href = url.toString();
+      } catch (err) {
+        console.error(err);
+        setStatus("Failed to start watch party.");
+      }
+    }
+
+    startPartyBtn.addEventListener("click", () => {
+      startWatchParty();
     });
 
     // INIT
