@@ -12,10 +12,14 @@ const {
 
 const app = express();
 
-// --- Middleware ---
+// === CONFIG ===
+const TMDB_API_KEY = process.env.TMDB_API_KEY || "YOUR_TMDB_API_KEY";
+
+// === VIEW ENGINE ===
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+// === MIDDLEWARE ===
 app.use(express.urlencoded({ extended: false }));
 
 app.use(
@@ -24,13 +28,13 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // set to true with HTTPS & "trust proxy" on Render
+      secure: false, // set true + trust proxy when using HTTPS in production
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
   })
 );
 
-// Expose user to templates
+// Expose current user to all templates
 app.use(async (req, res, next) => {
   if (!req.session.userId) {
     res.locals.currentUser = null;
@@ -38,7 +42,7 @@ app.use(async (req, res, next) => {
   }
   try {
     const user = await findUserById(req.session.userId);
-    res.locals.currentUser = user;
+    res.locals.currentUser = user || null;
   } catch (err) {
     console.error(err);
     res.locals.currentUser = null;
@@ -52,21 +56,21 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// --- Routes ---
+// === ROUTES ===
 
+// Redirect root -> movies or login
 app.get("/", (req, res) => {
-  if (req.session.userId) return res.redirect("/profile");
+  if (req.session.userId) return res.redirect("/movies");
   res.redirect("/login");
 });
 
-// Signup
+// SIGNUP
 app.get("/signup", (req, res) => {
   res.render("signup", { error: null, values: { name: "", email: "" } });
 });
 
 app.post("/signup", async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
-
   const values = { name, email };
 
   if (!name || !email || !password || !confirmPassword) {
@@ -100,7 +104,7 @@ app.post("/signup", async (req, res) => {
     });
 
     req.session.userId = user.id;
-    res.redirect("/profile");
+    res.redirect("/movies"); // go straight to movies after signup
   } catch (err) {
     console.error(err);
     res.status(500).render("signup", {
@@ -110,7 +114,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-// Login
+// LOGIN
 app.get("/login", (req, res) => {
   res.render("login", { error: null, values: { email: "" } });
 });
@@ -144,7 +148,7 @@ app.post("/login", async (req, res) => {
     }
 
     req.session.userId = user.id;
-    res.redirect("/profile");
+    res.redirect("/movies");
   } catch (err) {
     console.error(err);
     res.status(500).render("login", {
@@ -154,14 +158,14 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Logout
+// LOGOUT
 app.post("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/login");
   });
 });
 
-// Profile
+// PROFILE
 app.get("/profile", requireAuth, async (req, res) => {
   try {
     const user = await findUserById(req.session.userId);
@@ -207,7 +211,17 @@ app.post("/profile", requireAuth, async (req, res) => {
   }
 });
 
-// Fallback 404
+// MOVIES (Netflix-style home)
+app.get("/movies", requireAuth, (req, res) => {
+  res.render("movies", { tmdbApiKey: TMDB_API_KEY });
+});
+
+// WATCH (Netflix-style player page)
+app.get("/watch", requireAuth, (req, res) => {
+  res.render("watch", { tmdbApiKey: TMDB_API_KEY });
+});
+
+// 404
 app.use((req, res) => {
   res.status(404).render("404");
 });
