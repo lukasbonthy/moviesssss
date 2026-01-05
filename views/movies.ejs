@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>CineWave+ • Movies</title>
+  <title>StreamRealm+ • Movies</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Tailwind CDN -->
@@ -15,11 +15,11 @@
             sans: ["system-ui", "SF Pro Text", "Inter", "sans-serif"],
           },
           colors: {
-            cwBg: "#040714",
-            cwNav: "#040714",
-            cwCard: "#0b1120",
-            cwAccent: "#00b0ff",
-            cwAccentSoft: "#38bdf8",
+            srBg: "#040714",
+            srNav: "#040714",
+            srCard: "#0b1120",
+            srAccent: "#00b0ff",
+            srAccentSoft: "#38bdf8",
           },
           borderRadius: {
             "2xl-plus": "1.25rem",
@@ -39,7 +39,7 @@
             },
           },
           animation: {
-            "fade-up": "fade-up 0.45s ease-out forwards",
+            "fade-up": "fade-up 0.4s ease-out forwards",
             "loader-spin": "loader-spin 1.1s linear infinite",
             "loader-pulse": "loader-pulse 2s ease-in-out infinite",
           },
@@ -51,8 +51,8 @@
   <style>
     body {
       background:
-        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.50), transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(0, 184, 255, 0.45), transparent 60%),
+        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.55), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(0, 184, 255, 0.4), transparent 60%),
         #040714;
     }
     .row-scroll {
@@ -66,49 +66,50 @@
       position: fixed;
       inset: 0;
       mix-blend-mode: soft-light;
-      opacity: 0.18;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+      opacity: 0.2;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
     }
   </style>
 </head>
-<body class="min-h-screen font-sans text-white antialiased bg-cwBg">
+<body class="min-h-screen font-sans text-white antialiased bg-srBg">
   <div class="noise-layer -z-10"></div>
 
-  <!-- LOADING OVERLAY -->
+  <!-- FULLSCREEN LOADER -->
   <div id="appLoader"
-       class="fixed inset-0 z-40 flex flex-col items-center justify-center bg-cwBg transition-opacity duration-500">
+       class="fixed inset-0 z-40 flex flex-col items-center justify-center bg-srBg transition-opacity duration-500">
     <div class="relative mb-6">
-      <!-- glow circle -->
-      <div class="w-32 h-32 rounded-full bg-gradient-to-br from-cwAccent/35 via-transparent to-cwAccentSoft/40 blur-3xl opacity-80"></div>
+      <!-- subtle glow -->
+      <div class="w-32 h-32 rounded-full bg-gradient-to-br from-srAccent/40 via-transparent to-srAccentSoft/45 blur-3xl opacity-80"></div>
       <!-- spinner -->
       <div class="absolute inset-0 flex items-center justify-center">
-        <div class="w-16 h-16 rounded-full border-[3px] border-slate-700 border-t-cwAccent animate-loader-spin"></div>
+        <div class="w-16 h-16 rounded-full border-[3px] border-slate-700 border-t-srAccent animate-loader-spin"></div>
       </div>
     </div>
     <div class="flex flex-col items-center gap-1 animate-loader-pulse">
       <div class="text-2xl font-semibold tracking-tight">
-        CineWave<span class="text-cwAccent align-super text-sm">+</span>
+        StreamRealm<span class="text-srAccent align-super text-sm">+</span>
       </div>
       <p class="text-xs text-slate-300 uppercase tracking-[0.25em]">
-        Loading experience
+        Starting stream
       </p>
     </div>
   </div>
 
   <div class="min-h-screen flex flex-col">
     <!-- NAVBAR -->
-    <header class="fixed top-0 left-0 right-0 z-30 bg-cwNav/95 backdrop-blur border-b border-white/5">
+    <header class="fixed top-0 left-0 right-0 z-30 bg-srNav/95 backdrop-blur border-b border-white/5">
       <nav class="max-w-6xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-7">
-          <!-- Brand (Disney+-ish but unique) -->
+        <div class="flex items-center gap-8">
+          <!-- Brand (Disney+-feel, but unique text) -->
           <a href="/movies" class="flex items-center relative group">
             <span class="text-2xl md:text-[26px] font-semibold tracking-tight text-white select-none">
-              CineWave<span class="text-cwAccent align-super text-sm">+</span>
+              StreamRealm<span class="text-srAccent align-super text-sm">+</span>
             </span>
-            <span class="pointer-events-none absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cwAccent/70 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+            <!-- arc-like glow under logo -->
+            <span class="pointer-events-none absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-srAccent/80 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
           </a>
 
-          <!-- Nav links -->
+          <!-- Nav links in a single row -->
           <ul class="hidden md:flex items-center gap-6 text-[13px]">
             <li>
               <span class="font-semibold text-white">Home</span>
@@ -129,7 +130,7 @@
         </div>
 
         <div class="flex items-center gap-4">
-          <!-- Search -->
+          <!-- Search (top-right) -->
           <form id="searchForm"
                 class="hidden sm:flex items-center bg-[#0b1120] rounded-full px-3 py-1 border border-white/10">
             <svg class="w-4 h-4 text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -145,7 +146,7 @@
             />
           </form>
 
-          <!-- Mobile search -->
+          <!-- Mobile search button -->
           <button id="mobileSearchBtn" class="sm:hidden text-slate-100">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
@@ -154,7 +155,7 @@
             </svg>
           </button>
 
-          <!-- Profile -->
+          <!-- Profile / login -->
           <div class="flex items-center gap-3">
             <% if (currentUser) { %>
               <div class="relative group">
@@ -197,20 +198,20 @@
       </nav>
     </header>
 
-    <!-- MAIN -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 pt-16">
-      <!-- HERO -->
+      <!-- HERO SECTION (big backdrop, text left, dark gradient) -->
       <section id="heroSection"
                class="relative h-[60vh] min-h-[380px] max-h-[640px] overflow-hidden">
         <div id="heroBackdrop"
              class="absolute inset-0 bg-cover bg-center scale-110 blur-[2px] transition-transform duration-[1600ms] ease-out"></div>
         <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-[#040714]/70 to-[#040714]"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-transparent"></div>
 
         <div class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 h-full flex items-end pb-10 md:pb-14">
           <div class="max-w-xl">
             <p class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-slate-200 mb-2">
-              <span class="inline-flex h-[2px] w-6 rounded-full bg-cwAccent"></span>
+              <span class="inline-flex h-[2px] w-6 rounded-full bg-srAccent"></span>
               Featured
             </p>
 
@@ -246,10 +247,26 @@
         </div>
       </section>
 
-      <!-- CONTENT -->
-      <section class="bg-gradient-to-b from-[#040714] via-[#020617] to-black pt-4 pb-16">
+      <!-- CONTENT SECTIONS -->
+      <section class="bg-gradient-to-b from-[#040714] via-[#020617] to-black pt-6 pb-16">
         <div class="max-w-6xl mx-auto px-4 md:px-6">
-          <!-- Search results -->
+          <!-- “Brands row” – just decorative (like Disney / Pixar row, but generic) -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 mb-10">
+            <% const tiles = ["Realm Studios","Nova Animation","Echo Docs","Myth World","Galaxy Live"]; %>
+            <% tiles.forEach(function(tile) { %>
+              <div class="relative rounded-2xl-plus overflow-hidden bg-gradient-to-br from-srCard via-[#020617] to-srCard border border-white/10 aspect-[16/9] cursor-pointer group">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(56,189,248,0.3),transparent_55%),radial-gradient(circle_at_100%_0%,rgba(59,130,246,0.25),transparent_55%)] opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase text-slate-50">
+                    <%= tile %>
+                  </span>
+                </div>
+                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-40 transition-opacity"></div>
+              </div>
+            <% }) %>
+          </div>
+
+          <!-- Search results rail -->
           <div id="searchSection" class="hidden mb-10">
             <div class="flex items-center justify-between mb-2">
               <div class="flex flex-col gap-0.5">
@@ -269,10 +286,10 @@
             <div id="searchRow" class="row-scroll flex gap-3 overflow-x-auto pb-2"></div>
           </div>
 
-          <!-- Status -->
+          <!-- Status text -->
           <p id="statusMessage" class="text-sm text-slate-300 mb-3 hidden"></p>
 
-          <!-- Rows -->
+          <!-- Category rails -->
           <div id="rowsContainer" class="space-y-8"></div>
         </div>
       </section>
@@ -287,11 +304,11 @@
     const TMDB_BACKDROP = "https://image.tmdb.org/t/p/original";
 
     const CATEGORIES = [
-      { key: "trending",    title: "Trending",         path: "/trending/movie/week" },
-      { key: "popular",     title: "Popular Movies",   path: "/movie/popular" },
-      { key: "top_rated",   title: "Top Rated",        path: "/movie/top_rated" },
-      { key: "now_playing", title: "In Theatres",      path: "/movie/now_playing" },
-      { key: "upcoming",    title: "Coming Soon",      path: "/movie/upcoming" },
+      { key: "trending",    title: "Trending Now",      path: "/trending/movie/week" },
+      { key: "popular",     title: "Popular Movies",    path: "/movie/popular" },
+      { key: "top_rated",   title: "Top Rated",         path: "/movie/top_rated" },
+      { key: "now_playing", title: "In Theatres",       path: "/movie/now_playing" },
+      { key: "upcoming",    title: "Coming Soon",       path: "/movie/upcoming" },
     ];
 
     // ===== DOM =====
@@ -382,7 +399,7 @@
         "group relative flex-shrink-0 w-[70vw] sm:w-[220px] md:w-[260px] lg:w-[280px] cursor-pointer";
 
       card.innerHTML = `
-        <div class="relative rounded-xl overflow-hidden bg-cwCard border border-transparent hover:border-cwAccent/60 transition-colors duration-200">
+        <div class="relative rounded-xl overflow-hidden bg-srCard border border-transparent hover:border-srAccent/60 transition-colors duration-200">
           <img src="${imgSrc}" alt="${escapeHtml(title)}"
                class="w-full aspect-[16/9] object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -459,6 +476,7 @@
         const results = data.results || [];
         if (!results.length) return;
 
+        // use first popular/trending result as hero
         if (!heroSet && (category.key === "trending" || category.key === "popular")) {
           setHero(results[0]);
           heroSet = true;
@@ -530,7 +548,7 @@
       document.querySelectorAll(".js-row").forEach((row) => rowObserver.observe(row));
     }
 
-    // Events
+    // EVENTS
     if (searchForm && searchInput) {
       searchForm.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -562,7 +580,7 @@
       });
     }
 
-    // Init
+    // INIT
     (async function init() {
       try {
         setStatus("Loading movies...", true);
