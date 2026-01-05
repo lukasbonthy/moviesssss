@@ -5,6 +5,7 @@
   <title>Darkflix • Movies</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -14,10 +15,11 @@
             sans: ["system-ui", "SF Pro Text", "Inter", "sans-serif"],
           },
           colors: {
-            dfBg: "#020617",
-            dfBgSoft: "#050816",
-            dfAccent: "#e11d48",
-            dfAccent2: "#6366f1",
+            dpBg: "#040714",
+            dpBgSoft: "#05091f",
+            dpAccent: "#00b3ff",
+            dpAccentSoft: "#7b5eff",
+            dpAccentWarn: "#ffcc00",
           },
           borderRadius: {
             "2xl-plus": "1.25rem",
@@ -27,19 +29,22 @@
               "0%": { opacity: 0, transform: "translateY(12px)" },
               "100%": { opacity: 1, transform: "translateY(0)" },
             },
-            "hero-glow": {
-              "0%,100%": { opacity: 0.7, transform: "scale(1)" },
-              "50%": { opacity: 1, transform: "scale(1.04)" },
-            },
             "nav-blur": {
               "0%": { backdropFilter: "blur(0px)" },
               "100%": { backdropFilter: "blur(18px)" },
             },
+            "hero-glow": {
+              "0%,100%": { opacity: 0.8, transform: "scale(1)" },
+              "50%": { opacity: 1, transform: "scale(1.03)" },
+            },
           },
           animation: {
             "fade-up": "fade-up 0.5s ease-out forwards",
-            "hero-glow": "hero-glow 4s ease-in-out infinite",
             "nav-blur": "nav-blur 0.3s ease-out forwards",
+            "hero-glow": "hero-glow 4s ease-in-out infinite",
+          },
+          boxShadow: {
+            "dp-soft": "0 18px 45px rgba(0,0,0,0.7)",
           },
         },
       },
@@ -49,9 +54,9 @@
   <style>
     body {
       background:
-        radial-gradient(circle at 0% 0%, rgba(248, 113, 113, 0.16), transparent 60%),
-        radial-gradient(circle at 100% 0%, rgba(129, 140, 248, 0.18), transparent 55%),
-        #020617;
+        radial-gradient(circle at 20% 0%, rgba(0, 179, 255, 0.35), transparent 55%),
+        radial-gradient(circle at 80% 0%, rgba(123, 94, 255, 0.35), transparent 55%),
+        radial-gradient(circle at 50% 100%, rgba(8, 47, 73, 0.9), #020617 70%);
     }
     .row-scroll {
       scrollbar-width: none;
@@ -64,12 +69,12 @@
       position: fixed;
       inset: 0;
       mix-blend-mode: soft-light;
-      opacity: 0.16;
+      opacity: 0.15;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
     }
   </style>
 </head>
-<body class="min-h-screen font-sans text-white antialiased bg-dfBg">
+<body class="min-h-screen font-sans text-white antialiased bg-dpBg">
   <div class="noise-layer -z-10"></div>
 
   <div class="min-h-screen flex flex-col">
@@ -79,20 +84,25 @@
       <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-6">
           <a href="/movies" class="flex items-center">
-            <span class="text-2xl md:text-3xl font-black tracking-tight text-white select-none">
-              <span class="text-dfAccent">DARK</span>FLIX
+            <!-- Logo styled like Disney+ glow -->
+            <span class="text-2xl md:text-3xl font-black tracking-tight select-none">
+              <span class="bg-gradient-to-r from-dpAccent via-white to-dpAccentSoft bg-clip-text text-transparent">
+                Darkflix
+              </span>
             </span>
           </a>
           <ul class="hidden md:flex items-center gap-5 text-sm">
-            <li><span class="font-semibold">Home</span></li>
             <li>
-              <a href="/tv" class="text-slate-300 hover:text-slate-100">TV Shows</a>
+              <span class="font-semibold text-white">Movies</span>
             </li>
-            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">
-              Movies
+            <li>
+              <a href="/tv" class="text-slate-300 hover:text-white transition-colors">Series</a>
             </li>
-            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">
-              My List
+            <li class="text-slate-300 hover:text-white transition-colors cursor-pointer">
+              Originals
+            </li>
+            <li class="text-slate-300 hover:text-white transition-colors cursor-pointer">
+              Watchlist
             </li>
           </ul>
         </div>
@@ -113,6 +123,8 @@
               class="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-400 px-2 w-40"
             />
           </form>
+
+          <!-- Mobile search icon -->
           <button id="mobileSearchBtn" class="sm:hidden text-slate-100">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
@@ -126,7 +138,7 @@
             <% if (currentUser) { %>
               <div class="relative group">
                 <button type="button" class="flex items-center gap-2 text-xs text-slate-200 hover:text-white">
-                  <span class="inline-flex h-8 w-8 rounded-full overflow-hidden bg-gradient-to-br from-dfAccent to-dfAccent2 items-center justify-center text-[11px] font-semibold border border-white/10 shadow shadow-black/60">
+                  <span class="inline-flex h-8 w-8 rounded-full overflow-hidden bg-gradient-to-br from-dpAccent to-dpAccentSoft items-center justify-center text-[11px] font-semibold border border-white/10 shadow shadow-black/60">
                     <%= currentUser.name.charAt(0).toUpperCase() %>
                   </span>
                   <span class="hidden sm:inline"><%= currentUser.name %></span>
@@ -136,17 +148,17 @@
                           d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div class="absolute right-0 mt-1 w-44 bg-[#050816]/98 border border-white/10 rounded-2xl shadow-xl shadow-black/80 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all origin-top-right backdrop-blur">
+                <div class="absolute right-0 mt-1 w-44 bg-[#06091e]/98 border border-white/10 rounded-2xl shadow-xl shadow-black/80 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all origin-top-right backdrop-blur">
                   <a href="/profile" class="block px-3 py-2 hover:bg-white/10 rounded-t-2xl">
                     Account
                   </a>
                   <a href="/tv" class="block px-3 py-2 hover:bg-white/10">
-                    TV Shows
+                    Browse Series
                   </a>
                   <form action="/logout" method="POST" class="border-t border-white/10 mt-1">
                     <button
                       type="submit"
-                      class="w-full text-left px-3 py-2 hover:bg-white/10 text-rose-300 rounded-b-2xl">
+                      class="w-full text-left px-3 py-2 hover:bg-white/10 text-red-200 rounded-b-2xl">
                       Sign out
                     </button>
                   </form>
@@ -154,8 +166,8 @@
               </div>
             <% } else { %>
               <a href="/login"
-                 class="text-xs px-4 py-1.5 rounded-full bg-dfAccent hover:bg-rose-600 font-semibold shadow shadow-black/60">
-                Sign In
+                 class="text-xs px-4 py-1.5 rounded-full bg-white text-black font-semibold shadow shadow-black/60 hover:bg-slate-100">
+                Log In
               </a>
             <% } %>
           </div>
@@ -166,28 +178,36 @@
     <!-- MAIN -->
     <main class="flex-1">
       <!-- HERO -->
-      <section id="heroSection" class="relative h-[70vh] min-h-[430px] max-h-[780px] overflow-hidden">
+      <section id="heroSection"
+               class="relative h-[70vh] min-h-[430px] max-h-[780px] overflow-hidden">
         <div id="heroBackdrop"
-             class="absolute inset-0 bg-cover bg-center scale-115 transition-transform duration-[1600ms] ease-out blur-[1px]"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-black via-dfBg/55 to-dfBg"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+             class="absolute inset-0 bg-cover bg-center scale-110 blur-[2px] transition-transform duration-[1600ms] ease-out"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-[#040714]/60 to-[#040714]"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"></div>
+
+        <!-- Little arc glow at bottom (Disney+ vibe) -->
+        <div class="pointer-events-none absolute bottom-[-25%] left-1/2 -translate-x-1/2 w-[140%] h-[80%] rounded-[100%] bg-gradient-to-t from-[#0ea5e9]/40 via-transparent to-transparent blur-3xl opacity-40 animate-hero-glow"></div>
 
         <div class="relative z-10 max-w-6xl mx-auto h-full px-4 flex items-end pb-16 md:pb-24">
           <div class="max-w-xl animate-fade-up">
-            <p class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-rose-300 mb-3">
-              <span class="inline-flex h-1.5 w-6 rounded-full bg-gradient-to-r from-dfAccent to-dfAccent2 animate-hero-glow"></span>
-              Featured on Darkflix
+            <p class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-dpAccent mb-3">
+              <span class="inline-flex h-1 w-7 rounded-full bg-gradient-to-r from-dpAccent to-dpAccentSoft"></span>
+              Featured Movie
             </p>
+
             <h1 id="heroTitle" class="text-3xl md:text-5xl lg:text-6xl font-black drop-shadow-2xl mb-3">
               Featured Title
             </h1>
-            <p id="heroMeta" class="text-xs md:text-sm text-slate-200 mb-2"></p>
+
+            <p id="heroMeta" class="text-xs md:text-sm text-slate-100 mb-2"></p>
+
             <p id="heroOverview"
-               class="hidden sm:block text-sm md:text-[0.95rem] text-slate-200/90 mb-5 line-clamp-3"></p>
+               class="hidden sm:block text-sm md:text-[0.95rem] text-slate-200/90 mb-5 line-clamp-3">
+            </p>
 
             <div class="flex flex-wrap items-center gap-3">
               <button id="heroPlayBtn"
-                      class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-base px-5 py-2.5 rounded-full hover:bg-slate-200 shadow-md shadow-black/50">
+                      class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-base px-5 py-2.5 rounded-full hover:bg-slate-100 shadow-md shadow-black/50">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6 4.5v11l8-5.5-8-5.5z" />
                 </svg>
@@ -200,7 +220,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 4v16m8-8H4" />
                 </svg>
-                More Info
+                Details
               </button>
             </div>
           </div>
@@ -208,17 +228,17 @@
       </section>
 
       <!-- CONTENT -->
-      <section class="bg-gradient-to-b from-dfBg via-[#020617] to-black pt-6 pb-16">
+      <section class="bg-gradient-to-b from-[#040714] via-[#020617] to-black pt-6 pb-16">
         <div class="max-w-6xl mx-auto px-4">
-          <!-- Search Row -->
-          <div id="searchSection" class="hidden mb-8">
+          <!-- Search -->
+          <div id="searchSection" class="hidden mb-10">
             <div class="flex items-center justify-between mb-2">
               <div class="flex flex-col gap-0.5">
                 <h2 id="searchTitle" class="text-base md:text-lg font-semibold">
                   Search Results
                 </h2>
                 <p class="text-[11px] text-slate-400">
-                  Showing matches across movies.
+                  Movies that match your search.
                 </p>
               </div>
               <button
@@ -227,12 +247,13 @@
                 Clear
               </button>
             </div>
-            <div id="searchRow" class="row-scroll flex gap-3 overflow-x-auto pb-2">
-            </div>
+            <div id="searchRow" class="row-scroll flex gap-3 overflow-x-auto pb-2"></div>
           </div>
 
+          <!-- Status -->
           <p id="statusMessage" class="text-sm text-slate-300 mb-3 hidden"></p>
 
+          <!-- Category rows -->
           <div id="rowsContainer" class="space-y-8"></div>
         </div>
       </section>
@@ -240,6 +261,7 @@
   </div>
 
   <script>
+    // ===== CONFIG =====
     const TMDB_API_KEY = "<%= tmdbApiKey %>";
     const TMDB_BASE = "https://api.themoviedb.org/3";
     const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
@@ -249,10 +271,11 @@
       { key: "trending",    title: "Trending Now",        path: "/trending/movie/week" },
       { key: "popular",     title: "Popular on Darkflix", path: "/movie/popular" },
       { key: "top_rated",   title: "Top Rated",           path: "/movie/top_rated" },
-      { key: "now_playing", title: "Now Playing",         path: "/movie/now_playing" },
+      { key: "now_playing", title: "In Theatres",         path: "/movie/now_playing" },
       { key: "upcoming",    title: "Coming Soon",         path: "/movie/upcoming" },
     ];
 
+    // ===== DOM =====
     const rowsContainer   = document.getElementById("rowsContainer");
     const statusEl        = document.getElementById("statusMessage");
     const heroBackdropEl  = document.getElementById("heroBackdrop");
@@ -273,6 +296,17 @@
     let currentHeroMovie = null;
     let heroSet = false;
 
+    // ===== HELPERS =====
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     function setStatus(msg, show = true) {
       statusEl.textContent = msg;
       statusEl.classList.toggle("hidden", !show);
@@ -284,11 +318,11 @@
       return res.json();
     }
 
-    // Nav scroll effect
+    // Navbar blur on scroll (Disney+ style)
     window.addEventListener("scroll", () => {
       if (window.scrollY > 40) {
         mainNav.classList.add(
-          "bg-black/90",
+          "bg-black/80",
           "shadow-lg",
           "shadow-black/60",
           "backdrop-blur-md",
@@ -296,7 +330,7 @@
         );
       } else {
         mainNav.classList.remove(
-          "bg-black/90",
+          "bg-black/80",
           "shadow-lg",
           "shadow-black/60",
           "backdrop-blur-md",
@@ -305,25 +339,18 @@
       }
     });
 
-    function escapeHtml(str) {
-      if (!str) return "";
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
+    // ===== ROWS =====
     function createRowElement(title, key) {
       const wrapper = document.createElement("section");
       wrapper.className = "space-y-2 js-row opacity-0 translate-y-3 transition-all duration-500";
+
       wrapper.innerHTML = `
         <div class="flex items-center justify-between">
           <h2 class="text-base md:text-lg font-semibold">${escapeHtml(title)}</h2>
         </div>
         <div id="row-${key}" class="row-scroll flex gap-3 overflow-x-auto pb-2"></div>
       `;
+
       rowsContainer.appendChild(wrapper);
       return document.getElementById(`row-${key}`);
     }
@@ -342,19 +369,22 @@
 
       const card = document.createElement("article");
       card.className =
-        "group relative flex-shrink-0 w-[42vw] sm:w-[150px] md:w-[170px] lg:w-[190px] cursor-pointer";
+        "group relative flex-shrink-0 w-[44vw] sm:w-[160px] md:w-[180px] lg:w-[200px] cursor-pointer";
 
       card.innerHTML = `
-        <div class="relative rounded-2xl-plus overflow-hidden bg-slate-900/70 border border-white/5 shadow-md shadow-black/70">
+        <div class="relative rounded-2xl-plus overflow-hidden bg-slate-900/60 border border-white/5 shadow-md shadow-black/70">
           <img src="${imgSrc}" alt="${escapeHtml(title)}"
-               class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-110" />
+               class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-105" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+          <div class="absolute top-1.5 left-1.5 flex items-center gap-1 text-[10px] text-yellow-200 opacity-90">
+            ${rating ? `<span class="px-1.5 py-0.5 rounded-full bg-black/70 border border-white/10">★ ${rating}</span>` : ""}
+          </div>
+
           <div class="absolute bottom-1.5 left-1.5 right-1.5 flex flex-col gap-0.5 text-[10px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
             <span class="font-semibold line-clamp-1">${escapeHtml(title)}</span>
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1">
-                ${rating ? `<span class="px-1.5 py-0.5 rounded-full bg-black/80 text-[9px] border border-white/10">★ ${rating}</span>` : ""}
-              </div>
+              <span class="text-[10px] text-slate-300">Movie</span>
               ${year ? `<span class="text-slate-400">${year}</span>` : ""}
             </div>
           </div>
@@ -373,13 +403,13 @@
 
     function setHero(movie) {
       currentHeroMovie = movie;
-      const title = movie.title || movie.name || "Untitled";
+      const title    = movie.title || movie.name || "Untitled";
       const overview = movie.overview || "";
       const backdrop = movie.backdrop_path || movie.poster_path || "";
-      const date = movie.release_date || movie.first_air_date || "";
-      const year = date ? date.split("-")[0] : "";
-      const vote = movie.vote_average || 0;
-      const rating = vote ? vote.toFixed(1) : "";
+      const date     = movie.release_date || movie.first_air_date || "";
+      const year     = date ? date.split("-")[0] : "";
+      const vote     = movie.vote_average || 0;
+      const rating   = vote ? vote.toFixed(1) : "";
 
       const imgSrc = backdrop ? TMDB_BACKDROP + backdrop : null;
       if (imgSrc) {
@@ -390,14 +420,15 @@
         }, 900);
       } else {
         heroBackdropEl.style.backgroundImage = "none";
-        heroBackdropEl.style.backgroundColor = "#020617";
+        heroBackdropEl.style.backgroundColor = "#040714";
       }
 
       heroTitleEl.textContent = title;
-      const bits = [];
-      if (year) bits.push(year);
-      if (rating) bits.push(`★ ${rating}`);
-      heroMetaEl.textContent = bits.join("  •  ");
+
+      const metaBits = [];
+      if (year) metaBits.push(year);
+      if (rating) metaBits.push(`★ ${rating}`);
+      heroMetaEl.textContent = metaBits.join("  •  ");
       heroOverviewEl.textContent = overview;
 
       const goToWatch = () => {
@@ -407,6 +438,7 @@
         url.searchParams.set("tmdbId", currentHeroMovie.id);
         window.location.href = url.toString();
       };
+
       heroPlayBtn.onclick = goToWatch;
       heroMoreBtn.onclick = goToWatch;
     }
@@ -432,6 +464,7 @@
       }
     }
 
+    // ===== SEARCH =====
     async function handleSearch(q) {
       const query = q.trim();
       if (!query) {
@@ -465,7 +498,7 @@
       }
     }
 
-    // row animations
+    // Row entrance animation
     const rowObserver = "IntersectionObserver" in window
       ? new IntersectionObserver(
           (entries) => {
@@ -483,10 +516,12 @@
 
     function observeRows() {
       if (!rowObserver) return;
-      document.querySelectorAll(".js-row").forEach((row) => rowObserver.observe(row));
+      document
+        .querySelectorAll(".js-row")
+        .forEach((row) => rowObserver.observe(row));
     }
 
-    // events
+    // Events
     if (searchForm && searchInput) {
       searchForm.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -518,6 +553,7 @@
       });
     }
 
+    // Init
     (async function init() {
       try {
         setStatus("Loading movies...", true);
