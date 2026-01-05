@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Watch Party • Darkflix</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["system-ui", "ui-sans-serif", "SF Pro Text", "Inter", "sans-serif"],
+          },
+          colors: {
+            netflixBlack: "#141414",
+            netflixRed: "#e50914",
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body {
+      background: #000;
+    }
+    .backdrop-layer {
+      background-position: center;
+      background-size: cover;
+      filter: blur(30px);
+      opacity: 0.4;
+      transform: scale(1.15);
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans text-white antialiased bg-black">
+  <div class="min-h-screen flex flex-col">
+    <!-- NAV -->
+    <header class="fixed top-0 left-0 right-0 z-30 bg-gradient-to-b from-black via-black/80 to-transparent">
+      <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <a href="/movies" class="flex items-center">
+            <span class="text-2xl md:text-3xl font-black tracking-tight text-netflixRed">
+              DARKFLIX
+            </span>
+          </a>
+          <div class="hidden md:flex flex-col leading-tight">
+            <span id="roomNameHeader" class="text-sm font-semibold text-slate-100"></span>
+            <span id="movieTitleHeader" class="text-xs text-slate-300"></span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="copyLinkBtn"
+                  class="hidden sm:inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded bg-white/10 hover:bg-white/20">
+            <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 17l4 4 4-4m-4-5v9M4 7V4a1 1 0 011-1h14a1 1 0 011 1v3" />
+            </svg>
+            Copy invite link
+          </button>
+
+          <% if (currentUser) { %>
+            <a href="/profile" class="hidden sm:inline text-xs text-slate-200 hover:text-white">
+              <%= currentUser.name %>
+            </a>
+          <% } %>
+
+          <button
+            onclick="window.location.href='/movies'"
+            class="text-xs px-3 py-1.5 rounded bg-white/10 hover:bg-white/20">
+            Exit
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- MAIN -->
+    <main class="flex-1 pt-20 pb-8">
+      <section class="max-w-6xl mx-auto px-4">
+        <div class="grid gap-4 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1.2fr)] items-start">
+          <!-- Player + info -->
+          <div class="space-y-3">
+            <div class="relative border border-white/10 rounded-md overflow-hidden bg-black shadow-[0_20px_60px_rgba(0,0,0,0.9)]">
+              <div class="aspect-video md:aspect-[21/9] w-full">
+                <iframe
+                  id="partyPlayer"
+                  class="w-full h-full"
+                  src=""
+                  frameborder="0"
+                  allowfullscreen
+                  referrerpolicy="no-referrer">
+                </iframe>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-300">
+              <div>
+                <span class="font-semibold">Server time:</span>
+                <span id="serverTimeDisplay">00:00</span>
+              </div>
+              <p class="text-[11px] text-slate-400">
+                Playback is via an external embed. When you swap to a controllable player (HTML5 or YouTube),
+                you can use this shared timer for tighter sync.
+              </p>
+            </div>
+          </div>
+
+          <!-- Chat -->
+          <aside class="bg-[#141826] border border-white/10 rounded-md p-3 flex flex-col max-h-[520px]">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-sm font-semibold">Party Chat</h2>
+              <% if (currentUser) { %>
+                <span class="text-[11px] text-slate-400">
+                  You’re chatting as <span class="text-slate-100 font-medium"><%= currentUser.name %></span>
+                </span>
+              <% } %>
+            </div>
+            <div id="chatMessages"
+                 class="flex-1 overflow-y-auto space-y-2 text-xs pr-1 border border-white/5 rounded-md p-2 bg-black/40">
+              <!-- messages -->
+            </div>
+            <form id="chatForm" class="mt-2 flex gap-2">
+              <input
+                id="chatInput"
+                type="text"
+                maxlength="200"
+                placeholder="Type a message..."
+                class="flex-1 bg-black/70 border border-white/15 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-netflixRed"
+              />
+              <button
+                type="submit"
+                class="px-3 py-1.5 text-xs rounded bg-netflixRed hover:bg-[#f6121d] font-semibold">
+                Send
+              </button>
+            </form>
+            <p id="chatStatus" class="mt-1 text-[11px] text-slate-400"></p>
+          </aside>
+        </div>
+
+        <p id="globalStatus" class="mt-4 text-xs text-slate-400"></p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const currentUsername = "<%= currentUser ? currentUser.name.replace(/"/g, '&quot;') : 'Guest' %>";
+    const defaultProfilePicture = "https://via.placeholder.com/40x40.png?text=U";
+
+    const partyPlayer = document.getElementById("partyPlayer");
+    const roomNameHeader = document.getElementById("roomNameHeader");
+    const movieTitleHeader = document.getElementById("movieTitleHeader");
+    const serverTimeDisplay = document.getElementById("serverTimeDisplay");
+    const chatMessagesEl = document.getElementById("chatMessages");
+    const chatForm = document.getElementById("chatForm");
+    const chatInput = document.getElementById("chatInput");
+    const chatStatus = document.getElementById("chatStatus");
+    const globalStatus = document.getElementById("globalStatus");
+    const copyLinkBtn = document.getElementById("copyLinkBtn");
+
+    const SYNC_INTERVAL = 5000;
+    const CHAT_REFRESH_INTERVAL = 5000;
+
+    function getRoomCode() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("code");
+    }
+
+    function formatTime(seconds) {
+      const s = Math.max(0, Math.floor(seconds));
+      const m = Math.floor(s / 60);
+      const h = Math.floor(m / 60);
+      const ss = (s % 60).toString().padStart(2, "0");
+      const mm = (m % 60).toString().padStart(2, "0");
+      if (h > 0) return `${h}:${mm}:${ss}`;
+      return `${mm}:${ss}`;
+    }
+
+    function setGlobalStatus(msg) {
+      globalStatus.textContent = msg || "";
+    }
+
+    function displayChatMessage({ username, profilePicture, message }) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "flex items-start gap-2";
+
+      const avatar = document.createElement("div");
+      avatar.className = "w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-semibold flex-shrink-0 overflow-hidden";
+      if (profilePicture) {
+        const img = document.createElement("img");
+        img.src = profilePicture;
+        img.alt = username;
+        img.className = "w-full h-full object-cover";
+        avatar.appendChild(img);
+      } else {
+        avatar.textContent = (username || "?").charAt(0).toUpperCase();
+      }
+
+      const content = document.createElement("div");
+      const nameEl = document.createElement("div");
+      nameEl.className = "text-[11px] font-semibold text-slate-100";
+      nameEl.textContent = username || "User";
+
+      const msgEl = document.createElement("div");
+      msgEl.className = "text-[11px] text-slate-200";
+      msgEl.textContent = message;
+
+      content.appendChild(nameEl);
+      content.appendChild(msgEl);
+
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(content);
+
+      chatMessagesEl.appendChild(wrapper);
+      chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+    }
+
+    function loadChatMessages(chat) {
+      chatMessagesEl.innerHTML = "";
+      chat.forEach(displayChatMessage);
+    }
+
+    async function fetchRoomDetails() {
+      const code = getRoomCode();
+      if (!code) {
+        setGlobalStatus("No room code found in URL.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/room-details/${code}`);
+        if (!res.ok) throw new Error("Room not found");
+        const data = await res.json();
+
+        if (!data.videoUrl) {
+          setGlobalStatus("This room has no video URL configured.");
+          return;
+        }
+
+        partyPlayer.src = data.videoUrl;
+        roomNameHeader.textContent = data.roomName || `Room ${code}`;
+        movieTitleHeader.textContent = data.movieTitle || "";
+
+        if (data.chat) loadChatMessages(data.chat);
+
+        setGlobalStatus("");
+      } catch (err) {
+        console.error(err);
+        setGlobalStatus("Failed to load room details.");
+      }
+    }
+
+    async function syncServerTime() {
+      const code = getRoomCode();
+      if (!code) return;
+      try {
+        const res = await fetch(`/time/${code}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        serverTimeDisplay.textContent = formatTime(data.currentTime || 0);
+      } catch (err) {
+        console.error("Time sync error", err);
+      }
+    }
+
+    async function refreshChat() {
+      const code = getRoomCode();
+      if (!code) return;
+      try {
+        const res = await fetch(`/room-details/${code}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.chat) loadChatMessages(data.chat);
+      } catch (err) {
+        console.error("Chat refresh error", err);
+      }
+    }
+
+    async function sendChatMessage(message) {
+      const code = getRoomCode();
+      if (!code) return;
+
+      const profilePicture = defaultProfilePicture; // you can later store real avatar in DB
+
+      try {
+        const res = await fetch(`/send-message/${code}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: currentUsername, profilePicture, message }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          displayChatMessage({ username: currentUsername, profilePicture, message });
+          chatInput.value = "";
+          chatStatus.textContent = "";
+        } else if (data.error) {
+          chatStatus.textContent = data.error;
+        } else {
+          chatStatus.textContent = "Failed to send message.";
+        }
+      } catch (err) {
+        console.error(err);
+        chatStatus.textContent = "Failed to send message.";
+      }
+    }
+
+    chatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const msg = chatInput.value.trim();
+      if (!msg) return;
+      if (!currentUsername || currentUsername === "Guest") {
+        chatStatus.textContent = "You must be logged in to chat.";
+        return;
+      }
+      sendChatMessage(msg);
+    });
+
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener("click", async () => {
+        const code = getRoomCode();
+        if (!code) return;
+        const url = new URL(window.location.href);
+        url.searchParams.set("code", code);
+        try {
+          await navigator.clipboard.writeText(url.toString());
+          copyLinkBtn.textContent = "Link copied!";
+          setTimeout(() => {
+            copyLinkBtn.innerHTML = `Copy invite link`;
+          }, 1500);
+        } catch (err) {
+          console.error("Copy failed", err);
+          alert("Could not copy link");
+        }
+      });
+    }
+
+    // Init
+    (async function init() {
+      await fetchRoomDetails();
+      syncServerTime();
+      setInterval(syncServerTime, SYNC_INTERVAL);
+      setInterval(refreshChat, CHAT_REFRESH_INTERVAL);
+    })();
+  </script>
+</body>
+</html>
