@@ -11,8 +11,12 @@
     tailwind.config = {
       theme: {
         extend: {
+          fontFamily: {
+            sans: ["system-ui", "ui-sans-serif", "SF Pro Text", "Inter", "sans-serif"],
+          },
           colors: {
-            bgDark: "#050816",
+            appBg: "#020617",
+            accent: "#ef4444",
           },
         },
       },
@@ -21,140 +25,182 @@
 
   <style>
     body {
-      background: radial-gradient(circle at top, #020617 0, #020617 35%, #000 100%);
+      background:
+        radial-gradient(circle at top center, rgba(239, 68, 68, 0.25), transparent 60%),
+        radial-gradient(circle at 0% 100%, rgba(59, 130, 246, 0.20), transparent 55%),
+        #020617;
     }
-    .backdrop-blur-custom {
-      backdrop-filter: blur(20px);
+    .backdrop-layer {
+      background-position: center;
+      background-size: cover;
+      filter: blur(32px);
+      opacity: 0.6;
+      transform: scale(1.18);
     }
   </style>
 </head>
-<body class="min-h-screen text-slate-100">
+<body class="min-h-screen font-sans text-slate-100 antialiased">
   <div class="min-h-screen flex flex-col">
     <!-- Navbar -->
-    <header class="fixed top-0 w-full z-20 bg-gradient-to-b from-black/80 via-black/60 to-transparent border-b border-white/5">
+    <header class="fixed top-0 left-0 right-0 z-30 border-b border-slate-800/80 bg-black/80 backdrop-blur-xl">
       <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <a href="index.html" class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-amber-400 flex items-center justify-center text-xl font-black">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-red-500 via-orange-400 to-amber-200 flex items-center justify-center text-xl font-black shadow-lg shadow-red-500/40">
             🎬
           </div>
-          <span class="text-lg font-semibold tracking-wide">Dark Movie Hub</span>
+          <div class="leading-tight">
+            <p class="text-[11px] font-semibold tracking-[0.22em] uppercase text-slate-400">
+              Dark Movie
+            </p>
+            <p class="text-lg font-semibold tracking-tight">Hub</p>
+          </div>
         </a>
-        <button onclick="window.history.back()"
-                class="text-xs px-3 py-1.5 rounded-full border border-slate-600 bg-black/60 hover:bg-slate-900 transition">
-          ← Back
-        </button>
+
+        <div class="flex items-center gap-3">
+          <button
+            onclick="window.history.back()"
+            class="text-[11px] px-3 py-1.5 rounded-full border border-slate-700 bg-black/70 hover:bg-slate-900 transition">
+            ← Back
+          </button>
+        </div>
       </nav>
     </header>
 
     <!-- Main -->
     <main class="flex-1 max-w-6xl mx-auto px-4 pt-24 pb-10">
-      <!-- Player Section -->
-      <section id="playerSection"
-               class="relative rounded-3xl overflow-hidden border border-slate-800 bg-gradient-to-br from-slate-900/80 via-slate-900/40 to-slate-900/90 shadow-2xl shadow-black/60">
-        <div id="backdropLayer" class="absolute inset-0 opacity-50 blur-xl"></div>
+      <!-- Player Card -->
+      <section id="playerWrapper"
+               class="relative rounded-[32px] overflow-hidden border border-slate-800/70 bg-slate-950/80 shadow-[0_30px_80px_rgba(0,0,0,0.95)] mb-8">
+        <!-- Blurred backdrop -->
+        <div id="backdropLayer" class="backdrop-layer absolute inset-0"></div>
 
-        <div class="relative z-10 grid md:grid-cols-[2fr,1.2fr] gap-6 p-4 md:p-6 lg:p-8">
-          <!-- Left: Player -->
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <p id="movieTitle" class="text-lg md:text-2xl font-bold"></p>
-                <p id="movieMeta" class="text-xs md:text-sm text-slate-300 mt-1"></p>
-              </div>
-              <div class="flex items-center gap-2">
-                <div class="text-xs text-slate-300 flex items-center gap-1">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
-                  <span id="movieRating">0.0</span>
-                </div>
-
-                <!-- Optional language selection (ds_lang) -->
-                <select id="langSelect"
-                        class="text-xs bg-black/50 border border-slate-600 rounded-full px-3 py-1 outline-none focus:ring-1 focus:ring-red-500">
-                  <option value="">Default</option>
-                  <option value="en">English</option>
-                  <option value="es">Spanish</option>
-                  <option value="de">German</option>
-                  <option value="fr">French</option>
-                </select>
-              </div>
+        <div class="relative z-10">
+          <!-- Top controls + meta -->
+          <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-4 pt-4 md:px-6">
+            <div>
+              <p id="movieTitle" class="text-xl md:text-2xl lg:text-[1.65rem] font-semibold tracking-tight"></p>
+              <p id="movieMeta" class="text-xs md:text-sm text-slate-300 mt-0.5"></p>
             </div>
-
-            <div class="aspect-video w-full rounded-2xl overflow-hidden border border-slate-800 bg-black">
-              <iframe
-                id="moviePlayer"
-                class="w-full h-full"
-                src=""
-                frameborder="0"
-                allowfullscreen
-                referrerpolicy="no-referrer">
-              </iframe>
+            <div class="flex items-center gap-3">
+              <div class="flex items-center gap-1.5 text-xs text-slate-200 bg-black/70 border border-slate-700 px-2.5 py-1 rounded-full">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                <span class="font-semibold" id="movieRating">0.0</span>
+                <span class="text-[10px] text-slate-400">rating</span>
+              </div>
+              <!-- Language selector -->
+              <select id="langSelect"
+                      class="text-xs bg-black/70 border border-slate-700 rounded-full px-3 py-1 outline-none focus:ring-1 focus:ring-red-500">
+                <option value="">Default audio</option>
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="de">German</option>
+                <option value="fr">French</option>
+              </select>
             </div>
-
-            <p class="text-[11px] text-slate-400 mt-2">
-              Content is played via an external provider using the selected movie’s identifier.
-            </p>
           </div>
 
-          <!-- Right: Details -->
-          <aside class="space-y-3 md:space-y-4">
-            <div class="space-y-1.5">
-              <p id="movieTagline" class="text-sm italic text-slate-300"></p>
-              <p id="movieOverview" class="text-xs md:text-sm text-slate-200/90"></p>
+          <!-- Big Player -->
+          <div class="mt-3 md:mt-4 px-2 md:px-4 pb-4">
+            <div class="relative bg-black border border-slate-800 rounded-[24px] overflow-hidden shadow-inner shadow-black/90">
+              <!-- Wide: 21:9 on desktop -->
+              <div class="aspect-video md:aspect-[21/9] w-full">
+                <iframe
+                  id="moviePlayer"
+                  class="w-full h-full"
+                  src=""
+                  frameborder="0"
+                  allowfullscreen
+                  referrerpolicy="no-referrer">
+                </iframe>
+              </div>
+
+              <!-- Overlay info -->
+              <div class="pointer-events-none absolute top-3 right-3 flex gap-2">
+                <div class="pointer-events-auto flex items-center gap-1.5 bg-black/80 border border-slate-700 rounded-full px-2.5 py-1 text-[10px] text-slate-300">
+                  <span class="w-1.5 h-1.5 rounded-full bg-lime-400"></span>
+                  <span>External player active</span>
+                </div>
+              </div>
             </div>
 
-            <div id="genresRow" class="flex flex-wrap gap-1.5 text-[10px]"></div>
-
-            <div>
-              <h3 class="text-xs font-semibold text-slate-300 tracking-wide uppercase mb-1.5">
-                Top Cast
-              </h3>
-              <div id="castRow" class="flex flex-wrap gap-1.5 text-[11px]"></div>
-            </div>
-
-            <div>
-              <h3 class="text-xs font-semibold text-slate-300 tracking-wide uppercase mb-1.5">
-                Additional info
-              </h3>
-              <dl id="extraInfo" class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-300"></dl>
-            </div>
-          </aside>
+            <p class="text-[11px] text-slate-400 mt-2 px-1">
+              Playback uses an external embed provider, linked via the selected TMDB identifier.
+            </p>
+          </div>
         </div>
       </section>
 
-      <!-- Error / Status -->
+      <!-- Info section -->
+      <section class="grid gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)]">
+        <!-- Overview, tagline, genres -->
+        <div class="space-y-4">
+          <div class="space-y-1.5 bg-slate-950/80 rounded-3xl border border-slate-800/80 px-4 py-4 shadow-lg shadow-black/70">
+            <p id="movieTagline" class="text-sm italic text-slate-300"></p>
+            <p id="movieOverview" class="text-xs md:text-sm text-slate-100/90 leading-relaxed"></p>
+          </div>
+
+          <div class="bg-slate-950/80 rounded-3xl border border-slate-800/80 px-4 py-3 shadow-lg shadow-black/70">
+            <h3 class="text-xs font-semibold text-slate-300 tracking-[0.16em] uppercase mb-2">
+              Genres
+            </h3>
+            <div id="genresRow" class="flex flex-wrap gap-1.5 text-[11px]"></div>
+          </div>
+        </div>
+
+        <!-- Cast + extra info -->
+        <aside class="space-y-4">
+          <div class="bg-slate-950/80 rounded-3xl border border-slate-800/80 px-4 py-3 shadow-lg shadow-black/70">
+            <h3 class="text-xs font-semibold text-slate-300 tracking-[0.16em] uppercase mb-2">
+              Top Cast
+            </h3>
+            <div id="castRow" class="flex flex-wrap gap-1.5 text-[11px]"></div>
+          </div>
+
+          <div class="bg-slate-950/80 rounded-3xl border border-slate-800/80 px-4 py-3 shadow-lg shadow-black/70">
+            <h3 class="text-xs font-semibold text-slate-300 tracking-[0.16em] uppercase mb-2">
+              Additional info
+            </h3>
+            <dl id="extraInfo" class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-300"></dl>
+          </div>
+        </aside>
+      </section>
+
+      <!-- Status -->
       <p id="statusText" class="mt-4 text-sm text-slate-400"></p>
     </main>
 
-    <footer class="border-t border-slate-800/80 bg-black/80">
-      <div class="max-w-6xl mx-auto px-4 py-4 text-xs text-slate-500 flex justify-between items-center">
-        <span>Watching mode engaged 🌒</span>
-        <span class="hidden sm:inline">TMDB for data • External embed for playback.</span>
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-black/90 backdrop-blur">
+      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] md:text-xs text-slate-500 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+        <span>Immersive watching mode 🌒</span>
+        <span>TMDB for data • External embed for playback.</span>
       </div>
     </footer>
   </div>
 
   <script>
     // ====== CONFIG ======
-    const TMDB_API_KEY = "YOUR_TMDB_API_KEY"; // <- same as on index
+    const TMDB_API_KEY = "YOUR_TMDB_API_KEY"; // <- same as in index.html
     const TMDB_BASE = "https://api.themoviedb.org/3";
     const TMDB_IMG = "https://image.tmdb.org/t/p/original";
 
-    const statusText = document.getElementById("statusText");
-    const movieTitleEl = document.getElementById("movieTitle");
-    const movieMetaEl = document.getElementById("movieMeta");
-    const movieRatingEl = document.getElementById("movieRating");
-    const movieTaglineEl = document.getElementById("movieTagline");
+    const statusText      = document.getElementById("statusText");
+    const movieTitleEl    = document.getElementById("movieTitle");
+    const movieMetaEl     = document.getElementById("movieMeta");
+    const movieRatingEl   = document.getElementById("movieRating");
+    const movieTaglineEl  = document.getElementById("movieTagline");
     const movieOverviewEl = document.getElementById("movieOverview");
-    const genresRow = document.getElementById("genresRow");
-    const castRow = document.getElementById("castRow");
-    const extraInfo = document.getElementById("extraInfo");
-    const moviePlayer = document.getElementById("moviePlayer");
-    const langSelect = document.getElementById("langSelect");
-    const backdropLayer = document.getElementById("backdropLayer");
+    const genresRow       = document.getElementById("genresRow");
+    const castRow         = document.getElementById("castRow");
+    const extraInfo       = document.getElementById("extraInfo");
+    const moviePlayer     = document.getElementById("moviePlayer");
+    const langSelect      = document.getElementById("langSelect");
+    const backdropLayer   = document.getElementById("backdropLayer");
 
-    let globalMovie = null;
     let tmdbId = null;
-    let type = null;
+    let type   = "movie";  // movie | tv
+    let season = null;
+    let episode = null;
 
     function setStatus(msg) {
       statusText.textContent = msg || "";
@@ -162,11 +208,13 @@
 
     function parseQuery() {
       const params = new URLSearchParams(window.location.search);
-      type = params.get("type") || "movie";
+      type   = (params.get("type") || "movie").toLowerCase();
       tmdbId = params.get("tmdbId");
+      season = params.get("season");
+      episode = params.get("episode");
 
       if (!tmdbId) {
-        setStatus("No movie was selected. Return to the home page to choose one.");
+        setStatus("No title was selected. Go back to the home page and pick one.");
         return false;
       }
       return true;
@@ -178,56 +226,72 @@
       return res.json();
     }
 
-    async function loadMovieDetails() {
+    async function loadDetails() {
       if (!tmdbId) return;
 
       try {
-        setStatus("Loading movie details...");
+        setStatus("Loading details...");
+        let url;
+        if (type === "tv") {
+          url = `${TMDB_BASE}/tv/${tmdbId}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
+        } else {
+          url = `${TMDB_BASE}/movie/${tmdbId}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
+        }
 
-        const url = `${TMDB_BASE}/movie/${tmdbId}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
         const data = await fetchJson(url);
-        globalMovie = data;
-        renderMovieDetails(data);
-        updatePlayerSrc(); // initial
+        renderDetails(data);
+        updatePlayerSrc();
         setStatus("");
       } catch (err) {
         console.error(err);
-        setStatus("Failed to load details for this movie.");
+        setStatus("Failed to load details for this title.");
       }
     }
 
-    function renderMovieDetails(movie) {
-      const {
-        title,
-        release_date,
-        runtime,
-        vote_average,
-        overview,
-        tagline,
-        genres = [],
-        credits = {},
-        status,
-        original_language,
-        budget,
-        revenue,
-        backdrop_path,
-      } = movie;
+    function renderDetails(data) {
+      const isTv = type === "tv";
+
+      const title  = isTv ? data.name : data.title;
+      const date   = isTv ? data.first_air_date : data.release_date;
+      const runtime = isTv
+        ? (Array.isArray(data.episode_run_time) && data.episode_run_time.length
+            ? data.episode_run_time[0]
+            : null)
+        : data.runtime;
+
+      const vote_average      = data.vote_average;
+      const overview          = data.overview;
+      const tagline           = data.tagline;
+      const genres            = data.genres || [];
+      const credits           = data.credits || {};
+      const status            = data.status;
+      const original_language = data.original_language;
+      const budget            = !isTv ? data.budget : null;
+      const revenue           = !isTv ? data.revenue : null;
+      const backdrop_path     = data.backdrop_path;
 
       movieTitleEl.textContent = title || "Untitled";
-      const year = release_date ? release_date.split("-")[0] : "—";
-      const runtimeText = runtime ? `${runtime} min` : "—";
-      const ratingText = vote_average ? vote_average.toFixed(1) : "N/A";
 
-      movieMetaEl.textContent = `${year} • ${runtimeText}`;
+      const year        = date ? date.split("-")[0] : "—";
+      const runtimeText = runtime ? `${runtime} min` : "—";
+      const ratingText  = vote_average ? vote_average.toFixed(1) : "N/A";
+
+      const metaBits = [year];
+      if (runtimeText !== "—") metaBits.push(runtimeText);
+      if (isTv && data.number_of_seasons) {
+        metaBits.push(`${data.number_of_seasons} season${data.number_of_seasons > 1 ? "s" : ""}`);
+      }
+      if (season && episode) {
+        metaBits.push(`S${season} • E${episode}`);
+      }
+
+      movieMetaEl.textContent = metaBits.filter(Boolean).join(" • ");
       movieRatingEl.textContent = ratingText;
       movieTaglineEl.textContent = tagline || "";
       movieOverviewEl.textContent = overview || "No overview available.";
 
-      // Backdrop in background
       if (backdrop_path) {
         backdropLayer.style.backgroundImage = `url(${TMDB_IMG + backdrop_path})`;
-        backdropLayer.style.backgroundSize = "cover";
-        backdropLayer.style.backgroundPosition = "center";
       }
 
       // Genres
@@ -235,18 +299,18 @@
       genres.forEach((g) => {
         const span = document.createElement("span");
         span.className =
-          "px-2 py-1 rounded-full bg-slate-900/80 border border-slate-700 text-[10px] uppercase tracking-wide";
+          "px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-700 text-[11px] uppercase tracking-wide text-slate-100";
         span.textContent = g.name;
         genresRow.appendChild(span);
       });
 
       // Cast
       castRow.innerHTML = "";
-      const cast = (credits.cast || []).slice(0, 8);
+      const cast = (credits.cast || []).slice(0, 10);
       cast.forEach((c) => {
         const pill = document.createElement("span");
         pill.className =
-          "px-2 py-1 rounded-full bg-black/60 border border-slate-700 text-[11px]";
+          "px-2.5 py-1 rounded-full bg-black/70 border border-slate-700 text-[11px] text-slate-100";
         pill.textContent = c.name;
         castRow.appendChild(pill);
       });
@@ -254,36 +318,58 @@
       // Extra info
       extraInfo.innerHTML = "";
       const infoEntries = [
+        ["Type", isTv ? "TV Show" : "Movie"],
         ["Status", status || "—"],
-        ["Original language", (original_language || "").toUpperCase()],
-        ["Budget", budget ? `$${budget.toLocaleString()}` : "—"],
-        ["Revenue", revenue ? `$${revenue.toLocaleString()}` : "—"],
+        ["Original language", (original_language || "").toUpperCase() || "—"],
       ];
+
+      if (!isTv) {
+        infoEntries.push(
+          ["Budget", budget ? `$${budget.toLocaleString()}` : "—"],
+          ["Revenue", revenue ? `$${revenue.toLocaleString()}` : "—"]
+        );
+      } else {
+        if (data.number_of_episodes) {
+          infoEntries.push(["Episodes", `${data.number_of_episodes}`]);
+        }
+      }
 
       infoEntries.forEach(([label, value]) => {
         const dt = document.createElement("dt");
-        dt.textContent = label;
         const dd = document.createElement("dd");
+        dt.textContent = label;
         dd.textContent = value;
-        extraInfo.appendChild(dt);
-        extraInfo.appendChild(dd);
-
         dt.className = "text-slate-400";
         dd.className = "text-slate-100";
+        extraInfo.appendChild(dt);
+        extraInfo.appendChild(dd);
       });
     }
 
     function buildEmbedUrl() {
-      // You’ll later swap this provider if needed.
-      const base = "https://vidsrc-embed.ru/embed/movie";
+      let base;
       const params = new URLSearchParams();
-      params.set("tmdb", tmdbId);
-      params.set("autoplay", "1");
+      const isTv = type === "tv";
+
+      if (isTv) {
+        base = "https://vidsrc-embed.ru/embed/tv";
+        params.set("tmdb", tmdbId);
+
+        // Optional season/episode if provided
+        if (season && episode) {
+          params.set("season", season);
+          params.set("episode", episode);
+          params.set("autonext", "1");
+          params.set("autoplay", "1");
+        }
+      } else {
+        base = "https://vidsrc-embed.ru/embed/movie";
+        params.set("tmdb", tmdbId);
+        params.set("autoplay", "1");
+      }
 
       const lang = langSelect.value;
-      if (lang) {
-        params.set("ds_lang", lang);
-      }
+      if (lang) params.set("ds_lang", lang);
 
       return `${base}?${params.toString()}`;
     }
@@ -300,7 +386,7 @@
 
     // Init
     if (parseQuery()) {
-      loadMovieDetails();
+      loadDetails();
     }
   </script>
 </body>
