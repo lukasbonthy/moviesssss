@@ -1,242 +1,266 @@
 // server.js
+require("dotenv").config();
+
 const express = require("express");
-const session = require("express-session");
-const bcrypt = require("bcrypt");
 const path = require("path");
-const {
-  createUser,
-  findUserByEmail,
-  findUserById,
-  updateUserProfile,
-} = require("./db");
+const sqlite3 = require("sqlite3").verbose();
+const bcrypt = require("bcryptjs");
+const session = require("express-session");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+const TMDB_API_KEY = process.env.TMDB_API_KEY || "YOUR_TMDB_API_KEY_HERE";
 
-// === CONFIG ===
-const TMDB_API_KEY = process.env.TMDB_API_KEY || "YOUR_TMDB_API_KEY";
+// ---------- DB SETUP ----------
+const db = new sqlite3.Database(path.join(__dirname, "app.db"));
 
-// In-memory movie party rooms (like your Vividx app)
-const rooms = {};
-const userLastMessageTime = {};
-const MESSAGE_RATE_LIMIT = 5000; // 5 seconds
+db.serialize(() => {
+  db.run(
+    `CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      bio TEXT DEFAULT '',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`
+  );
+});
 
-// === VIEW ENGINE ===
+// ---------- APP SETUP ----------
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// === MIDDLEWARE ===
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json({ limit: "10mb" })); // for JSON body (chat)
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-// Session
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "super-secret-dev-key",
+    secret: process.env.SESSION_SECRET || "super-secret-darkflix",
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      secure: false, // set true + trust proxy when behind HTTPS
-      maxAge: 1000 * 60 * 60 * 24,
-    },
   })
 );
 
-// Expose current user to templates
-app.use(async (req, res, next) => {
+// Inject currentUser + tmdbApiKey into all views
+app.use((req, res, next) => {
+  res.locals.tmdbApiKey = TMDB_API_KEY;
   if (!req.session.userId) {
     res.locals.currentUser = null;
     return next();
   }
-  try {
-    const user = await findUserById(req.session.userId);
-    res.locals.currentUser = user || null;
-  } catch (err) {
-    console.error(err);
-    res.locals.currentUser = null;
-  }
-  next();
+  db.get(
+    "SELECT id, name, email, bio, created_at FROM users WHERE id = ?",
+    [req.session.userId],
+    (err, user) => {
+      if (err) return next(err);
+      res.locals.currentUser = user || null;
+      next();
+    }
+  );
 });
 
-// Auth guard
-function requireAuth(req, res, next) {
-  if (!req.session.userId) return res.redirect("/login");
+function requireLogin(req, res, next) {
+  if (!req.session.userId) {
+    return res.redirect("/login");
+  }
   next();
 }
 
-// === BASIC ROUTES ===
+// ---------- AUTH ROUTES ----------
 
-// Root -> movies or login
-app.get("/", (req, res) => {
-  if (req.session.userId) return res.redirect("/movies");
-  res.redirect("/login");
-});
-
-// SIGNUP
+// GET /signup
 app.get("/signup", (req, res) => {
-  res.render("signup", { error: null, values: { name: "", email: "" } });
+  res.render("signup", {
+    error: null,
+    values: {},
+  });
 });
 
-app.post("/signup", async (req, res) => {
+// POST /signup
+app.post("/signup", (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
-  const values = { name, email };
 
   if (!name || !email || !password || !confirmPassword) {
-    return res.status(400).render("signup", {
-      error: "All fields are required.",
-      values,
+    return res.render("signup", {
+      error: "Please fill in all fields.",
+      values: { name, email },
     });
   }
-
   if (password !== confirmPassword) {
-    return res.status(400).render("signup", {
+    return res.render("signup", {
       error: "Passwords do not match.",
-      values,
+      values: { name, email },
     });
   }
 
-  try {
-    const existing = await findUserByEmail(email.trim().toLowerCase());
+  db.get("SELECT id FROM users WHERE email = ?", [email], (err, existing) => {
+    if (err) {
+      console.error(err);
+      return res.render("signup", {
+        error: "Something went wrong. Please try again.",
+        values: { name, email },
+      });
+    }
     if (existing) {
-      return res.status(400).render("signup", {
-        error: "A user with that email already exists.",
-        values,
+      return res.render("signup", {
+        error: "An account with that email already exists.",
+        values: { name, email },
       });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    const user = await createUser({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      passwordHash,
-    });
-
-    req.session.userId = user.id;
-    res.redirect("/movies");
-  } catch (err) {
-    console.error(err);
-    res.status(500).render("signup", {
-      error: "Something went wrong. Please try again.",
-      values,
-    });
-  }
+    const hash = bcrypt.hashSync(password, 10);
+    db.run(
+      "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+      [name, email, hash],
+      function (err2) {
+        if (err2) {
+          console.error(err2);
+          return res.render("signup", {
+            error: "Could not create account.",
+            values: { name, email },
+          });
+        }
+        // Auto-login
+        req.session.userId = this.lastID;
+        res.redirect("/movies");
+      }
+    );
+  });
 });
 
-// LOGIN
+// GET /login
 app.get("/login", (req, res) => {
-  res.render("login", { error: null, values: { email: "" } });
+  res.render("login", {
+    error: null,
+    values: {},
+  });
 });
 
-app.post("/login", async (req, res) => {
+// POST /login
+app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const values = { email };
-
   if (!email || !password) {
-    return res.status(400).render("login", {
-      error: "Email and password are required.",
-      values,
+    return res.render("login", {
+      error: "Please enter email and password.",
+      values: { email },
     });
   }
 
-  try {
-    const user = await findUserByEmail(email.trim().toLowerCase());
+  db.get("SELECT * FROM users WHERE email = ?", [email], (err, user) => {
+    if (err) {
+      console.error(err);
+      return res.render("login", {
+        error: "Something went wrong.",
+        values: { email },
+      });
+    }
     if (!user) {
-      return res.status(400).render("login", {
+      return res.render("login", {
         error: "Invalid email or password.",
-        values,
+        values: { email },
       });
     }
 
-    const ok = await bcrypt.compare(password, user.password_hash);
-    if (!ok) {
-      return res.status(400).render("login", {
+    const match = bcrypt.compareSync(password, user.password_hash);
+    if (!match) {
+      return res.render("login", {
         error: "Invalid email or password.",
-        values,
+        values: { email },
       });
     }
 
     req.session.userId = user.id;
     res.redirect("/movies");
-  } catch (err) {
-    console.error(err);
-    res.status(500).render("login", {
-      error: "Something went wrong. Please try again.",
-      values,
-    });
-  }
+  });
 });
 
-// LOGOUT
+// POST /logout
 app.post("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/login");
   });
 });
 
-// PROFILE
-app.get("/profile", requireAuth, async (req, res) => {
-  try {
-    const user = await findUserById(req.session.userId);
-    if (!user) {
-      req.session.destroy(() => res.redirect("/login"));
-      return;
+// ---------- ACCOUNT ----------
+app.get("/profile", requireLogin, (req, res, next) => {
+  db.get(
+    "SELECT id, name, email, bio, created_at FROM users WHERE id = ?",
+    [req.session.userId],
+    (err, user) => {
+      if (err) return next(err);
+      if (!user) return res.redirect("/login");
+      res.render("profile", { user, message: null, error: null });
     }
-    res.render("profile", { user, message: null, error: null });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error loading profile");
-  }
+  );
 });
 
-app.post("/profile", requireAuth, async (req, res) => {
+app.post("/profile", requireLogin, (req, res, next) => {
   const { name, bio } = req.body;
-  try {
-    const user = await findUserById(req.session.userId);
-    if (!user) {
-      req.session.destroy(() => res.redirect("/login"));
-      return;
-    }
-
-    const newName = name && name.trim() ? name.trim() : user.name;
-    const newBio = bio && bio.trim() ? bio.trim() : "";
-
-    await updateUserProfile(user.id, { name: newName, bio: newBio });
-    const updatedUser = await findUserById(user.id);
-
-    res.render("profile", {
-      user: updatedUser,
-      message: "Profile updated successfully.",
-      error: null,
-    });
-  } catch (err) {
-    console.error(err);
-    const user = await findUserById(req.session.userId);
-    res.status(500).render("profile", {
-      user,
-      message: null,
-      error: "Error updating profile.",
-    });
+  if (!name) {
+    return db.get(
+      "SELECT id, name, email, bio, created_at FROM users WHERE id = ?",
+      [req.session.userId],
+      (err, user) => {
+        if (err) return next(err);
+        res.render("profile", { user, message: null, error: "Name is required." });
+      }
+    );
   }
+  db.run(
+    "UPDATE users SET name = ?, bio = ? WHERE id = ?",
+    [name, bio || "", req.session.userId],
+    (err) => {
+      if (err) return next(err);
+      db.get(
+        "SELECT id, name, email, bio, created_at FROM users WHERE id = ?",
+        [req.session.userId],
+        (err2, user) => {
+          if (err2) return next(err2);
+          res.render("profile", {
+            user,
+            message: "Profile updated!",
+            error: null,
+          });
+        }
+      );
+    }
+  );
 });
 
-// MOVIES (Netflix-style home)
-app.get("/movies", requireAuth, (req, res) => {
-  res.render("movies", { tmdbApiKey: TMDB_API_KEY });
+// ---------- CORE PAGES ----------
+app.get("/", (req, res) => res.redirect("/movies"));
+
+app.get("/movies", (req, res) => {
+  res.render("movies");
 });
 
-// WATCH (single-user watch page)
-app.get("/watch", requireAuth, (req, res) => {
-  res.render("watch", { tmdbApiKey: TMDB_API_KEY });
+app.get("/tv", (req, res) => {
+  res.render("tv");
 });
 
-// WATCH PARTY PAGE
-app.get("/party", requireAuth, (req, res) => {
-  // just render; client JS will read ?code=... etc.
-  res.render("party", { tmdbApiKey: TMDB_API_KEY });
+// watch movie or tv: /watch?type=movie|tv&tmdbId=...&season=&episode=
+app.get("/watch", (req, res) => {
+  const { tmdbId } = req.query;
+  if (!tmdbId) {
+    return res.redirect("/movies");
+  }
+  res.render("watch");
 });
 
-// === MOVIE PARTY API (ported from Vividx) ===
+// Watch party view: /party?code=ROOMCODE
+app.get("/party", requireLogin, (req, res) => {
+  const code = req.query.code;
+  if (!code) return res.redirect("/movies");
+  res.render("party");
+});
 
-// Helper: generate room code
+// ---------- WATCH PARTY BACKEND (in-memory) ----------
+const rooms = {};
+const userLastMessageTime = {};
+const MESSAGE_RATE_LIMIT = 5000; // 5s
+
 function generateRoomCode() {
   let roomCode;
   do {
@@ -245,80 +269,79 @@ function generateRoomCode() {
   return roomCode;
 }
 
-// Create a new room
-app.get("/create-room", requireAuth, (req, res) => {
-  const username = req.query.username || (res.locals.currentUser && res.locals.currentUser.name);
+// Create room
+// GET /create-room?username=...
+app.get("/create-room", (req, res) => {
+  const username = req.query.username;
   if (!username) {
     return res.status(400).json({ error: "Username is required" });
   }
-
-  const roomCode = generateRoomCode();
-  rooms[roomCode] = {
+  const code = generateRoomCode();
+  rooms[code] = {
     currentTime: 0,
     videoUrl: "",
     lastActivity: Date.now(),
     roomName: `${username}'s room`,
     movieTitle: "",
     chat: [],
-    users: new Set(),
   };
-  res.json({ roomCode });
+  res.json({ roomCode: code });
 });
 
-// Set video URL and movie title for a room
-app.get("/set-room-details/:roomCode", requireAuth, (req, res) => {
+// Set room details (embed URL + movieTitle)
+app.get("/set-room-details/:roomCode", (req, res) => {
   const roomCode = req.params.roomCode;
   const { url, movieTitle } = req.query;
-  if (rooms[roomCode]) {
-    rooms[roomCode].videoUrl = url;
-    rooms[roomCode].movieTitle = movieTitle || "";
-    rooms[roomCode].lastActivity = Date.now();
-    res.json({ success: true });
-  } else {
-    res.status(404).json({ error: "Room not found" });
-  }
+  const room = rooms[roomCode];
+  if (!room) return res.status(404).json({ error: "Room not found" });
+
+  room.videoUrl = url;
+  room.movieTitle = movieTitle || "";
+  room.lastActivity = Date.now();
+  res.json({ success: true });
 });
 
-// Get the current time for a room
+// Get current time
 app.get("/time/:roomCode", (req, res) => {
   const roomCode = req.params.roomCode;
-  if (rooms[roomCode]) {
-    rooms[roomCode].lastActivity = Date.now();
-    res.json({ currentTime: rooms[roomCode].currentTime });
-  } else {
-    res.status(404).json({ error: "Room not found" });
-  }
+  const room = rooms[roomCode];
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  room.lastActivity = Date.now();
+  res.json({ currentTime: room.currentTime });
 });
 
-// Get the video URL and other details for a room
+// Room details
 app.get("/room-details/:roomCode", (req, res) => {
   const roomCode = req.params.roomCode;
-  if (rooms[roomCode]) {
-    rooms[roomCode].lastActivity = Date.now();
-    const { videoUrl, roomName, movieTitle, chat } = rooms[roomCode];
-    res.json({ videoUrl, roomName, movieTitle, chat });
-  } else {
-    res.status(404).json({ error: "Room not found" });
-  }
+  const room = rooms[roomCode];
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  room.lastActivity = Date.now();
+  res.json({
+    videoUrl: room.videoUrl,
+    roomName: room.roomName,
+    movieTitle: room.movieTitle,
+    chat: room.chat,
+  });
 });
 
-// Get list of rooms (for potential lobby page)
+// List rooms with a configured video
 app.get("/rooms", (req, res) => {
-  const availableRooms = Object.keys(rooms)
+  const list = Object.keys(rooms)
     .filter((code) => rooms[code].videoUrl)
     .map((code) => ({
       code,
       roomName: rooms[code].roomName,
       movieTitle: rooms[code].movieTitle,
     }));
-  res.json(availableRooms);
+  res.json(list);
 });
 
 // Chat messages
-app.post("/send-message/:roomCode", requireAuth, (req, res) => {
+app.post("/send-message/:roomCode", (req, res) => {
   const roomCode = req.params.roomCode;
   const { username, profilePicture, message } = req.body;
-  const currentTime = Date.now();
+  const room = rooms[roomCode];
+  if (!room) return res.status(404).json({ error: "Room not found" });
 
   if (!username || !message) {
     return res
@@ -326,56 +349,57 @@ app.post("/send-message/:roomCode", requireAuth, (req, res) => {
       .json({ error: "Username and message are required" });
   }
 
+  const now = Date.now();
   if (
     userLastMessageTime[username] &&
-    currentTime - userLastMessageTime[username] < MESSAGE_RATE_LIMIT
+    now - userLastMessageTime[username] < MESSAGE_RATE_LIMIT
   ) {
-    return res.status(429).json({
-      error:
-        "You are sending messages too quickly. Please wait before sending another message.",
-    });
+    return res
+      .status(429)
+      .json({ error: "Slow down a bit before sending another message." });
   }
 
-  userLastMessageTime[username] = currentTime;
-
-  if (rooms[roomCode]) {
-    rooms[roomCode].chat.push({
-      username,
-      profilePicture,
-      message,
-      timestamp: currentTime,
-    });
-    rooms[roomCode].lastActivity = currentTime;
-    res.json({ success: true });
-  } else {
-    res.status(404).json({ error: "Room not found" });
-  }
+  userLastMessageTime[username] = now;
+  room.chat.push({
+    username,
+    profilePicture,
+    message,
+    timestamp: now,
+  });
+  room.lastActivity = now;
+  res.json({ success: true });
 });
 
-// Increment video time for each room (server-side "clock")
+// Simulate server time progress (5s steps)
 setInterval(() => {
   Object.keys(rooms).forEach((code) => {
-    rooms[code].currentTime += 5; // seconds
+    rooms[code].currentTime += 5;
   });
 }, 5000);
 
-// Clean up inactive/empty rooms
+// Cleanup inactive rooms (inactive > 30 min)
 setInterval(() => {
   const now = Date.now();
   Object.keys(rooms).forEach((code) => {
     const room = rooms[code];
-    if (!room.videoUrl || now - room.lastActivity > 1 * 60 * 1000) {
+    if (!room.videoUrl || now - room.lastActivity > 30 * 60 * 1000) {
       delete rooms[code];
     }
   });
-}, 60 * 1000);
+}, 5 * 60 * 1000);
 
-// 404
+// ---------- 404 ----------
 app.use((req, res) => {
   res.status(404).render("404");
 });
 
-const PORT = process.env.PORT || 3000;
+// ---------- ERROR HANDLER ----------
+app.use((err, req, res, next) => {
+  console.error("Server error:", err);
+  res.status(500).send("Something went wrong.");
+});
+
+// ---------- START ----------
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Darkflix running on http://localhost:${PORT}`);
 });
