@@ -2,49 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Darkflix • TV Shows</title>
+  <title>Darkflix • Series</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ["system-ui", "SF Pro Text", "Inter", "sans-serif"] },
-          colors: { dfBg: "#020617", dfAccent: "#e11d48", dfAccent2: "#6366f1" },
-        }
-      }
+          fontFamily: {
+            sans: ["system-ui", "SF Pro Text", "Inter", "sans-serif"],
+          },
+          colors: {
+            dpBg: "#040714",
+            dpAccent: "#00b3ff",
+            dpAccentSoft: "#7b5eff",
+          },
+          borderRadius: {
+            "2xl-plus": "1.25rem",
+          },
+          keyframes: {
+            "fade-up": {
+              "0%": { opacity: 0, transform: "translateY(12px)" },
+              "100%": { opacity: 1, transform: "translateY(0)" },
+            },
+          },
+          animation: {
+            "fade-up": "fade-up 0.5s ease-out forwards",
+          },
+        },
+      },
     };
   </script>
   <style>
     body {
       background:
-        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.22), transparent 60%),
-        radial-gradient(circle at 100% 0%, rgba(251, 113, 133, 0.23), transparent 55%),
-        #020617;
+        radial-gradient(circle at 15% 0%, rgba(0, 179, 255, 0.35), transparent 55%),
+        radial-gradient(circle at 85% 0%, rgba(123, 94, 255, 0.35), transparent 55%),
+        #040714;
     }
-    .row-scroll { scrollbar-width: none; }
-    .row-scroll::-webkit-scrollbar { display: none; }
+    .row-scroll {
+      scrollbar-width: none;
+    }
+    .row-scroll::-webkit-scrollbar {
+      display: none;
+    }
   </style>
 </head>
-<body class="min-h-screen font-sans text-white antialiased bg-dfBg">
+<body class="min-h-screen font-sans text-white antialiased bg-dpBg">
   <div class="min-h-screen flex flex-col">
-    <header id="mainNav"
-            class="fixed top-0 left-0 right-0 z-30 transition-all duration-300 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
+    <!-- NAV -->
+    <header class="fixed top-0 left-0 right-0 z-30 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
       <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-6">
           <a href="/movies" class="flex items-center">
-            <span class="text-2xl md:text-3xl font-black tracking-tight">
-              <span class="text-dfAccent">DARK</span>FLIX
+            <span class="text-2xl md:text-3xl font-black tracking-tight select-none">
+              <span class="bg-gradient-to-r from-dpAccent via-white to-dpAccentSoft bg-clip-text text-transparent">
+                Darkflix
+              </span>
             </span>
           </a>
           <ul class="hidden md:flex items-center gap-5 text-sm">
-            <li><a href="/movies" class="text-slate-300 hover:text-slate-100">Home</a></li>
-            <li><span class="font-semibold">TV Shows</span></li>
-            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">Movies</li>
-            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">My List</li>
+            <li><a href="/movies" class="text-slate-300 hover:text-white">Movies</a></li>
+            <li><span class="font-semibold text-white">Series</span></li>
+            <li class="text-slate-300 hover:text-white cursor-pointer">Originals</li>
+            <li class="text-slate-300 hover:text-white cursor-pointer">Watchlist</li>
           </ul>
         </div>
         <div class="flex items-center gap-4">
+          <!-- Search -->
           <form id="searchForm"
                 class="hidden sm:flex items-center bg-black/50 rounded-full px-3 py-1 border border-white/10 shadow-sm shadow-black/40 backdrop-blur">
             <svg class="w-4 h-4 text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -55,10 +80,11 @@
             <input
               id="searchInput"
               type="text"
-              placeholder="Search TV shows..."
+              placeholder="Search series..."
               class="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-400 px-2 w-40"
             />
           </form>
+
           <button id="mobileSearchBtn" class="sm:hidden text-slate-100">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
@@ -66,9 +92,11 @@
                     d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
             </svg>
           </button>
+
           <div class="flex items-center gap-3">
             <% if (currentUser) { %>
-              <a href="/profile" class="hidden sm:flex items-center gap-2 text-xs text-slate-200 hover:text-white">
+              <a href="/profile"
+                 class="hidden sm:inline-flex items-center gap-2 text-xs text-slate-200 hover:text-white">
                 <span class="inline-flex h-7 w-7 rounded-full bg-white/10 items-center justify-center text-[10px] font-semibold">
                   <%= currentUser.name.charAt(0).toUpperCase() %>
                 </span>
@@ -83,8 +111,8 @@
               </form>
             <% } else { %>
               <a href="/login"
-                 class="text-xs px-4 py-1.5 rounded-full bg-dfAccent hover:bg-rose-600 font-semibold shadow shadow-black/60">
-                Sign In
+                 class="text-xs px-4 py-1.5 rounded-full bg-white text-black font-semibold shadow shadow-black/60 hover:bg-slate-100">
+                Log In
               </a>
             <% } %>
           </div>
@@ -93,10 +121,11 @@
     </header>
 
     <main class="flex-1 pt-20">
-      <section class="bg-gradient-to-b from-dfBg via-[#020617] to-black pt-4 pb-16">
+      <section class="bg-gradient-to-b from-[#040714] via-[#020617] to-black pt-4 pb-16">
         <div class="max-w-6xl mx-auto px-4">
-          <h1 class="text-2xl md:text-3xl font-bold mb-4">TV Shows</h1>
+          <h1 class="text-2xl md:text-3xl font-bold mb-4">Series</h1>
 
+          <!-- Search results -->
           <div id="searchSection" class="hidden mb-8">
             <div class="flex items-center justify-between mb-2">
               <h2 id="searchTitle" class="text-base md:text-lg font-semibold">
@@ -124,11 +153,11 @@
     const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
 
     const CATEGORIES = [
-      { key: "trending",    title: "Trending Shows",       path: "/trending/tv/week" },
-      { key: "popular",     title: "Popular on Darkflix",  path: "/tv/popular" },
-      { key: "top_rated",   title: "Top Rated Series",     path: "/tv/top_rated" },
-      { key: "on_the_air",  title: "Currently Airing",     path: "/tv/on_the_air" },
-      { key: "airing_today",title: "Airing Today",         path: "/tv/airing_today" },
+      { key: "trending",    title: "Trending Series",     path: "/trending/tv/week" },
+      { key: "popular",     title: "Popular on Darkflix", path: "/tv/popular" },
+      { key: "top_rated",   title: "Top Rated",           path: "/tv/top_rated" },
+      { key: "on_the_air",  title: "Currently Airing",    path: "/tv/on_the_air" },
+      { key: "airing_today",title: "Airing Today",        path: "/tv/airing_today" },
     ];
 
     const rowsContainer   = document.getElementById("rowsContainer");
@@ -140,7 +169,16 @@
     const searchInput     = document.getElementById("searchInput");
     const mobileSearchBtn = document.getElementById("mobileSearchBtn");
     const clearSearchBtn  = document.getElementById("clearSearchBtn");
-    const mainNav         = document.getElementById("mainNav");
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
     function setStatus(msg, show = true) {
       statusEl.textContent = msg;
@@ -151,24 +189,6 @@
       const res = await fetch(url);
       if (!res.ok) throw new Error("Network error");
       return res.json();
-    }
-
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 40) {
-        mainNav.classList.add("bg-black/90", "shadow-lg", "shadow-black/60", "backdrop-blur-md");
-      } else {
-        mainNav.classList.remove("bg-black/90", "shadow-lg", "shadow-black/60", "backdrop-blur-md");
-      }
-    });
-
-    function escapeHtml(str) {
-      if (!str) return "";
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
     }
 
     function createRowElement(title, key) {
@@ -185,11 +205,11 @@
     }
 
     function createCard(show) {
-      const id = show.id;
+      const id    = show.id;
       const title = show.name || show.original_name || "Untitled";
-      const date = show.first_air_date || "";
-      const year = date ? date.split("-")[0] : "";
-      const vote = show.vote_average || 0;
+      const date  = show.first_air_date || "";
+      const year  = date ? date.split("-")[0] : "";
+      const vote  = show.vote_average || 0;
       const rating = vote ? vote.toFixed(1) : "";
       const imgPath = show.poster_path || show.backdrop_path;
       const imgSrc = imgPath
@@ -198,19 +218,22 @@
 
       const card = document.createElement("article");
       card.className =
-        "group relative flex-shrink-0 w-[42vw] sm:w-[150px] md:w-[170px] lg:w-[190px] cursor-pointer";
+        "group relative flex-shrink-0 w-[44vw] sm:w-[160px] md:w-[180px] lg:w-[200px] cursor-pointer";
 
       card.innerHTML = `
-        <div class="relative rounded-2xl overflow-hidden bg-slate-900/70 border border-white/5 shadow-md shadow-black/70">
+        <div class="relative rounded-2xl-plus overflow-hidden bg-slate-900/60 border border-white/5 shadow-md shadow-black/70">
           <img src="${imgSrc}" alt="${escapeHtml(title)}"
-               class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-110" />
+               class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-105" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+          <div class="absolute top-1.5 left-1.5 flex items-center gap-1 text-[10px] text-yellow-200 opacity-90">
+            ${rating ? `<span class="px-1.5 py-0.5 rounded-full bg-black/70 border border-white/10">★ ${rating}</span>` : ""}
+          </div>
+
           <div class="absolute bottom-1.5 left-1.5 right-1.5 flex flex-col gap-0.5 text-[10px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
             <span class="font-semibold line-clamp-1">${escapeHtml(title)}</span>
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1">
-                ${rating ? `<span class="px-1.5 py-0.5 rounded-full bg-black/80 text-[9px] border border-white/10">★ ${rating}</span>` : ""}
-              </div>
+              <span class="text-[10px] text-slate-300">Series</span>
               ${year ? `<span class="text-slate-400">${year}</span>` : ""}
             </div>
           </div>
@@ -232,8 +255,7 @@
     async function loadCategoryRow(cat) {
       const rowEl = createRowElement(cat.title, cat.key);
       try {
-        const url =
-          `${TMDB_BASE}${cat.path}?api_key=${TMDB_API_KEY}&page=1`;
+        const url = `${TMDB_BASE}${cat.path}?api_key=${TMDB_API_KEY}&page=1`;
         const data = await fetchJson(url);
         const results = data.results || [];
         results.forEach((s) => rowEl.appendChild(createCard(s)));
@@ -257,12 +279,14 @@
         const data = await fetchJson(url);
         const results = data.results || [];
         searchRowEl.innerHTML = "";
+
         if (!results.length) {
           searchTitleEl.textContent = `No results for "${query}"`;
           searchSection.classList.remove("hidden");
           setStatus("", false);
           return;
         }
+
         searchTitleEl.textContent = `Search results for "${query}"`;
         results.forEach((s) => searchRowEl.appendChild(createCard(s)));
         searchSection.classList.remove("hidden");
@@ -290,7 +314,9 @@
 
     function observeRows() {
       if (!rowObserver) return;
-      document.querySelectorAll(".js-row").forEach((row) => rowObserver.observe(row));
+      document
+        .querySelectorAll(".js-row")
+        .forEach((row) => rowObserver.observe(row));
     }
 
     if (searchForm && searchInput) {
@@ -308,7 +334,7 @@
 
     if (mobileSearchBtn) {
       mobileSearchBtn.addEventListener("click", () => {
-        const q = prompt("Search TV shows:");
+        const q = prompt("Search series:");
         if (q !== null) {
           if (searchInput) searchInput.value = q;
           handleSearch(q);
@@ -326,13 +352,13 @@
 
     (async function init() {
       try {
-        setStatus("Loading TV shows...", true);
+        setStatus("Loading series...", true);
         await Promise.all(CATEGORIES.map(loadCategoryRow));
         observeRows();
         setStatus("", false);
       } catch (err) {
         console.error(err);
-        setStatus("Failed to load shows.", true);
+        setStatus("Failed to load series.", true);
       }
     })();
   </script>
