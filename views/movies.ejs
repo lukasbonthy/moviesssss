@@ -16,10 +16,10 @@
           },
           colors: {
             dpBg: "#040714",
-            dpBgSoft: "#05091f",
-            dpAccent: "#00b3ff",
-            dpAccentSoft: "#7b5eff",
-            dpAccentWarn: "#ffcc00",
+            dpCard: "#0b1120",
+            dpCardSoft: "#111827",
+            dpAccent: "#00b0ff",
+            dpAccentSoft: "#60a5fa",
           },
           borderRadius: {
             "2xl-plus": "1.25rem",
@@ -29,22 +29,9 @@
               "0%": { opacity: 0, transform: "translateY(12px)" },
               "100%": { opacity: 1, transform: "translateY(0)" },
             },
-            "nav-blur": {
-              "0%": { backdropFilter: "blur(0px)" },
-              "100%": { backdropFilter: "blur(18px)" },
-            },
-            "hero-glow": {
-              "0%,100%": { opacity: 0.8, transform: "scale(1)" },
-              "50%": { opacity: 1, transform: "scale(1.03)" },
-            },
           },
           animation: {
             "fade-up": "fade-up 0.5s ease-out forwards",
-            "nav-blur": "nav-blur 0.3s ease-out forwards",
-            "hero-glow": "hero-glow 4s ease-in-out infinite",
-          },
-          boxShadow: {
-            "dp-soft": "0 18px 45px rgba(0,0,0,0.7)",
           },
         },
       },
@@ -54,9 +41,9 @@
   <style>
     body {
       background:
-        radial-gradient(circle at 20% 0%, rgba(0, 179, 255, 0.35), transparent 55%),
-        radial-gradient(circle at 80% 0%, rgba(123, 94, 255, 0.35), transparent 55%),
-        radial-gradient(circle at 50% 100%, rgba(8, 47, 73, 0.9), #020617 70%);
+        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.45), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(0, 184, 255, 0.5), transparent 60%),
+        #040714;
     }
     .row-scroll {
       scrollbar-width: none;
@@ -69,7 +56,7 @@
       position: fixed;
       inset: 0;
       mix-blend-mode: soft-light;
-      opacity: 0.15;
+      opacity: 0.18;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
     }
   </style>
@@ -79,29 +66,32 @@
 
   <div class="min-h-screen flex flex-col">
     <!-- NAVBAR -->
-    <header id="mainNav"
-            class="fixed top-0 left-0 right-0 z-30 transition-all duration-300 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
-      <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-6">
-          <a href="/movies" class="flex items-center">
-            <!-- Logo styled like Disney+ glow -->
-            <span class="text-2xl md:text-3xl font-black tracking-tight select-none">
-              <span class="bg-gradient-to-r from-dpAccent via-white to-dpAccentSoft bg-clip-text text-transparent">
-                Darkflix
-              </span>
+    <header class="fixed top-0 left-0 right-0 z-30 bg-[#040714]/90 backdrop-blur border-b border-white/5">
+      <nav class="max-w-6xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-7">
+          <!-- Disney+ style text logo -->
+          <a href="/movies" class="flex items-center relative">
+            <span class="text-2xl md:text-[26px] font-semibold tracking-tight text-white select-none">
+              Darkflix<span class="text-[#00b0ff] align-super text-sm">+</span>
             </span>
+            <!-- subtle arc under logo -->
+            <span class="pointer-events-none absolute -bottom-1 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-[#00b0ff]/60 to-transparent rounded-full opacity-60"></span>
           </a>
-          <ul class="hidden md:flex items-center gap-5 text-sm">
+
+          <ul class="hidden md:flex items-center gap-6 text-[13px]">
             <li>
-              <span class="font-semibold text-white">Movies</span>
+              <span class="font-semibold text-white">Home</span>
             </li>
             <li>
               <a href="/tv" class="text-slate-300 hover:text-white transition-colors">Series</a>
             </li>
-            <li class="text-slate-300 hover:text-white transition-colors cursor-pointer">
+            <li class="text-slate-300 hover:text-white cursor-pointer">
               Originals
             </li>
-            <li class="text-slate-300 hover:text-white transition-colors cursor-pointer">
+            <li class="text-slate-300 hover:text-white cursor-pointer">
+              Movies
+            </li>
+            <li class="text-slate-300 hover:text-white cursor-pointer">
               Watchlist
             </li>
           </ul>
@@ -110,7 +100,7 @@
         <div class="flex items-center gap-4">
           <!-- Search -->
           <form id="searchForm"
-                class="hidden sm:flex items-center bg-black/50 rounded-full px-3 py-1 border border-white/10 shadow-sm shadow-black/40 backdrop-blur">
+                class="hidden sm:flex items-center bg-[#0b1120] rounded-full px-3 py-1 border border-white/10">
             <svg class="w-4 h-4 text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -119,12 +109,12 @@
             <input
               id="searchInput"
               type="text"
-              placeholder="Search movies..."
-              class="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-400 px-2 w-40"
+              placeholder="Search"
+              class="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-400 px-2 w-36"
             />
           </form>
 
-          <!-- Mobile search icon -->
+          <!-- Mobile search -->
           <button id="mobileSearchBtn" class="sm:hidden text-slate-100">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
@@ -137,8 +127,9 @@
           <div class="flex items-center gap-3">
             <% if (currentUser) { %>
               <div class="relative group">
-                <button type="button" class="flex items-center gap-2 text-xs text-slate-200 hover:text-white">
-                  <span class="inline-flex h-8 w-8 rounded-full overflow-hidden bg-gradient-to-br from-dpAccent to-dpAccentSoft items-center justify-center text-[11px] font-semibold border border-white/10 shadow shadow-black/60">
+                <button type="button"
+                        class="flex items-center gap-2 text-xs text-slate-200 hover:text-white">
+                  <span class="inline-flex h-8 w-8 rounded-full overflow-hidden bg-[#111827] items-center justify-center text-[11px] font-semibold border border-white/15">
                     <%= currentUser.name.charAt(0).toUpperCase() %>
                   </span>
                   <span class="hidden sm:inline"><%= currentUser.name %></span>
@@ -148,17 +139,17 @@
                           d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div class="absolute right-0 mt-1 w-44 bg-[#06091e]/98 border border-white/10 rounded-2xl shadow-xl shadow-black/80 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all origin-top-right backdrop-blur">
-                  <a href="/profile" class="block px-3 py-2 hover:bg-white/10 rounded-t-2xl">
+                <div class="absolute right-0 mt-1 w-44 bg-[#050819]/98 border border-white/10 rounded-xl shadow-xl shadow-black/70 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all origin-top-right backdrop-blur">
+                  <a href="/profile" class="block px-3 py-2 hover:bg-white/10 rounded-t-xl">
                     Account
                   </a>
                   <a href="/tv" class="block px-3 py-2 hover:bg-white/10">
-                    Browse Series
+                    Series
                   </a>
                   <form action="/logout" method="POST" class="border-t border-white/10 mt-1">
                     <button
                       type="submit"
-                      class="w-full text-left px-3 py-2 hover:bg-white/10 text-red-200 rounded-b-2xl">
+                      class="w-full text-left px-3 py-2 hover:bg-white/10 text-red-200 rounded-b-xl">
                       Sign out
                     </button>
                   </form>
@@ -166,7 +157,7 @@
               </div>
             <% } else { %>
               <a href="/login"
-                 class="text-xs px-4 py-1.5 rounded-full bg-white text-black font-semibold shadow shadow-black/60 hover:bg-slate-100">
+                 class="text-xs px-4 py-1.5 rounded-full bg-white text-black font-semibold hover:bg-slate-100">
                 Log In
               </a>
             <% } %>
@@ -176,45 +167,42 @@
     </header>
 
     <!-- MAIN -->
-    <main class="flex-1">
+    <main class="flex-1 pt-16">
       <!-- HERO -->
       <section id="heroSection"
-               class="relative h-[70vh] min-h-[430px] max-h-[780px] overflow-hidden">
+               class="relative h-[60vh] min-h-[380px] max-h-[640px] overflow-hidden">
         <div id="heroBackdrop"
              class="absolute inset-0 bg-cover bg-center scale-110 blur-[2px] transition-transform duration-[1600ms] ease-out"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-[#040714]/60 to-[#040714]"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-[#040714]/70 to-[#040714]"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-transparent"></div>
 
-        <!-- Little arc glow at bottom (Disney+ vibe) -->
-        <div class="pointer-events-none absolute bottom-[-25%] left-1/2 -translate-x-1/2 w-[140%] h-[80%] rounded-[100%] bg-gradient-to-t from-[#0ea5e9]/40 via-transparent to-transparent blur-3xl opacity-40 animate-hero-glow"></div>
-
-        <div class="relative z-10 max-w-6xl mx-auto h-full px-4 flex items-end pb-16 md:pb-24">
-          <div class="max-w-xl animate-fade-up">
-            <p class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-dpAccent mb-3">
-              <span class="inline-flex h-1 w-7 rounded-full bg-gradient-to-r from-dpAccent to-dpAccentSoft"></span>
-              Featured Movie
+        <div class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 h-full flex items-end pb-10 md:pb-14">
+          <div class="max-w-xl">
+            <p class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-slate-200 mb-2">
+              <span class="inline-flex h-[2px] w-6 rounded-full bg-[#00b0ff]"></span>
+              Original
             </p>
 
-            <h1 id="heroTitle" class="text-3xl md:text-5xl lg:text-6xl font-black drop-shadow-2xl mb-3">
+            <h1 id="heroTitle" class="text-3xl md:text-5xl font-bold mb-2">
               Featured Title
             </h1>
 
             <p id="heroMeta" class="text-xs md:text-sm text-slate-100 mb-2"></p>
 
             <p id="heroOverview"
-               class="hidden sm:block text-sm md:text-[0.95rem] text-slate-200/90 mb-5 line-clamp-3">
+               class="hidden sm:block text-sm md:text-[0.95rem] text-slate-200/90 mb-4 line-clamp-3">
             </p>
 
             <div class="flex flex-wrap items-center gap-3">
               <button id="heroPlayBtn"
-                      class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-base px-5 py-2.5 rounded-full hover:bg-slate-100 shadow-md shadow-black/50">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-[15px] px-5 py-2 rounded-md hover:bg-slate-100">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6 4.5v11l8-5.5-8-5.5z" />
                 </svg>
                 Play
               </button>
               <button id="heroMoreBtn"
-                      class="flex items-center gap-2 bg-white/10 text-white font-semibold text-xs md:text-sm px-4 py-2.5 rounded-full hover:bg-white/20 border border-white/20 backdrop-blur">
+                      class="flex items-center gap-2 bg-white/15 text-white font-semibold text-xs md:text-[13px] px-4 py-2 rounded-md hover:bg-white/25 border border-white/20">
                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -228,17 +216,17 @@
       </section>
 
       <!-- CONTENT -->
-      <section class="bg-gradient-to-b from-[#040714] via-[#020617] to-black pt-6 pb-16">
-        <div class="max-w-6xl mx-auto px-4">
-          <!-- Search -->
+      <section class="bg-gradient-to-b from-[#040714] via-[#020617] to-black pt-4 pb-16">
+        <div class="max-w-6xl mx-auto px-4 md:px-6">
+          <!-- Search results -->
           <div id="searchSection" class="hidden mb-10">
             <div class="flex items-center justify-between mb-2">
               <div class="flex flex-col gap-0.5">
-                <h2 id="searchTitle" class="text-base md:text-lg font-semibold">
-                  Search Results
+                <h2 id="searchTitle" class="text-sm md:text-base font-semibold">
+                  Search results
                 </h2>
                 <p class="text-[11px] text-slate-400">
-                  Movies that match your search.
+                  Titles matching your search.
                 </p>
               </div>
               <button
@@ -253,7 +241,7 @@
           <!-- Status -->
           <p id="statusMessage" class="text-sm text-slate-300 mb-3 hidden"></p>
 
-          <!-- Category rows -->
+          <!-- Rows -->
           <div id="rowsContainer" class="space-y-8"></div>
         </div>
       </section>
@@ -268,11 +256,11 @@
     const TMDB_BACKDROP = "https://image.tmdb.org/t/p/original";
 
     const CATEGORIES = [
-      { key: "trending",    title: "Trending Now",        path: "/trending/movie/week" },
-      { key: "popular",     title: "Popular on Darkflix", path: "/movie/popular" },
-      { key: "top_rated",   title: "Top Rated",           path: "/movie/top_rated" },
-      { key: "now_playing", title: "In Theatres",         path: "/movie/now_playing" },
-      { key: "upcoming",    title: "Coming Soon",         path: "/movie/upcoming" },
+      { key: "trending",    title: "Trending",         path: "/trending/movie/week" },
+      { key: "popular",     title: "Popular Movies",   path: "/movie/popular" },
+      { key: "top_rated",   title: "Top Rated",        path: "/movie/top_rated" },
+      { key: "now_playing", title: "In Theatres",      path: "/movie/now_playing" },
+      { key: "upcoming",    title: "Coming Soon",      path: "/movie/upcoming" },
     ];
 
     // ===== DOM =====
@@ -291,7 +279,6 @@
     const searchInput     = document.getElementById("searchInput");
     const mobileSearchBtn = document.getElementById("mobileSearchBtn");
     const clearSearchBtn  = document.getElementById("clearSearchBtn");
-    const mainNav         = document.getElementById("mainNav");
 
     let currentHeroMovie = null;
     let heroSet = false;
@@ -318,27 +305,6 @@
       return res.json();
     }
 
-    // Navbar blur on scroll (Disney+ style)
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 40) {
-        mainNav.classList.add(
-          "bg-black/80",
-          "shadow-lg",
-          "shadow-black/60",
-          "backdrop-blur-md",
-          "animate-nav-blur"
-        );
-      } else {
-        mainNav.classList.remove(
-          "bg-black/80",
-          "shadow-lg",
-          "shadow-black/60",
-          "backdrop-blur-md",
-          "animate-nav-blur"
-        );
-      }
-    });
-
     // ===== ROWS =====
     function createRowElement(title, key) {
       const wrapper = document.createElement("section");
@@ -346,13 +312,15 @@
 
       wrapper.innerHTML = `
         <div class="flex items-center justify-between">
-          <h2 class="text-base md:text-lg font-semibold">${escapeHtml(title)}</h2>
+          <h2 class="text-[13px] md:text-sm font-semibold text-slate-100 uppercase tracking-[0.12em]">
+            ${escapeHtml(title)}
+          </h2>
         </div>
         <div id="row-${key}" class="row-scroll flex gap-3 overflow-x-auto pb-2"></div>
       `;
 
       rowsContainer.appendChild(wrapper);
-      return document.getElementById(`row-${key}`);
+      return document.getElementById("row-" + key);
     }
 
     function createCard(movie) {
@@ -362,30 +330,26 @@
       const year = date ? date.split("-")[0] : "";
       const vote = movie.vote_average || 0;
       const rating = vote ? vote.toFixed(1) : "";
-      const imgPath = movie.poster_path || movie.backdrop_path;
+      const imgPath = movie.backdrop_path || movie.poster_path;
       const imgSrc = imgPath
         ? TMDB_IMG + imgPath
-        : "https://via.placeholder.com/500x750/020617/ffffff?text=No+Image";
+        : "https://via.placeholder.com/800x450/020617/ffffff?text=No+Image";
 
       const card = document.createElement("article");
       card.className =
-        "group relative flex-shrink-0 w-[44vw] sm:w-[160px] md:w-[180px] lg:w-[200px] cursor-pointer";
+        "group relative flex-shrink-0 w-[70vw] sm:w-[220px] md:w-[260px] lg:w-[280px] cursor-pointer";
 
       card.innerHTML = `
-        <div class="relative rounded-2xl-plus overflow-hidden bg-slate-900/60 border border-white/5 shadow-md shadow-black/70">
+        <div class="relative rounded-xl overflow-hidden bg-dpCard border border-transparent hover:border-[#00b0ff]/60 transition-colors duration-200">
           <img src="${imgSrc}" alt="${escapeHtml(title)}"
-               class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-105" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+               class="w-full aspect-[16/9] object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-          <div class="absolute top-1.5 left-1.5 flex items-center gap-1 text-[10px] text-yellow-200 opacity-90">
-            ${rating ? `<span class="px-1.5 py-0.5 rounded-full bg-black/70 border border-white/10">★ ${rating}</span>` : ""}
-          </div>
-
-          <div class="absolute bottom-1.5 left-1.5 right-1.5 flex flex-col gap-0.5 text-[10px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div class="absolute bottom-2 left-2 right-2 flex flex-col gap-0.5 text-[11px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
             <span class="font-semibold line-clamp-1">${escapeHtml(title)}</span>
             <div class="flex items-center justify-between">
-              <span class="text-[10px] text-slate-300">Movie</span>
-              ${year ? `<span class="text-slate-400">${year}</span>` : ""}
+              <span class="text-slate-300">${year || ""}</span>
+              ${rating ? `<span class="px-2 py-[2px] rounded-full bg-black/75 text-[10px] border border-white/15">★ ${rating}</span>` : ""}
             </div>
           </div>
         </div>
@@ -414,9 +378,9 @@
       const imgSrc = backdrop ? TMDB_BACKDROP + backdrop : null;
       if (imgSrc) {
         heroBackdropEl.style.backgroundImage = `url(${imgSrc})`;
-        heroBackdropEl.style.transform = "scale(1.2)";
+        heroBackdropEl.style.transform = "scale(1.1)";
         setTimeout(() => {
-          heroBackdropEl.style.transform = "scale(1.08)";
+          heroBackdropEl.style.transform = "scale(1.05)";
         }, 900);
       } else {
         heroBackdropEl.style.backgroundImage = "none";
@@ -443,24 +407,24 @@
       heroMoreBtn.onclick = goToWatch;
     }
 
-    async function loadCategoryRow(cat) {
-      const rowEl = createRowElement(cat.title, cat.key);
+    async function loadCategoryRow(category) {
+      const rowEl = createRowElement(category.title, category.key);
       try {
-        const url = cat.path.startsWith("/trending")
-          ? `${TMDB_BASE}${cat.path}?api_key=${TMDB_API_KEY}`
-          : `${TMDB_BASE}${cat.path}?api_key=${TMDB_API_KEY}&page=1`;
+        const url = category.path.startsWith("/trending")
+          ? `${TMDB_BASE}${category.path}?api_key=${TMDB_API_KEY}`
+          : `${TMDB_BASE}${category.path}?api_key=${TMDB_API_KEY}&page=1`;
         const data = await fetchJson(url);
         const results = data.results || [];
         if (!results.length) return;
 
-        if (!heroSet && (cat.key === "trending" || cat.key === "popular")) {
+        if (!heroSet && (category.key === "trending" || category.key === "popular")) {
           setHero(results[0]);
           heroSet = true;
         }
 
         results.forEach((m) => rowEl.appendChild(createCard(m)));
       } catch (err) {
-        console.error("Error loading category", cat.key, err);
+        console.error("Error loading category", category.key, err);
       }
     }
 
@@ -498,7 +462,7 @@
       }
     }
 
-    // Row entrance animation
+    // Row animation
     const rowObserver = "IntersectionObserver" in window
       ? new IntersectionObserver(
           (entries) => {
@@ -516,9 +480,7 @@
 
     function observeRows() {
       if (!rowObserver) return;
-      document
-        .querySelectorAll(".js-row")
-        .forEach((row) => rowObserver.observe(row));
+      document.querySelectorAll(".js-row").forEach((row) => rowObserver.observe(row));
     }
 
     // Events
@@ -537,7 +499,7 @@
 
     if (mobileSearchBtn) {
       mobileSearchBtn.addEventListener("click", () => {
-        const q = prompt("Search movies:");
+        const q = prompt("Search titles:");
         if (q !== null) {
           if (searchInput) searchInput.value = q;
           handleSearch(q);
