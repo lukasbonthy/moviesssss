@@ -5,7 +5,7 @@
 
   <nav class="flex items-center gap-4 text-sm">
     <% if (currentUser) { %>
-      <span class="text-slate-300">Hi, <%= currentUser.name %></span>
+      <span class="text-slate-300 text-xs">Hi, <%= currentUser.name %></span>
       <form action="/logout" method="POST">
         <button
           type="submit"
