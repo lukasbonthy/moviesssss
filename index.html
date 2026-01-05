@@ -11,8 +11,12 @@
     tailwind.config = {
       theme: {
         extend: {
+          fontFamily: {
+            sans: ["system-ui", "ui-sans-serif", "SF Pro Text", "Inter", "sans-serif"],
+          },
           colors: {
-            bgDark: "#050816",
+            bgDeep: "#020617",
+            primary: "#ef4444",
           },
         },
       },
@@ -21,53 +25,69 @@
 
   <style>
     body {
-      background: radial-gradient(circle at top, #1f2937 0, #020617 40%, #000 100%);
+      background:
+        radial-gradient(circle at top left, rgba(248, 113, 113, 0.12), transparent 55%),
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 55%),
+        radial-gradient(circle at bottom, rgba(34, 197, 94, 0.08), transparent 55%),
+        #020617;
     }
-    .backdrop-blur-custom {
-      backdrop-filter: blur(16px);
+    .glass {
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.16), transparent 60%);
     }
   </style>
 </head>
-<body class="min-h-screen text-slate-100">
+<body class="min-h-screen font-sans text-slate-100">
 
   <div class="min-h-screen flex flex-col">
     <!-- Navbar -->
-    <header class="fixed top-0 w-full z-20 bg-gradient-to-b from-black/80 via-black/60 to-transparent border-b border-white/5">
+    <header class="fixed top-0 left-0 right-0 z-30 border-b border-slate-800/70 bg-black/80 backdrop-blur">
       <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <a href="index.html" class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-amber-400 flex items-center justify-center text-xl font-black">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-red-500 via-orange-400 to-amber-200 flex items-center justify-center text-xl font-black shadow-lg shadow-red-500/40">
             🎬
           </div>
-          <span class="text-lg font-semibold tracking-wide">Dark Movie Hub</span>
+          <div class="leading-tight">
+            <p class="text-sm font-semibold tracking-[0.18em] uppercase text-slate-400">
+              Dark Movie
+            </p>
+            <p class="text-lg font-semibold tracking-tight">Hub</p>
+          </div>
         </a>
-        <span class="hidden sm:inline text-xs text-slate-400 uppercase tracking-[0.2em]">
-          Explore • Watch • Repeat
-        </span>
+
+        <div class="hidden md:flex items-center gap-4 text-xs text-slate-400">
+          <span class="uppercase tracking-[0.18em]">Explore</span>
+          <span class="w-1 h-1 rounded-full bg-slate-500 inline-block"></span>
+          <span class="uppercase tracking-[0.18em]">Watch</span>
+          <span class="w-1 h-1 rounded-full bg-slate-500 inline-block"></span>
+          <span class="uppercase tracking-[0.18em]">Repeat</span>
+        </div>
       </nav>
     </header>
 
     <!-- Main Content -->
     <main class="flex-1 max-w-6xl mx-auto px-4 pt-24 pb-12">
-      <!-- Hero / Search -->
-      <section class="mb-8">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div>
-            <h1 class="text-3xl md:text-4xl font-bold tracking-tight">
-              Dive into the <span class="bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-pink-500 to-sky-400">dark side</span> of cinema
+      <!-- Hero + Search -->
+      <section class="glass rounded-3xl border border-slate-800/60 bg-slate-900/60 shadow-2xl shadow-black/60 px-4 py-5 md:px-7 md:py-6 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          <div class="max-w-xl">
+            <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">
+              Your personal <span class="bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-fuchsia-500 to-sky-400">cinema in the dark</span>.
             </h1>
-            <p class="mt-2 text-sm md:text-base text-slate-300 max-w-xl">
-              Search the TMDB library and play your selection in an immersive, modern player view.
+            <p class="mt-2 text-sm md:text-base text-slate-300">
+              Browse movies from TMDB, then jump into an immersive player view with a single click.
             </p>
           </div>
 
+          <!-- Search -->
           <form id="searchForm" class="w-full md:w-80 relative">
             <input
               id="searchInput"
               type="text"
               placeholder="Search for a movie..."
-              class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder:text-slate-500"
+              class="w-full bg-slate-950/80 border border-slate-700/70 rounded-2xl px-4 py-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder:text-slate-500 shadow-inner shadow-black/40"
             />
-            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
             </svg>
@@ -76,16 +96,20 @@
 
         <!-- Filter Pills -->
         <div class="mt-5 flex flex-wrap gap-2 text-xs">
-          <button data-filter="popular" class="filter-pill bg-red-500 text-white px-3 py-1.5 rounded-full shadow shadow-red-500/30">
+          <button data-filter="popular"
+                  class="filter-pill bg-red-500 text-white px-4 py-1.5 rounded-full shadow shadow-red-500/40">
             Popular
           </button>
-          <button data-filter="now_playing" class="filter-pill bg-slate-800 px-3 py-1.5 rounded-full text-slate-200 border border-slate-600/80">
+          <button data-filter="now_playing"
+                  class="filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90">
             Now Playing
           </button>
-          <button data-filter="top_rated" class="filter-pill bg-slate-800 px-3 py-1.5 rounded-full text-slate-200 border border-slate-600/80">
+          <button data-filter="top_rated"
+                  class="filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90">
             Top Rated
           </button>
-          <button data-filter="upcoming" class="filter-pill bg-slate-800 px-3 py-1.5 rounded-full text-slate-200 border border-slate-600/80">
+          <button data-filter="upcoming"
+                  class="filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90">
             Upcoming
           </button>
         </div>
@@ -94,32 +118,33 @@
       <!-- Status messages -->
       <div id="statusMessage" class="mb-4 text-sm text-slate-400 hidden"></div>
 
-      <!-- Movie Grid -->
+      <!-- Movies grid -->
       <section id="movieGrid"
                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
-        <!-- Cards injected via JS -->
+        <!-- Cards injected -->
       </section>
 
       <!-- Load more -->
       <div class="mt-8 flex justify-center">
         <button id="loadMoreBtn"
-                class="hidden px-4 py-2 rounded-full text-sm bg-slate-900/80 border border-slate-600 text-slate-200 hover:bg-slate-800 transition">
+                class="hidden px-4 py-2 rounded-full text-sm bg-slate-900/80 border border-slate-700 text-slate-100 hover:bg-slate-800 transition shadow shadow-black/40">
           Load more
         </button>
       </div>
     </main>
 
-    <footer class="border-t border-slate-800/80 bg-black/80">
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-black/90 backdrop-blur">
       <div class="max-w-6xl mx-auto px-4 py-4 text-xs text-slate-500 flex justify-between items-center">
-        <span>Built with TMDB data & an external player embed 🔨🤖🔧</span>
-        <span class="hidden sm:inline">You’ll swap to your official provider later.</span>
+        <span>Powered by TMDB data • External embed for playback.</span>
+        <span class="hidden sm:inline">Swap to your official provider whenever you’re ready 🔨🤖🔧</span>
       </div>
     </footer>
   </div>
 
   <script>
     // ====== CONFIG ======
-    const TMDB_API_KEY = "f830dc2d840aa7b697cdfbdb0418d27e"; // <- replace with your key
+    const TMDB_API_KEY = "YOUR_TMDB_API_KEY"; // <- replace
     const TMDB_BASE = "https://api.themoviedb.org/3";
     const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
 
@@ -164,7 +189,6 @@
           default:            path = "/movie/popular";
         }
       }
-
       return `${TMDB_BASE}${path}?${params.toString()}`;
     }
 
@@ -187,21 +211,21 @@
 
       const card = document.createElement("article");
       card.className =
-        "group relative bg-slate-900/70 border border-slate-800/90 rounded-2xl overflow-hidden shadow-lg shadow-black/50 hover:-translate-y-1 hover:shadow-red-500/25 transition transform cursor-pointer";
+        "group relative bg-slate-950/80 border border-slate-800/90 rounded-3xl overflow-hidden shadow-xl shadow-black/70 hover:-translate-y-1 hover:shadow-red-500/30 transition-transform duration-200 cursor-pointer";
 
       card.innerHTML = `
         <div class="relative overflow-hidden">
           <img src="${imgSrc}" alt="${title}"
-               class="w-full h-56 sm:h-64 object-cover group-hover:scale-105 transition duration-300" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition"></div>
+               class="w-full h-56 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-300" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
 
-          <div class="absolute top-2 left-2 px-2 py-1 rounded-full text-[10px] bg-black/70 border border-white/10 flex items-center gap-1">
+          <div class="absolute top-2 left-2 px-2.5 py-1 rounded-full text-[10px] bg-black/80 border border-white/10 flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
-            ${rating}
+            <span class="font-semibold">${rating}</span>
           </div>
 
           <button
-            class="absolute inset-x-4 bottom-3 flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-full bg-red-600/90 hover:bg-red-500 text-white shadow-lg shadow-red-500/40 group-hover:translate-y-0.5 transition">
+            class="absolute inset-x-3 bottom-2.5 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-red-600/95 hover:bg-red-500 text-white shadow-lg shadow-red-500/50 group-hover:translate-y-0.5 transition-transform">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M6 4.5v11l8-5.5-8-5.5z" />
             </svg>
@@ -215,7 +239,6 @@
       `;
 
       card.addEventListener("click", () => {
-        // Navigate to watch page with tmdbId
         const url = new URL("watch.html", window.location.href);
         url.searchParams.set("type", "movie");
         url.searchParams.set("tmdbId", id);
@@ -236,11 +259,7 @@
       }
 
       setStatus("", false);
-
-      movies.forEach((movie) => {
-        const card = createMovieCard(movie);
-        movieGridEl.appendChild(card);
-      });
+      movies.forEach((m) => movieGridEl.appendChild(createMovieCard(m)));
     }
 
     // ====== LOAD DATA ======
@@ -259,7 +278,7 @@
           type,
           page: currentPage,
           query: currentQuery.trim(),
-          filter: currentFilter
+          filter: currentFilter,
         });
 
         const data = await fetchJson(url);
@@ -267,7 +286,6 @@
 
         renderMovies(data.results || [], !reset && currentPage > 1);
 
-        // Load more visibility
         if (currentPage < totalPages && totalPages > 1) {
           loadMoreBtn.classList.remove("hidden");
         } else {
@@ -277,23 +295,23 @@
         if ((data.results || []).length === 0) {
           setStatus("Nothing matched your search.", true);
         }
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        console.error(err);
         setStatus("Something went wrong while loading movies.", true);
         loadMoreBtn.classList.add("hidden");
       }
     }
 
-    // ====== EVENT HANDLERS ======
+    // ====== EVENTS ======
     // Filter pills
     filterPills.forEach((pill) => {
       pill.addEventListener("click", () => {
         filterPills.forEach((p) => {
-          p.classList.remove("bg-red-500", "text-white", "shadow", "shadow-red-500/30");
-          p.classList.add("bg-slate-800", "text-slate-200", "border", "border-slate-600/80");
+          p.className =
+            "filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90";
         });
-        pill.classList.remove("bg-slate-800", "border-slate-600/80");
-        pill.classList.add("bg-red-500", "text-white", "shadow", "shadow-red-500/30");
+        pill.className =
+          "filter-pill bg-red-500 text-white px-4 py-1.5 rounded-full shadow shadow-red-500/40";
 
         currentFilter = pill.dataset.filter;
         currentQuery = "";
@@ -324,7 +342,7 @@
       }
     });
 
-    // ====== INIT ======
+    // Init
     loadMovies({ reset: true });
   </script>
 </body>
