@@ -329,30 +329,19 @@
       });
     }
 
+    // 🔁 UPDATED: buildEmbedUrl now uses iframe.pstream.mov
     function buildEmbedUrl() {
-      let base;
-      const params = new URLSearchParams();
       const isTv = type === "tv";
 
       if (isTv) {
-        base = "https://vidsrc-embed.ru/embed/tv";
-        params.set("tmdb", tmdbId);
-        if (season && episode) {
-          params.set("season", season);
-          params.set("episode", episode);
-          params.set("autoplay", "1");
-          params.set("autonext", "1");
-        }
+        // Example: https://iframe.pstream.mov/embed/tmdb-tv-1399/1/2
+        const s = season || 1;
+        const e = episode || 1;
+        return `https://iframe.pstream.mov/embed/tmdb-tv-${tmdbId}/${s}/${e}`;
       } else {
-        base = "https://vidsrc-embed.ru/embed/movie";
-        params.set("tmdb", tmdbId);
-        params.set("autoplay", "1");
+        // Example: https://iframe.pstream.mov/embed/tmdb-movie-385687
+        return `https://iframe.pstream.mov/embed/tmdb-movie-${tmdbId}`;
       }
-
-      const lang = langSelect.value;
-      if (lang) params.set("ds_lang", lang);
-
-      return `${base}?${params.toString()}`;
     }
 
     function updatePlayerSrc() {
@@ -361,6 +350,8 @@
     }
 
     langSelect.addEventListener("change", () => {
+      // pstream API doesn’t expose a ds_lang param in your example,
+      // so right now this just reloads the same URL (future-proofed if they add params later).
       updatePlayerSrc();
     });
 
@@ -371,7 +362,7 @@
         return;
       }
 
-      const username = "<%= currentUser ? currentUser.name.replace(/"/g, '&quot;') : '' %>";
+      const username = "<%= currentUser ? currentUser.name.replace(/\"/g, '&quot;') : '' %>";
       if (!username) {
         setStatus("You must be logged in to start a watch party.");
         return;
