@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dark Movide Hub</title>
+  <title>Darkflix</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Tailwind CDN -->
@@ -15,8 +15,8 @@
             sans: ["system-ui", "ui-sans-serif", "SF Pro Text", "Inter", "sans-serif"],
           },
           colors: {
-            appBg: "#020617",
-            accent: "#ef4444",
+            netflixBlack: "#141414",
+            netflixRed: "#e50914",
           },
         },
       },
@@ -25,174 +25,166 @@
 
   <style>
     body {
-      background:
-        radial-gradient(circle at 0% 0%, rgba(248, 113, 113, 0.20), transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.18), transparent 55%),
-        radial-gradient(circle at 50% 100%, rgba(34, 197, 94, 0.12), transparent 55%),
-        #020617;
+      background: #000;
+    }
+    .row-scroll {
+      scrollbar-width: none;
+    }
+    .row-scroll::-webkit-scrollbar {
+      display: none;
     }
     .noise {
       pointer-events: none;
       position: fixed;
       inset: 0;
-      opacity: 0.18;
+      opacity: 0.16;
       mix-blend-mode: soft-light;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
     }
   </style>
 </head>
-<body class="min-h-screen font-sans text-slate-100 antialiased">
-  <!-- Noise overlay -->
+<body class="min-h-screen font-sans text-white antialiased bg-netflixBlack">
   <div class="noise -z-10"></div>
 
   <div class="min-h-screen flex flex-col">
-    <!-- Navbar -->
-    <header class="fixed top-0 left-0 right-0 z-30 border-b border-slate-800/70 bg-black/80 backdrop-blur-xl">
+    <!-- NAVBAR -->
+    <header class="fixed top-0 left-0 right-0 z-30 bg-gradient-to-b from-black via-black/80 to-transparent">
       <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <a href="index.html" class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-red-500 via-orange-400 to-amber-200 flex items-center justify-center text-xl font-black shadow-lg shadow-red-500/40">
-            🎬
-          </div>
-          <div class="leading-tight">
-            <p class="text-[11px] font-semibold tracking-[0.22em] uppercase text-slate-400">
-              Dark Movie
-            </p>
-            <p class="text-lg font-semibold tracking-tight">Hub</p>
-          </div>
-        </a>
+        <div class="flex items-center gap-6">
+          <a href="index.html" class="flex items-center">
+            <span class="text-2xl md:text-3xl font-black tracking-tight text-netflixRed">
+              DARKFLIX
+            </span>
+          </a>
+          <ul class="hidden md:flex items-center gap-4 text-sm">
+            <li><span class="font-semibold">Home</span></li>
+            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">Movies</li>
+            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">My List</li>
+          </ul>
+        </div>
 
-        <div class="hidden md:flex items-center gap-3 text-[11px] text-slate-400">
-          <span class="uppercase tracking-[0.2em]">Home</span>
-          <span class="w-1 h-1 rounded-full bg-slate-500 inline-block"></span>
-          <span class="uppercase tracking-[0.2em]">Discover</span>
-          <span class="w-1 h-1 rounded-full bg-slate-500 inline-block"></span>
-          <span class="uppercase tracking-[0.2em]">Watch</span>
+        <div class="flex items-center gap-4">
+          <form id="searchForm" class="hidden sm:flex items-center bg-black/60 rounded px-2 py-1 border border-white/10">
+            <svg class="w-4 h-4 text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+            </svg>
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Titles"
+              class="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-400 px-2 w-32"
+            />
+          </form>
+          <button id="mobileSearchBtn" class="sm:hidden text-slate-100">
+            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+            </svg>
+          </button>
+          <div class="w-7 h-7 rounded bg-slate-700 flex items-center justify-center text-xs">
+            U
+          </div>
         </div>
       </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-6xl mx-auto px-4 pt-24 pb-12">
-      <!-- Hero + Search -->
-      <section class="rounded-3xl border border-slate-800/60 bg-slate-900/60/80 shadow-[0_24px_80px_rgba(0,0,0,0.85)] mb-8 overflow-hidden">
-        <div class="grid md:grid-cols-[1.7fr,1.2fr] gap-6 md:gap-10 p-5 md:p-7 lg:p-8 relative">
-          <!-- Glow accents -->
-          <div class="absolute -top-32 -right-20 w-72 h-72 bg-red-500/20 blur-3xl pointer-events-none"></div>
-          <div class="absolute -bottom-32 -left-20 w-72 h-72 bg-sky-500/20 blur-3xl pointer-events-none"></div>
+    <!-- MAIN -->
+    <main class="flex-1">
+      <!-- HERO / FEATURED -->
+      <section id="heroSection" class="relative h-[70vh] min-h-[400px] max-h-[760px]">
+        <div id="heroBackdrop" class="absolute inset-0 bg-cover bg-center"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-netflixBlack via-netflixBlack/30 to-black/40"></div>
 
-          <div class="relative z-10 space-y-4">
-            <div class="inline-flex items-center gap-2 rounded-full border border-slate-700/80 bg-black/60 px-3 py-1 text-[11px] text-slate-300">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              Live catalog from TMDB
-            </div>
-
-            <h1 class="text-3xl md:text-4xl lg:text-[2.6rem] font-semibold leading-tight tracking-tight">
-              Stream in style with a
-              <span class="bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-fuchsia-500 to-sky-400">
-                cinematic dark interface.
-              </span>
+        <div class="relative z-10 max-w-6xl mx-auto h-full px-4 flex items-end pb-16 md:pb-24">
+          <div class="max-w-lg">
+            <h1 id="heroTitle" class="text-3xl md:text-5xl font-black drop-shadow-lg mb-3">
+              Featured Title
             </h1>
-
-            <p class="text-sm md:text-[0.95rem] text-slate-300 max-w-xl">
-              Browse movies powered by TMDB, then jump into a sleek, immersive player view. No clutter, just pure focus on what you’re watching.
-            </p>
-
-            <!-- Filters -->
-            <div class="mt-3 flex flex-wrap gap-2 text-xs">
-              <button data-filter="popular"
-                      class="filter-pill bg-red-500 text-white px-4 py-1.5 rounded-full shadow shadow-red-500/40">
-                Popular
+            <p id="heroMeta" class="text-xs md:text-sm text-slate-200 mb-2"></p>
+            <p id="heroOverview" class="hidden sm:block text-sm text-slate-200/90 mb-5 line-clamp-3"></p>
+            <div class="flex flex-wrap items-center gap-3">
+              <button id="heroPlayBtn"
+                      class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-base px-5 py-2 rounded hover:bg-slate-200">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M6 4.5v11l8-5.5-8-5.5z" />
+                </svg>
+                Play
               </button>
-              <button data-filter="now_playing"
-                      class="filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90">
-                Now Playing
-              </button>
-              <button data-filter="top_rated"
-                      class="filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90">
-                Top Rated
-              </button>
-              <button data-filter="upcoming"
-                      class="filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90">
-                Upcoming
-              </button>
-            </div>
-          </div>
-
-          <!-- Search card -->
-          <div class="relative z-10 flex items-center">
-            <div class="w-full rounded-3xl border border-slate-700/70 bg-slate-950/80 shadow-[0_20px_60px_rgba(0,0,0,0.8)] p-4 md:p-5 space-y-4">
-              <p class="text-xs font-medium text-slate-300 uppercase tracking-[0.18em]">
-                Search
-              </p>
-              <form id="searchForm" class="relative">
-                <input
-                  id="searchInput"
-                  type="text"
-                  placeholder="Search for a movie..."
-                  class="w-full bg-black/70 border border-slate-700/90 rounded-2xl px-4 py-2.5 pl-11 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder:text-slate-500 shadow-inner shadow-black/50"
-                />
-                <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" xmlns="http://www.w3.org/2000/svg"
+              <button id="heroMoreBtn"
+                      class="flex items-center gap-2 bg-slate-500/70 text-white font-semibold text-xs md:text-sm px-4 py-2 rounded hover:bg-slate-400/80">
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+                        d="M12 4v16m8-8H4" />
                 </svg>
-              </form>
-              <p class="text-[11px] text-slate-400">
-                Hit <span class="px-1.5 py-0.5 rounded-md bg-slate-800/80 text-[10px] border border-slate-700">Enter</span>
-                to search TMDB’s movie database.
-              </p>
+                More Info
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Status messages -->
-      <div id="statusMessage" class="mb-4 text-sm text-slate-400 hidden"></div>
+      <!-- CONTENT ROWS -->
+      <section class="bg-netflixBlack pt-4 pb-16">
+        <div class="max-w-6xl mx-auto px-4">
+          <!-- Search Row -->
+          <div id="searchSection" class="hidden mb-6">
+            <h2 id="searchTitle" class="text-base md:text-lg font-semibold mb-2">
+              Search Results
+            </h2>
+            <div id="searchRow" class="row-scroll flex gap-2 overflow-x-auto pb-2">
+              <!-- search cards -->
+            </div>
+          </div>
 
-      <!-- Movies grid container -->
-      <section class="rounded-3xl border border-slate-800/70 bg-slate-950/70/90 shadow-[0_24px_80px_rgba(0,0,0,0.9)] p-3 md:p-4">
-        <div id="movieGrid"
-             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
-          <!-- Cards injected -->
-        </div>
+          <!-- Status -->
+          <p id="statusMessage" class="text-sm text-slate-300 mb-3 hidden"></p>
 
-        <!-- Load more -->
-        <div class="mt-6 flex justify-center">
-          <button id="loadMoreBtn"
-                  class="hidden px-4 py-2 rounded-full text-sm bg-slate-900/90 border border-slate-700 text-slate-100 hover:bg-slate-800 transition shadow shadow-black/50">
-            Load more
-          </button>
+          <!-- Dynamic rows -->
+          <div id="rowsContainer" class="space-y-7">
+            <!-- rows injected -->
+          </div>
         </div>
       </section>
     </main>
-
-    <!-- Footer -->
-    <footer class="border-t border-slate-800/80 bg-black/90 backdrop-blur">
-      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] md:text-xs text-slate-500 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-        <span>Built on TMDB data • Playback via external embed source.</span>
-        <span>You can switch to your official provider later without changing the UI 🔨🤖🔧</span>
-      </div>
-    </footer>
   </div>
 
   <script>
     // ====== CONFIG ======
-    const TMDB_API_KEY = "f830dc2d840aa7b697cdfbdb0418d27e"; // <- replace
+    const TMDB_API_KEY = "YOUR_TMDB_API_KEY"; // <- replace
     const TMDB_BASE = "https://api.themoviedb.org/3";
     const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
+    const TMDB_BACKDROP = "https://image.tmdb.org/t/p/original";
 
-    // ====== STATE ======
-    let currentFilter = "popular";
-    let currentPage = 1;
-    let totalPages = 1;
-    let currentQuery = "";
+    const CATEGORIES = [
+      { key: "popular",     title: "Popular on Darkflix", path: "/movie/popular" },
+      { key: "top_rated",   title: "Top Rated",           path: "/movie/top_rated" },
+      { key: "now_playing", title: "Now Playing",         path: "/movie/now_playing" },
+      { key: "upcoming",    title: "Upcoming",            path: "/movie/upcoming" },
+    ];
 
-    const movieGridEl   = document.getElementById("movieGrid");
-    const statusEl      = document.getElementById("statusMessage");
-    const loadMoreBtn   = document.getElementById("loadMoreBtn");
-    const searchForm    = document.getElementById("searchForm");
-    const searchInput   = document.getElementById("searchInput");
-    const filterPills   = document.querySelectorAll(".filter-pill");
+    // ====== DOM ======
+    const rowsContainer  = document.getElementById("rowsContainer");
+    const statusEl       = document.getElementById("statusMessage");
+    const heroBackdropEl = document.getElementById("heroBackdrop");
+    const heroTitleEl    = document.getElementById("heroTitle");
+    const heroMetaEl     = document.getElementById("heroMeta");
+    const heroOverviewEl = document.getElementById("heroOverview");
+    const heroPlayBtn    = document.getElementById("heroPlayBtn");
+    const heroMoreBtn    = document.getElementById("heroMoreBtn");
+
+    const searchSection  = document.getElementById("searchSection");
+    const searchTitleEl  = document.getElementById("searchTitle");
+    const searchRowEl    = document.getElementById("searchRow");
+    const searchForm     = document.getElementById("searchForm");
+    const searchInput    = document.getElementById("searchInput");
+    const mobileSearchBtn = document.getElementById("mobileSearchBtn");
+
+    let currentHeroMovie = null;
+    let heroSet = false;
 
     // ====== UTILS ======
     async function fetchJson(url) {
@@ -201,73 +193,64 @@
       return res.json();
     }
 
-    function setStatus(message, show = true) {
-      statusEl.textContent = message;
+    function setStatus(msg, show = true) {
+      statusEl.textContent = msg;
       statusEl.classList.toggle("hidden", !show);
     }
 
-    function buildTMDBUrl({ type = "discover", page = 1, query = "", filter = "popular" }) {
-      const params = new URLSearchParams({ api_key: TMDB_API_KEY, page });
-      let path;
-
-      if (type === "search") {
-        path = "/search/movie";
-        params.set("query", query);
-      } else {
-        switch (filter) {
-          case "now_playing": path = "/movie/now_playing"; break;
-          case "top_rated":   path = "/movie/top_rated";   break;
-          case "upcoming":    path = "/movie/upcoming";    break;
-          case "popular":
-          default:            path = "/movie/popular";
-        }
-      }
-      return `${TMDB_BASE}${path}?${params.toString()}`;
+    function createRowElement(title, rowKey) {
+      const wrapper = document.createElement("section");
+      wrapper.className = "space-y-2";
+      wrapper.innerHTML = `
+        <h2 class="text-base md:text-lg font-semibold">${title}</h2>
+        <div id="row-${rowKey}"
+             class="row-scroll flex gap-2 overflow-x-auto pb-2">
+        </div>
+      `;
+      rowsContainer.appendChild(wrapper);
+      return document.getElementById(`row-${rowKey}`);
     }
 
-    // ====== RENDERING ======
-    function createMovieCard(movie) {
+    function createCard(movie) {
       const {
         id,
         title,
+        name,
         release_date,
+        first_air_date,
         vote_average,
         poster_path,
         backdrop_path,
       } = movie;
 
-      const year = release_date ? release_date.split("-")[0] : "—";
-      const rating = vote_average ? vote_average.toFixed(1) : "N/A";
-      const imgSrc = poster_path || backdrop_path
-        ? TMDB_IMG + (poster_path || backdrop_path)
-        : "https://via.placeholder.com/500x750/020617/475569?text=No+Image";
+      const displayTitle = title || name || "Untitled";
+      const date = release_date || first_air_date || "";
+      const year = date ? date.split("-")[0] : "";
+      const rating = vote_average ? vote_average.toFixed(1) : "";
+      const imgPath = backdrop_path || poster_path;
+      const imgSrc = imgPath
+        ? TMDB_IMG + imgPath
+        : "https://via.placeholder.com/500x281/000000/ffffff?text=No+Image";
 
       const card = document.createElement("article");
       card.className =
-        "group relative bg-slate-950/90 border border-slate-800/90 rounded-3xl overflow-hidden shadow-xl shadow-black/70 hover:-translate-y-1 hover:shadow-red-500/35 transition-transform duration-200 cursor-pointer";
+        "group relative flex-shrink-0 w-[45vw] sm:w-[180px] md:w-[210px] lg:w-[230px] cursor-pointer";
 
       card.innerHTML = `
-        <div class="relative overflow-hidden">
-          <img src="${imgSrc}" alt="${title}"
-               class="w-full h-56 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-300" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent opacity-80 group-hover:opacity-95 transition-opacity"></div>
+        <div class="relative rounded-md overflow-hidden bg-slate-900">
+          <img src="${imgSrc}" alt="${displayTitle}"
+               class="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-300" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-          <div class="absolute top-2 left-2 px-2.5 py-1 rounded-full text-[10px] bg-black/80 border border-white/10 flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
-            <span class="font-semibold">${rating}</span>
+          <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="flex items-center gap-1">
+              <span class="font-semibold line-clamp-1 max-w-[120px]">${displayTitle}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              ${rating ? `<span class="px-1.5 py-0.5 rounded bg-black/70 text-[9px]">★ ${rating}</span>` : ""}
+              ${year ? `<span class="text-slate-400">${year}</span>` : ""}
+            </div>
           </div>
-
-          <button
-            class="absolute inset-x-3 bottom-2.5 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-red-600/95 hover:bg-red-500 text-white shadow-lg shadow-red-500/50 group-hover:translate-y-0.5 transition-transform">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M6 4.5v11l8-5.5-8-5.5z" />
-            </svg>
-            Play
-          </button>
-        </div>
-        <div class="p-2.5">
-          <h3 class="text-sm font-semibold line-clamp-1">${title}</h3>
-          <p class="text-[11px] text-slate-400 mt-0.5">${year}</p>
         </div>
       `;
 
@@ -281,101 +264,135 @@
       return card;
     }
 
-    function renderMovies(movies, append = false) {
-      if (!append) movieGridEl.innerHTML = "";
+    function setHero(movie) {
+      currentHeroMovie = movie;
+      const {
+        title,
+        name,
+        overview,
+        backdrop_path,
+        poster_path,
+        release_date,
+        vote_average,
+      } = movie;
 
-      if (!movies || movies.length === 0) {
-        setStatus("No movies found. Try a different search.", true);
+      const displayTitle = title || name || "Untitled";
+      const imgPath = backdrop_path || poster_path;
+      const imgSrc = imgPath ? TMDB_BACKDROP + imgPath : null;
+      const year = release_date ? release_date.split("-")[0] : "";
+      const rating = vote_average ? vote_average.toFixed(1) : "";
+
+      if (imgSrc) {
+        heroBackdropEl.style.backgroundImage = `url(${imgSrc})`;
+      } else {
+        heroBackdropEl.style.backgroundImage = "none";
+        heroBackdropEl.style.backgroundColor = "#000";
+      }
+
+      heroTitleEl.textContent = displayTitle;
+      const metaParts = [];
+      if (year) metaParts.push(year);
+      if (rating) metaParts.push(`★ ${rating}`);
+      heroMetaEl.textContent = metaParts.join("  •  ");
+      heroOverviewEl.textContent = overview || "";
+
+      heroPlayBtn.onclick = () => {
+        if (!currentHeroMovie) return;
+        const url = new URL("watch.html", window.location.href);
+        url.searchParams.set("type", "movie");
+        url.searchParams.set("tmdbId", currentHeroMovie.id);
+        window.location.href = url.toString();
+      };
+      heroMoreBtn.onclick = heroPlayBtn.onclick;
+    }
+
+    // ====== LOAD CATEGORY ROWS ======
+    async function loadCategoryRow(category) {
+      const rowEl = createRowElement(category.title, category.key);
+      try {
+        const url = `${TMDB_BASE}${category.path}?api_key=${TMDB_API_KEY}&page=1`;
+        const data = await fetchJson(url);
+        const results = data.results || [];
+        if (!results.length) return;
+
+        if (!heroSet && category.key === "popular") {
+          setHero(results[0]);
+          heroSet = true;
+        }
+
+        results.forEach((m) => {
+          rowEl.appendChild(createCard(m));
+        });
+      } catch (err) {
+        console.error("Error loading category", category.key, err);
+      }
+    }
+
+    // ====== SEARCH ======
+    async function handleSearch(query) {
+      const trimmed = query.trim();
+      if (!trimmed) {
+        searchSection.classList.add("hidden");
+        searchRowEl.innerHTML = "";
         return;
       }
 
-      setStatus("", false);
-      movies.forEach((m) => movieGridEl.appendChild(createMovieCard(m)));
-    }
-
-    // ====== LOAD DATA ======
-    async function loadMovies({ reset = false } = {}) {
       try {
-        if (reset) {
-          currentPage = 1;
-          totalPages = 1;
-          movieGridEl.innerHTML = "";
-        }
-
-        setStatus("Loading movies...", true);
-
-        const type = currentQuery.trim() ? "search" : "discover";
-        const url = buildTMDBUrl({
-          type,
-          page: currentPage,
-          query: currentQuery.trim(),
-          filter: currentFilter,
+        setStatus("Searching...", true);
+        const params = new URLSearchParams({
+          api_key: TMDB_API_KEY,
+          query: trimmed,
+          page: "1",
         });
-
+        const url = `${TMDB_BASE}/search/movie?${params.toString()}`;
         const data = await fetchJson(url);
-        totalPages = data.total_pages || 1;
+        const results = data.results || [];
 
-        renderMovies(data.results || [], !reset && currentPage > 1);
-
-        if (currentPage < totalPages && totalPages > 1) {
-          loadMoreBtn.classList.remove("hidden");
-        } else {
-          loadMoreBtn.classList.add("hidden");
+        searchRowEl.innerHTML = "";
+        if (!results.length) {
+          searchTitleEl.textContent = `No results for "${trimmed}"`;
+          searchSection.classList.remove("hidden");
+          setStatus("", false);
+          return;
         }
 
-        if ((data.results || []).length === 0) {
-          setStatus("Nothing matched your search.", true);
-        }
+        searchTitleEl.textContent = `Search results for "${trimmed}"`;
+        results.forEach((m) => searchRowEl.appendChild(createCard(m)));
+        searchSection.classList.remove("hidden");
+        setStatus("", false);
       } catch (err) {
         console.error(err);
-        setStatus("Something went wrong while loading movies.", true);
-        loadMoreBtn.classList.add("hidden");
+        setStatus("Search failed. Please try again.", true);
       }
     }
 
     // ====== EVENTS ======
-    // Filter pills
-    filterPills.forEach((pill) => {
-      pill.addEventListener("click", () => {
-        filterPills.forEach((p) => {
-          p.className =
-            "filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90";
-        });
-        pill.className =
-          "filter-pill bg-red-500 text-white px-4 py-1.5 rounded-full shadow shadow-red-500/40";
-
-        currentFilter = pill.dataset.filter;
-        currentQuery = "";
-        searchInput.value = "";
-        loadMovies({ reset: true });
-      });
-    });
-
-    // Search submit
     searchForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      currentQuery = searchInput.value;
-      loadMovies({ reset: true });
+      handleSearch(searchInput.value);
     });
 
-    // Clear search when input emptied
     searchInput.addEventListener("input", () => {
-      if (searchInput.value.trim() === "" && currentQuery !== "") {
-        currentQuery = "";
-        loadMovies({ reset: true });
+      if (!searchInput.value.trim()) {
+        searchSection.classList.add("hidden");
+        searchRowEl.innerHTML = "";
       }
     });
 
-    // Load more
-    loadMoreBtn.addEventListener("click", () => {
-      if (currentPage < totalPages) {
-        currentPage += 1;
-        loadMovies({ reset: false });
+    mobileSearchBtn.addEventListener("click", () => {
+      const q = prompt("Search titles:");
+      if (q !== null) {
+        searchInput.value = q;
+        handleSearch(q);
       }
     });
 
-    // Init
-    loadMovies({ reset: true });
+    // ====== INIT ======
+    (async function init() {
+      setStatus("Loading titles...", true);
+      await Promise.all(CATEGORIES.map(loadCategoryRow));
+      setStatus("", false);
+    })();
   </script>
 </body>
 </html>
