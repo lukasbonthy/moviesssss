@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Watch • Dark Movie Hub</title>
+  <title>Dark Movie Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Tailwind -->
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -15,8 +15,8 @@
             sans: ["system-ui", "ui-sans-serif", "SF Pro Text", "Inter", "sans-serif"],
           },
           colors: {
-            bgDeep: "#020617",
-            primary: "#ef4444",
+            appBg: "#020617",
+            accent: "#ef4444",
           },
         },
       },
@@ -26,379 +26,356 @@
   <style>
     body {
       background:
-        radial-gradient(circle at top center, rgba(239, 68, 68, 0.22), transparent 60%),
-        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.9), #020617);
+        radial-gradient(circle at 0% 0%, rgba(248, 113, 113, 0.20), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.18), transparent 55%),
+        radial-gradient(circle at 50% 100%, rgba(34, 197, 94, 0.12), transparent 55%),
+        #020617;
     }
-    .backdrop-layer {
-      background-position: center;
-      background-size: cover;
-      filter: blur(32px);
-      opacity: 0.55;
-      transform: scale(1.12);
+    .noise {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      opacity: 0.18;
+      mix-blend-mode: soft-light;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
     }
   </style>
 </head>
-<body class="min-h-screen font-sans text-slate-100">
+<body class="min-h-screen font-sans text-slate-100 antialiased">
+  <!-- Noise overlay -->
+  <div class="noise -z-10"></div>
+
   <div class="min-h-screen flex flex-col">
     <!-- Navbar -->
-    <header class="fixed top-0 left-0 right-0 z-30 border-b border-slate-800/80 bg-black/80 backdrop-blur">
+    <header class="fixed top-0 left-0 right-0 z-30 border-b border-slate-800/70 bg-black/80 backdrop-blur-xl">
       <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <a href="index.html" class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-red-500 via-orange-400 to-amber-200 flex items-center justify-center text-xl font-black shadow-lg shadow-red-500/40">
             🎬
           </div>
           <div class="leading-tight">
-            <p class="text-sm font-semibold tracking-[0.18em] uppercase text-slate-400">
+            <p class="text-[11px] font-semibold tracking-[0.22em] uppercase text-slate-400">
               Dark Movie
             </p>
             <p class="text-lg font-semibold tracking-tight">Hub</p>
           </div>
         </a>
 
-        <div class="flex items-center gap-3">
-          <button
-            onclick="window.history.back()"
-            class="text-xs px-3 py-1.5 rounded-full border border-slate-700 bg-black/70 hover:bg-slate-900 transition">
-            ← Back
-          </button>
+        <div class="hidden md:flex items-center gap-3 text-[11px] text-slate-400">
+          <span class="uppercase tracking-[0.2em]">Home</span>
+          <span class="w-1 h-1 rounded-full bg-slate-500 inline-block"></span>
+          <span class="uppercase tracking-[0.2em]">Discover</span>
+          <span class="w-1 h-1 rounded-full bg-slate-500 inline-block"></span>
+          <span class="uppercase tracking-[0.2em]">Watch</span>
         </div>
       </nav>
     </header>
 
-    <!-- Main -->
-    <main class="flex-1 max-w-6xl mx-auto px-4 pt-24 pb-10">
-      <!-- Player Card -->
-      <section id="playerWrapper"
-               class="relative rounded-[32px] overflow-hidden border border-slate-800/70 bg-slate-950/70 shadow-[0_30px_70px_rgba(0,0,0,0.9)] mb-8">
-        <!-- Blurred backdrop -->
-        <div id="backdropLayer" class="backdrop-layer absolute inset-0"></div>
+    <!-- Main Content -->
+    <main class="flex-1 max-w-6xl mx-auto px-4 pt-24 pb-12">
+      <!-- Hero + Search -->
+      <section class="rounded-3xl border border-slate-800/60 bg-slate-900/60/80 shadow-[0_24px_80px_rgba(0,0,0,0.85)] mb-8 overflow-hidden">
+        <div class="grid md:grid-cols-[1.7fr,1.2fr] gap-6 md:gap-10 p-5 md:p-7 lg:p-8 relative">
+          <!-- Glow accents -->
+          <div class="absolute -top-32 -right-20 w-72 h-72 bg-red-500/20 blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-32 -left-20 w-72 h-72 bg-sky-500/20 blur-3xl pointer-events-none"></div>
 
-        <div class="relative z-10">
-          <!-- Top controls + meta -->
-          <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-4 pt-4 md:px-6">
-            <div>
-              <p id="movieTitle" class="text-xl md:text-2xl font-semibold tracking-tight"></p>
-              <p id="movieMeta" class="text-xs md:text-sm text-slate-300 mt-0.5"></p>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="flex items-center gap-1.5 text-xs text-slate-200 bg-black/60 border border-slate-700 px-2.5 py-1 rounded-full">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
-                <span class="font-semibold" id="movieRating">0.0</span>
-                <span class="text-[10px] text-slate-400">rating</span>
-              </div>
-              <!-- Language selector -->
-              <select id="langSelect"
-                      class="text-xs bg-black/60 border border-slate-700 rounded-full px-3 py-1 outline-none focus:ring-1 focus:ring-red-500">
-                <option value="">Default audio</option>
-                <option value="en">English</option>
-                <option value="es">Spanish</option>
-                <option value="de">German</option>
-                <option value="fr">French</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Big Player -->
-          <div class="mt-3 md:mt-4 px-2 md:px-4 pb-4">
-            <div class="relative bg-black border border-slate-800 rounded-[24px] overflow-hidden shadow-inner shadow-black/80">
-              <!-- Big: 21:9 on desktop -->
-              <div class="aspect-video md:aspect-[21/9] w-full">
-                <iframe
-                  id="moviePlayer"
-                  class="w-full h-full"
-                  src=""
-                  frameborder="0"
-                  allowfullscreen
-                  referrerpolicy="no-referrer">
-                </iframe>
-              </div>
-
-              <!-- Overlay info -->
-              <div class="pointer-events-none absolute top-3 right-3 flex gap-2">
-                <div class="pointer-events-auto flex items-center gap-1.5 bg-black/70 border border-slate-700 rounded-full px-2.5 py-1 text-[10px] text-slate-300">
-                  <span class="w-1.5 h-1.5 rounded-full bg-lime-400"></span>
-                  <span>Playing via external provider</span>
-                </div>
-              </div>
+          <div class="relative z-10 space-y-4">
+            <div class="inline-flex items-center gap-2 rounded-full border border-slate-700/80 bg-black/60 px-3 py-1 text-[11px] text-slate-300">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Live catalog from TMDB
             </div>
 
-            <p class="text-[11px] text-slate-400 mt-2 px-1">
-              Playback uses an external embed source, matched to the selected TMDB identifier.
+            <h1 class="text-3xl md:text-4xl lg:text-[2.6rem] font-semibold leading-tight tracking-tight">
+              Stream in style with a
+              <span class="bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-fuchsia-500 to-sky-400">
+                cinematic dark interface.
+              </span>
+            </h1>
+
+            <p class="text-sm md:text-[0.95rem] text-slate-300 max-w-xl">
+              Browse movies powered by TMDB, then jump into a sleek, immersive player view. No clutter, just pure focus on what you’re watching.
             </p>
+
+            <!-- Filters -->
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <button data-filter="popular"
+                      class="filter-pill bg-red-500 text-white px-4 py-1.5 rounded-full shadow shadow-red-500/40">
+                Popular
+              </button>
+              <button data-filter="now_playing"
+                      class="filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90">
+                Now Playing
+              </button>
+              <button data-filter="top_rated"
+                      class="filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90">
+                Top Rated
+              </button>
+              <button data-filter="upcoming"
+                      class="filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90">
+                Upcoming
+              </button>
+            </div>
+          </div>
+
+          <!-- Search card -->
+          <div class="relative z-10 flex items-center">
+            <div class="w-full rounded-3xl border border-slate-700/70 bg-slate-950/80 shadow-[0_20px_60px_rgba(0,0,0,0.8)] p-4 md:p-5 space-y-4">
+              <p class="text-xs font-medium text-slate-300 uppercase tracking-[0.18em]">
+                Search
+              </p>
+              <form id="searchForm" class="relative">
+                <input
+                  id="searchInput"
+                  type="text"
+                  placeholder="Search for a movie..."
+                  class="w-full bg-black/70 border border-slate-700/90 rounded-2xl px-4 py-2.5 pl-11 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder:text-slate-500 shadow-inner shadow-black/50"
+                />
+                <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" xmlns="http://www.w3.org/2000/svg"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+                </svg>
+              </form>
+              <p class="text-[11px] text-slate-400">
+                Hit <span class="px-1.5 py-0.5 rounded-md bg-slate-800/80 text-[10px] border border-slate-700">Enter</span>
+                to search TMDB’s movie database.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Info section -->
-      <section class="grid gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)]">
-        <!-- Overview, tagline, genres -->
-        <div class="space-y-4">
-          <div class="space-y-1.5 bg-slate-950/70 rounded-3xl border border-slate-800/80 px-4 py-4 shadow-lg shadow-black/60">
-            <p id="movieTagline" class="text-sm italic text-slate-300"></p>
-            <p id="movieOverview" class="text-xs md:text-sm text-slate-100/90 leading-relaxed"></p>
-          </div>
+      <!-- Status messages -->
+      <div id="statusMessage" class="mb-4 text-sm text-slate-400 hidden"></div>
 
-          <div class="bg-slate-950/70 rounded-3xl border border-slate-800/80 px-4 py-3 shadow-lg shadow-black/60">
-            <h3 class="text-xs font-semibold text-slate-300 tracking-[0.16em] uppercase mb-2">
-              Genres
-            </h3>
-            <div id="genresRow" class="flex flex-wrap gap-1.5 text-[11px]"></div>
-          </div>
+      <!-- Movies grid container -->
+      <section class="rounded-3xl border border-slate-800/70 bg-slate-950/70/90 shadow-[0_24px_80px_rgba(0,0,0,0.9)] p-3 md:p-4">
+        <div id="movieGrid"
+             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
+          <!-- Cards injected -->
         </div>
 
-        <!-- Cast + extra info -->
-        <aside class="space-y-4">
-          <div class="bg-slate-950/70 rounded-3xl border border-slate-800/80 px-4 py-3 shadow-lg shadow-black/60">
-            <h3 class="text-xs font-semibold text-slate-300 tracking-[0.16em] uppercase mb-2">
-              Top Cast
-            </h3>
-            <div id="castRow" class="flex flex-wrap gap-1.5 text-[11px]"></div>
-          </div>
-
-          <div class="bg-slate-950/70 rounded-3xl border border-slate-800/80 px-4 py-3 shadow-lg shadow-black/60">
-            <h3 class="text-xs font-semibold text-slate-300 tracking-[0.16em] uppercase mb-2">
-              Additional info
-            </h3>
-            <dl id="extraInfo" class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-300"></dl>
-          </div>
-        </aside>
+        <!-- Load more -->
+        <div class="mt-6 flex justify-center">
+          <button id="loadMoreBtn"
+                  class="hidden px-4 py-2 rounded-full text-sm bg-slate-900/90 border border-slate-700 text-slate-100 hover:bg-slate-800 transition shadow shadow-black/50">
+            Load more
+          </button>
+        </div>
       </section>
-
-      <!-- Status -->
-      <p id="statusText" class="mt-4 text-sm text-slate-400"></p>
     </main>
 
     <!-- Footer -->
     <footer class="border-t border-slate-800/80 bg-black/90 backdrop-blur">
-      <div class="max-w-6xl mx-auto px-4 py-4 text-xs text-slate-500 flex justify-between items-center">
-        <span>Immersive watching mode 🌒</span>
-        <span class="hidden sm:inline">TMDB for data • External embed for playback.</span>
+      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] md:text-xs text-slate-500 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+        <span>Built on TMDB data • Playback via external embed source.</span>
+        <span>You can switch to your official provider later without changing the UI 🔨🤖🔧</span>
       </div>
     </footer>
   </div>
 
   <script>
     // ====== CONFIG ======
-    const TMDB_API_KEY = "YOUR_TMDB_API_KEY"; // <- same key as index.html
+    const TMDB_API_KEY = "YOUR_TMDB_API_KEY"; // <- replace
     const TMDB_BASE = "https://api.themoviedb.org/3";
-    const TMDB_IMG = "https://image.tmdb.org/t/p/original";
+    const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
 
-    const statusText = document.getElementById("statusText");
-    const movieTitleEl = document.getElementById("movieTitle");
-    const movieMetaEl = document.getElementById("movieMeta");
-    const movieRatingEl = document.getElementById("movieRating");
-    const movieTaglineEl = document.getElementById("movieTagline");
-    const movieOverviewEl = document.getElementById("movieOverview");
-    const genresRow = document.getElementById("genresRow");
-    const castRow = document.getElementById("castRow");
-    const extraInfo = document.getElementById("extraInfo");
-    const moviePlayer = document.getElementById("moviePlayer");
-    const langSelect = document.getElementById("langSelect");
-    const backdropLayer = document.getElementById("backdropLayer");
+    // ====== STATE ======
+    let currentFilter = "popular";
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentQuery = "";
 
-    let tmdbId = null;
-    let type = "movie";      // "movie" | "tv"
-    let season = null;       // for episodes
-    let episode = null;      // for episodes
+    const movieGridEl   = document.getElementById("movieGrid");
+    const statusEl      = document.getElementById("statusMessage");
+    const loadMoreBtn   = document.getElementById("loadMoreBtn");
+    const searchForm    = document.getElementById("searchForm");
+    const searchInput   = document.getElementById("searchInput");
+    const filterPills   = document.querySelectorAll(".filter-pill");
 
-    function setStatus(msg) {
-      statusText.textContent = msg || "";
-    }
-
-    function parseQuery() {
-      const params = new URLSearchParams(window.location.search);
-      type = (params.get("type") || "movie").toLowerCase();
-      tmdbId = params.get("tmdbId");
-      season = params.get("season");
-      episode = params.get("episode");
-
-      if (!tmdbId) {
-        setStatus("No title was selected. Go back to the home page and pick one.");
-        return false;
-      }
-      return true;
-    }
-
+    // ====== UTILS ======
     async function fetchJson(url) {
       const res = await fetch(url);
       if (!res.ok) throw new Error("Network error");
       return res.json();
     }
 
-    async function loadDetails() {
-      if (!tmdbId) return;
+    function setStatus(message, show = true) {
+      statusEl.textContent = message;
+      statusEl.classList.toggle("hidden", !show);
+    }
 
-      try {
-        setStatus("Loading details...");
-        let url;
+    function buildTMDBUrl({ type = "discover", page = 1, query = "", filter = "popular" }) {
+      const params = new URLSearchParams({ api_key: TMDB_API_KEY, page });
+      let path;
 
-        if (type === "tv") {
-          // TV show details
-          url = `${TMDB_BASE}/tv/${tmdbId}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
-        } else {
-          // Movie details
-          url = `${TMDB_BASE}/movie/${tmdbId}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
+      if (type === "search") {
+        path = "/search/movie";
+        params.set("query", query);
+      } else {
+        switch (filter) {
+          case "now_playing": path = "/movie/now_playing"; break;
+          case "top_rated":   path = "/movie/top_rated";   break;
+          case "upcoming":    path = "/movie/upcoming";    break;
+          case "popular":
+          default:            path = "/movie/popular";
         }
+      }
+      return `${TMDB_BASE}${path}?${params.toString()}`;
+    }
+
+    // ====== RENDERING ======
+    function createMovieCard(movie) {
+      const {
+        id,
+        title,
+        release_date,
+        vote_average,
+        poster_path,
+        backdrop_path,
+      } = movie;
+
+      const year = release_date ? release_date.split("-")[0] : "—";
+      const rating = vote_average ? vote_average.toFixed(1) : "N/A";
+      const imgSrc = poster_path || backdrop_path
+        ? TMDB_IMG + (poster_path || backdrop_path)
+        : "https://via.placeholder.com/500x750/020617/475569?text=No+Image";
+
+      const card = document.createElement("article");
+      card.className =
+        "group relative bg-slate-950/90 border border-slate-800/90 rounded-3xl overflow-hidden shadow-xl shadow-black/70 hover:-translate-y-1 hover:shadow-red-500/35 transition-transform duration-200 cursor-pointer";
+
+      card.innerHTML = `
+        <div class="relative overflow-hidden">
+          <img src="${imgSrc}" alt="${title}"
+               class="w-full h-56 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-300" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent opacity-80 group-hover:opacity-95 transition-opacity"></div>
+
+          <div class="absolute top-2 left-2 px-2.5 py-1 rounded-full text-[10px] bg-black/80 border border-white/10 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+            <span class="font-semibold">${rating}</span>
+          </div>
+
+          <button
+            class="absolute inset-x-3 bottom-2.5 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-red-600/95 hover:bg-red-500 text-white shadow-lg shadow-red-500/50 group-hover:translate-y-0.5 transition-transform">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M6 4.5v11l8-5.5-8-5.5z" />
+            </svg>
+            Play
+          </button>
+        </div>
+        <div class="p-2.5">
+          <h3 class="text-sm font-semibold line-clamp-1">${title}</h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">${year}</p>
+        </div>
+      `;
+
+      card.addEventListener("click", () => {
+        const url = new URL("watch.html", window.location.href);
+        url.searchParams.set("type", "movie");
+        url.searchParams.set("tmdbId", id);
+        window.location.href = url.toString();
+      });
+
+      return card;
+    }
+
+    function renderMovies(movies, append = false) {
+      if (!append) movieGridEl.innerHTML = "";
+
+      if (!movies || movies.length === 0) {
+        setStatus("No movies found. Try a different search.", true);
+        return;
+      }
+
+      setStatus("", false);
+      movies.forEach((m) => movieGridEl.appendChild(createMovieCard(m)));
+    }
+
+    // ====== LOAD DATA ======
+    async function loadMovies({ reset = false } = {}) {
+      try {
+        if (reset) {
+          currentPage = 1;
+          totalPages = 1;
+          movieGridEl.innerHTML = "";
+        }
+
+        setStatus("Loading movies...", true);
+
+        const type = currentQuery.trim() ? "search" : "discover";
+        const url = buildTMDBUrl({
+          type,
+          page: currentPage,
+          query: currentQuery.trim(),
+          filter: currentFilter,
+        });
 
         const data = await fetchJson(url);
-        renderDetails(data);
-        updatePlayerSrc();
-        setStatus("");
+        totalPages = data.total_pages || 1;
+
+        renderMovies(data.results || [], !reset && currentPage > 1);
+
+        if (currentPage < totalPages && totalPages > 1) {
+          loadMoreBtn.classList.remove("hidden");
+        } else {
+          loadMoreBtn.classList.add("hidden");
+        }
+
+        if ((data.results || []).length === 0) {
+          setStatus("Nothing matched your search.", true);
+        }
       } catch (err) {
         console.error(err);
-        setStatus("Failed to load details for this title.");
+        setStatus("Something went wrong while loading movies.", true);
+        loadMoreBtn.classList.add("hidden");
       }
     }
 
-    function renderDetails(data) {
-      const isTv = type === "tv";
-
-      const title = isTv ? data.name : data.title;
-      const date = isTv ? data.first_air_date : data.release_date;
-      const runtime = isTv
-        ? (Array.isArray(data.episode_run_time) && data.episode_run_time.length
-            ? data.episode_run_time[0]
-            : null)
-        : data.runtime;
-
-      const vote_average = data.vote_average;
-      const overview = data.overview;
-      const tagline = data.tagline;
-      const genres = data.genres || [];
-      const credits = data.credits || {};
-      const status = data.status;
-      const original_language = data.original_language;
-      const budget = !isTv ? data.budget : null;
-      const revenue = !isTv ? data.revenue : null;
-      const backdrop_path = data.backdrop_path;
-
-      movieTitleEl.textContent = title || "Untitled";
-
-      const year = date ? date.split("-")[0] : "—";
-      const runtimeText = runtime ? `${runtime} min` : "—";
-      const ratingText = vote_average ? vote_average.toFixed(1) : "N/A";
-
-      const metaBits = [year];
-      if (runtimeText !== "—") metaBits.push(runtimeText);
-      if (isTv && data.number_of_seasons) {
-        metaBits.push(`${data.number_of_seasons} season${data.number_of_seasons > 1 ? "s" : ""}`);
-      }
-      if (season && episode) {
-        metaBits.push(`S${season} • E${episode}`);
-      }
-
-      movieMetaEl.textContent = metaBits.filter(Boolean).join(" • ");
-      movieRatingEl.textContent = ratingText;
-      movieTaglineEl.textContent = tagline || "";
-      movieOverviewEl.textContent = overview || "No overview available.";
-
-      // Backdrop
-      if (backdrop_path) {
-        backdropLayer.style.backgroundImage = `url(${TMDB_IMG + backdrop_path})`;
-      }
-
-      // Genres
-      genresRow.innerHTML = "";
-      genres.forEach((g) => {
-        const span = document.createElement("span");
-        span.className =
-          "px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-700 text-[11px] uppercase tracking-wide text-slate-100";
-        span.textContent = g.name;
-        genresRow.appendChild(span);
-      });
-
-      // Cast
-      castRow.innerHTML = "";
-      const cast = (credits.cast || []).slice(0, 10);
-      cast.forEach((c) => {
-        const pill = document.createElement("span");
+    // ====== EVENTS ======
+    // Filter pills
+    filterPills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        filterPills.forEach((p) => {
+          p.className =
+            "filter-pill bg-slate-900/80 px-4 py-1.5 rounded-full text-slate-100 border border-slate-700/90";
+        });
         pill.className =
-          "px-2.5 py-1 rounded-full bg-black/70 border border-slate-700 text-[11px] text-slate-100";
-        pill.textContent = c.name;
-        castRow.appendChild(pill);
+          "filter-pill bg-red-500 text-white px-4 py-1.5 rounded-full shadow shadow-red-500/40";
+
+        currentFilter = pill.dataset.filter;
+        currentQuery = "";
+        searchInput.value = "";
+        loadMovies({ reset: true });
       });
+    });
 
-      // Extra info
-      extraInfo.innerHTML = "";
-      const infoEntries = [
-        ["Type", isTv ? "TV Show" : "Movie"],
-        ["Status", status || "—"],
-        ["Original language", (original_language || "").toUpperCase() || "—"],
-      ];
+    // Search submit
+    searchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      currentQuery = searchInput.value;
+      loadMovies({ reset: true });
+    });
 
-      if (!isTv) {
-        infoEntries.push(
-          ["Budget", budget ? `$${budget.toLocaleString()}` : "—"],
-          ["Revenue", revenue ? `$${revenue.toLocaleString()}` : "—"]
-        );
-      } else {
-        if (data.number_of_episodes) {
-          infoEntries.push(["Episodes", `${data.number_of_episodes}`]);
-        }
+    // Clear search when input emptied
+    searchInput.addEventListener("input", () => {
+      if (searchInput.value.trim() === "" && currentQuery !== "") {
+        currentQuery = "";
+        loadMovies({ reset: true });
       }
+    });
 
-      infoEntries.forEach(([label, value]) => {
-        const dt = document.createElement("dt");
-        const dd = document.createElement("dd");
-        dt.textContent = label;
-        dd.textContent = value;
-        dt.className = "text-slate-400";
-        dd.className = "text-slate-100";
-        extraInfo.appendChild(dt);
-        extraInfo.appendChild(dd);
-      });
-    }
-
-    function buildEmbedUrl() {
-      let base;
-      const params = new URLSearchParams();
-      const isTv = type === "tv";
-
-      if (isTv) {
-        base = "https://vidsrc-embed.ru/embed/tv";
-        params.set("tmdb", tmdbId);
-
-        // If season + episode provided -> show specific episode
-        if (season && episode) {
-          params.set("season", season);
-          params.set("episode", episode);
-          params.set("autonext", "1");
-        }
-      } else {
-        base = "https://vidsrc-embed.ru/embed/movie";
-        params.set("tmdb", tmdbId);
-        params.set("autoplay", "1");
+    // Load more
+    loadMoreBtn.addEventListener("click", () => {
+      if (currentPage < totalPages) {
+        currentPage += 1;
+        loadMovies({ reset: false });
       }
-
-      const lang = langSelect.value;
-      if (lang) {
-        params.set("ds_lang", lang);
-      }
-
-      // Always autoplay for movies; for tv episodes, provider defaults apply
-      if (!isTv) {
-        params.set("autoplay", "1");
-      } else if (season && episode) {
-        params.set("autoplay", "1");
-      }
-
-      return `${base}?${params.toString()}`;
-    }
-
-    function updatePlayerSrc() {
-      if (!tmdbId) return;
-      moviePlayer.src = buildEmbedUrl();
-    }
-
-    // Language change -> update embed with ds_lang
-    langSelect.addEventListener("change", () => {
-      updatePlayerSrc();
     });
 
     // Init
-    if (parseQuery()) {
-      loadDetails();
-    }
+    loadMovies({ reset: true });
   </script>
 </body>
 </html>
