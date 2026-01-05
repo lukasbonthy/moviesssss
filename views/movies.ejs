@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Darkflix • Movies</title>
+  <title>CineWave+ • Movies</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Tailwind CDN -->
@@ -15,11 +15,11 @@
             sans: ["system-ui", "SF Pro Text", "Inter", "sans-serif"],
           },
           colors: {
-            dpBg: "#040714",
-            dpCard: "#0b1120",
-            dpCardSoft: "#111827",
-            dpAccent: "#00b0ff",
-            dpAccentSoft: "#60a5fa",
+            cwBg: "#040714",
+            cwNav: "#040714",
+            cwCard: "#0b1120",
+            cwAccent: "#00b0ff",
+            cwAccentSoft: "#38bdf8",
           },
           borderRadius: {
             "2xl-plus": "1.25rem",
@@ -29,9 +29,19 @@
               "0%": { opacity: 0, transform: "translateY(12px)" },
               "100%": { opacity: 1, transform: "translateY(0)" },
             },
+            "loader-spin": {
+              "0%": { transform: "rotate(0deg)" },
+              "100%": { transform: "rotate(360deg)" },
+            },
+            "loader-pulse": {
+              "0%,100%": { opacity: 0.4 },
+              "50%": { opacity: 1 },
+            },
           },
           animation: {
-            "fade-up": "fade-up 0.5s ease-out forwards",
+            "fade-up": "fade-up 0.45s ease-out forwards",
+            "loader-spin": "loader-spin 1.1s linear infinite",
+            "loader-pulse": "loader-pulse 2s ease-in-out infinite",
           },
         },
       },
@@ -41,8 +51,8 @@
   <style>
     body {
       background:
-        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.45), transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(0, 184, 255, 0.5), transparent 60%),
+        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.50), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(0, 184, 255, 0.45), transparent 60%),
         #040714;
     }
     .row-scroll {
@@ -61,23 +71,44 @@
     }
   </style>
 </head>
-<body class="min-h-screen font-sans text-white antialiased bg-dpBg">
+<body class="min-h-screen font-sans text-white antialiased bg-cwBg">
   <div class="noise-layer -z-10"></div>
+
+  <!-- LOADING OVERLAY -->
+  <div id="appLoader"
+       class="fixed inset-0 z-40 flex flex-col items-center justify-center bg-cwBg transition-opacity duration-500">
+    <div class="relative mb-6">
+      <!-- glow circle -->
+      <div class="w-32 h-32 rounded-full bg-gradient-to-br from-cwAccent/35 via-transparent to-cwAccentSoft/40 blur-3xl opacity-80"></div>
+      <!-- spinner -->
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="w-16 h-16 rounded-full border-[3px] border-slate-700 border-t-cwAccent animate-loader-spin"></div>
+      </div>
+    </div>
+    <div class="flex flex-col items-center gap-1 animate-loader-pulse">
+      <div class="text-2xl font-semibold tracking-tight">
+        CineWave<span class="text-cwAccent align-super text-sm">+</span>
+      </div>
+      <p class="text-xs text-slate-300 uppercase tracking-[0.25em]">
+        Loading experience
+      </p>
+    </div>
+  </div>
 
   <div class="min-h-screen flex flex-col">
     <!-- NAVBAR -->
-    <header class="fixed top-0 left-0 right-0 z-30 bg-[#040714]/90 backdrop-blur border-b border-white/5">
+    <header class="fixed top-0 left-0 right-0 z-30 bg-cwNav/95 backdrop-blur border-b border-white/5">
       <nav class="max-w-6xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
         <div class="flex items-center gap-7">
-          <!-- Disney+ style text logo -->
-          <a href="/movies" class="flex items-center relative">
+          <!-- Brand (Disney+-ish but unique) -->
+          <a href="/movies" class="flex items-center relative group">
             <span class="text-2xl md:text-[26px] font-semibold tracking-tight text-white select-none">
-              Darkflix<span class="text-[#00b0ff] align-super text-sm">+</span>
+              CineWave<span class="text-cwAccent align-super text-sm">+</span>
             </span>
-            <!-- subtle arc under logo -->
-            <span class="pointer-events-none absolute -bottom-1 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-[#00b0ff]/60 to-transparent rounded-full opacity-60"></span>
+            <span class="pointer-events-none absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cwAccent/70 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
           </a>
 
+          <!-- Nav links -->
           <ul class="hidden md:flex items-center gap-6 text-[13px]">
             <li>
               <span class="font-semibold text-white">Home</span>
@@ -179,8 +210,8 @@
         <div class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 h-full flex items-end pb-10 md:pb-14">
           <div class="max-w-xl">
             <p class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-slate-200 mb-2">
-              <span class="inline-flex h-[2px] w-6 rounded-full bg-[#00b0ff]"></span>
-              Original
+              <span class="inline-flex h-[2px] w-6 rounded-full bg-cwAccent"></span>
+              Featured
             </p>
 
             <h1 id="heroTitle" class="text-3xl md:text-5xl font-bold mb-2">
@@ -279,9 +310,11 @@
     const searchInput     = document.getElementById("searchInput");
     const mobileSearchBtn = document.getElementById("mobileSearchBtn");
     const clearSearchBtn  = document.getElementById("clearSearchBtn");
+    const appLoader       = document.getElementById("appLoader");
 
     let currentHeroMovie = null;
     let heroSet = false;
+    let firstRowLoaded = false;
 
     // ===== HELPERS =====
     function escapeHtml(str) {
@@ -303,6 +336,15 @@
       const res = await fetch(url);
       if (!res.ok) throw new Error("Network error");
       return res.json();
+    }
+
+    function hideLoaderOnceReady() {
+      if (firstRowLoaded && appLoader) {
+        appLoader.classList.add("opacity-0", "pointer-events-none");
+        setTimeout(() => {
+          appLoader.style.display = "none";
+        }, 500);
+      }
     }
 
     // ===== ROWS =====
@@ -340,7 +382,7 @@
         "group relative flex-shrink-0 w-[70vw] sm:w-[220px] md:w-[260px] lg:w-[280px] cursor-pointer";
 
       card.innerHTML = `
-        <div class="relative rounded-xl overflow-hidden bg-dpCard border border-transparent hover:border-[#00b0ff]/60 transition-colors duration-200">
+        <div class="relative rounded-xl overflow-hidden bg-cwCard border border-transparent hover:border-cwAccent/60 transition-colors duration-200">
           <img src="${imgSrc}" alt="${escapeHtml(title)}"
                class="w-full aspect-[16/9] object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -423,6 +465,11 @@
         }
 
         results.forEach((m) => rowEl.appendChild(createCard(m)));
+
+        if (!firstRowLoaded) {
+          firstRowLoaded = true;
+          hideLoaderOnceReady();
+        }
       } catch (err) {
         console.error("Error loading category", category.key, err);
       }
@@ -522,9 +569,11 @@
         await Promise.all(CATEGORIES.map(loadCategoryRow));
         observeRows();
         setStatus("", false);
+        hideLoaderOnceReady();
       } catch (err) {
         console.error(err);
         setStatus("Failed to load movies.", true);
+        hideLoaderOnceReady();
       }
     })();
   </script>
