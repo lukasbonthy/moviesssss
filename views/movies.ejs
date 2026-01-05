@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Darkflix</title>
+  <title>Darkflix • Movies</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -17,18 +16,11 @@
           colors: {
             dfBg: "#020617",
             dfBgSoft: "#050816",
-            dfSurface: "#0b1020",
-            dfSurfaceSoft: "#0f172a",
-            dfAccent: "#e11d48",   // main accent (rose/red)
-            dfAccent2: "#6366f1",  // indigo
-            dfAccent3: "#22c55e",  // green accent
+            dfAccent: "#e11d48",
+            dfAccent2: "#6366f1",
           },
           borderRadius: {
             "2xl-plus": "1.25rem",
-          },
-          boxShadow: {
-            "df-soft": "0 18px 40px rgba(0,0,0,0.7)",
-            "df-hero": "0 40px 120px rgba(0,0,0,0.9)",
           },
           keyframes: {
             "fade-up": {
@@ -43,16 +35,11 @@
               "0%": { backdropFilter: "blur(0px)" },
               "100%": { backdropFilter: "blur(18px)" },
             },
-            "pulse-soft": {
-              "0%,100%": { opacity: 0.65 },
-              "50%": { opacity: 1 },
-            },
           },
           animation: {
             "fade-up": "fade-up 0.5s ease-out forwards",
             "hero-glow": "hero-glow 4s ease-in-out infinite",
             "nav-blur": "nav-blur 0.3s ease-out forwards",
-            "pulse-soft": "pulse-soft 2.5s ease-in-out infinite",
           },
         },
       },
@@ -64,7 +51,6 @@
       background:
         radial-gradient(circle at 0% 0%, rgba(248, 113, 113, 0.16), transparent 60%),
         radial-gradient(circle at 100% 0%, rgba(129, 140, 248, 0.18), transparent 55%),
-        radial-gradient(circle at 0% 100%, rgba(45, 212, 191, 0.16), transparent 55%),
         #020617;
     }
     .row-scroll {
@@ -84,7 +70,6 @@
   </style>
 </head>
 <body class="min-h-screen font-sans text-white antialiased bg-dfBg">
-  <!-- Global noise overlay -->
   <div class="noise-layer -z-10"></div>
 
   <div class="min-h-screen flex flex-col">
@@ -92,31 +77,26 @@
     <header id="mainNav"
             class="fixed top-0 left-0 right-0 z-30 transition-all duration-300 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
       <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <!-- Left: Logo + primary nav -->
         <div class="flex items-center gap-6">
           <a href="/movies" class="flex items-center">
             <span class="text-2xl md:text-3xl font-black tracking-tight text-white select-none">
               <span class="text-dfAccent">DARK</span>FLIX
             </span>
           </a>
-
           <ul class="hidden md:flex items-center gap-5 text-sm">
+            <li><span class="font-semibold">Home</span></li>
             <li>
-              <span class="font-semibold text-white">Home</span>
+              <a href="/tv" class="text-slate-300 hover:text-slate-100">TV Shows</a>
             </li>
-            <li class="text-slate-300 hover:text-slate-100 cursor-pointer transition-colors">
-              TV Shows
-            </li>
-            <li class="text-slate-300 hover:text-slate-100 cursor-pointer transition-colors">
+            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">
               Movies
             </li>
-            <li class="text-slate-300 hover:text-slate-100 cursor-pointer transition-colors">
+            <li class="text-slate-300 hover:text-slate-100 cursor-pointer">
               My List
             </li>
           </ul>
         </div>
 
-        <!-- Right: Search + profile -->
         <div class="flex items-center gap-4">
           <!-- Search -->
           <form id="searchForm"
@@ -129,12 +109,10 @@
             <input
               id="searchInput"
               type="text"
-              placeholder="Search titles..."
+              placeholder="Search movies..."
               class="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-400 px-2 w-40"
             />
           </form>
-
-          <!-- Mobile search icon -->
           <button id="mobileSearchBtn" class="sm:hidden text-slate-100">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
@@ -143,7 +121,7 @@
             </svg>
           </button>
 
-          <!-- Profile dropdown -->
+          <!-- Profile -->
           <div class="flex items-center gap-3">
             <% if (currentUser) { %>
               <div class="relative group">
@@ -158,13 +136,12 @@
                           d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-
                 <div class="absolute right-0 mt-1 w-44 bg-[#050816]/98 border border-white/10 rounded-2xl shadow-xl shadow-black/80 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all origin-top-right backdrop-blur">
                   <a href="/profile" class="block px-3 py-2 hover:bg-white/10 rounded-t-2xl">
                     Account
                   </a>
-                  <a href="/movies" class="block px-3 py-2 hover:bg-white/10">
-                    Home
+                  <a href="/tv" class="block px-3 py-2 hover:bg-white/10">
+                    TV Shows
                   </a>
                   <form action="/logout" method="POST" class="border-t border-white/10 mt-1">
                     <button
@@ -186,43 +163,28 @@
       </nav>
     </header>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN -->
     <main class="flex-1">
-      <!-- HERO SECTION -->
+      <!-- HERO -->
       <section id="heroSection" class="relative h-[70vh] min-h-[430px] max-h-[780px] overflow-hidden">
-        <!-- Backdrop -->
         <div id="heroBackdrop"
              class="absolute inset-0 bg-cover bg-center scale-115 transition-transform duration-[1600ms] ease-out blur-[1px]"></div>
-
-        <!-- Dark overlays -->
         <div class="absolute inset-0 bg-gradient-to-b from-black via-dfBg/55 to-dfBg"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
 
-        <!-- Floating gradient orbs -->
-        <div class="pointer-events-none">
-          <div class="absolute -left-24 top-16 w-72 h-72 bg-dfAccent/30 rounded-full blur-3xl opacity-40"></div>
-          <div class="absolute right-0 -bottom-16 w-72 h-72 bg-dfAccent2/25 rounded-full blur-3xl opacity-40"></div>
-        </div>
-
-        <!-- Hero content -->
         <div class="relative z-10 max-w-6xl mx-auto h-full px-4 flex items-end pb-16 md:pb-24">
           <div class="max-w-xl animate-fade-up">
             <p class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-rose-300 mb-3">
               <span class="inline-flex h-1.5 w-6 rounded-full bg-gradient-to-r from-dfAccent to-dfAccent2 animate-hero-glow"></span>
               Featured on Darkflix
             </p>
-
             <h1 id="heroTitle" class="text-3xl md:text-5xl lg:text-6xl font-black drop-shadow-2xl mb-3">
               Featured Title
             </h1>
-
             <p id="heroMeta" class="text-xs md:text-sm text-slate-200 mb-2"></p>
-
             <p id="heroOverview"
-               class="hidden sm:block text-sm md:text-[0.95rem] text-slate-200/90 mb-5 line-clamp-3">
-            </p>
+               class="hidden sm:block text-sm md:text-[0.95rem] text-slate-200/90 mb-5 line-clamp-3"></p>
 
-            <!-- Hero action buttons -->
             <div class="flex flex-wrap items-center gap-3">
               <button id="heroPlayBtn"
                       class="flex items-center gap-2 bg-white text-black font-semibold text-sm md:text-base px-5 py-2.5 rounded-full hover:bg-slate-200 shadow-md shadow-black/50">
@@ -231,7 +193,6 @@
                 </svg>
                 Play
               </button>
-
               <button id="heroMoreBtn"
                       class="flex items-center gap-2 bg-white/10 text-white font-semibold text-xs md:text-sm px-4 py-2.5 rounded-full hover:bg-white/20 border border-white/20 backdrop-blur">
                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
@@ -241,70 +202,15 @@
                 </svg>
                 More Info
               </button>
-
-              <span class="inline-flex items-center gap-1 text-[11px] text-slate-200 bg-black/40 rounded-full px-3 py-1 border border-white/10">
-                <span class="w-1.5 h-1.5 rounded-full bg-dfAccent3 animate-pulse-soft"></span>
-                Live sync ready
-              </span>
-            </div>
-
-            <!-- Hero meta pills -->
-            <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-slate-200">
-              <span class="px-2 py-1 rounded-full bg-white/10 border border-white/10 backdrop-blur">
-                HD
-              </span>
-              <span class="px-2 py-1 rounded-full bg-white/10 border border-white/10 backdrop-blur">
-                Multi-language
-              </span>
-              <span class="px-2 py-1 rounded-full bg-white/10 border border-white/10 backdrop-blur">
-                Party mode
-              </span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- CONTENT AREA -->
+      <!-- CONTENT -->
       <section class="bg-gradient-to-b from-dfBg via-[#020617] to-black pt-6 pb-16">
         <div class="max-w-6xl mx-auto px-4">
-          <!-- Quick filters row -->
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex flex-wrap items-center gap-2 text-[11px] md:text-xs">
-              <button
-                data-row-target="trending"
-                class="quick-filter inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 border border-white/15 hover:bg-white/20 text-slate-100">
-                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                Trending
-              </button>
-              <button
-                data-row-target="popular"
-                class="quick-filter inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-slate-200">
-                Popular
-              </button>
-              <button
-                data-row-target="top_rated"
-                class="quick-filter inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-slate-200">
-                Top Rated
-              </button>
-              <button
-                data-row-target="now_playing"
-                class="quick-filter hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-slate-200">
-                Now Playing
-              </button>
-              <button
-                data-row-target="upcoming"
-                class="quick-filter hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-slate-200">
-                Coming Soon
-              </button>
-            </div>
-
-            <p class="hidden md:flex items-center gap-1 text-[11px] text-slate-400">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              Auto-refreshed from TMDB
-            </p>
-          </div>
-
-          <!-- Search Results Row -->
+          <!-- Search Row -->
           <div id="searchSection" class="hidden mb-8">
             <div class="flex items-center justify-between mb-2">
               <div class="flex flex-col gap-0.5">
@@ -322,44 +228,31 @@
               </button>
             </div>
             <div id="searchRow" class="row-scroll flex gap-3 overflow-x-auto pb-2">
-              <!-- search cards -->
             </div>
           </div>
 
-          <!-- Status message -->
           <p id="statusMessage" class="text-sm text-slate-300 mb-3 hidden"></p>
 
-          <!-- Dynamic rows -->
-          <div id="rowsContainer" class="space-y-8">
-            <!-- "Continue watching" row will be injected here -->
-          </div>
+          <div id="rowsContainer" class="space-y-8"></div>
         </div>
       </section>
     </main>
   </div>
 
   <script>
-    // =========================
-    // CONFIG & CONSTANTS
-    // =========================
     const TMDB_API_KEY = "<%= tmdbApiKey %>";
     const TMDB_BASE = "https://api.themoviedb.org/3";
     const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
     const TMDB_BACKDROP = "https://image.tmdb.org/t/p/original";
 
-    const RECENT_STORAGE_KEY = "darkflix_recent";
-
     const CATEGORIES = [
-      { key: "trending",    title: "Trending Now",         path: "/trending/movie/week" },
-      { key: "popular",     title: "Popular on Darkflix",  path: "/movie/popular" },
-      { key: "top_rated",   title: "Top Rated",            path: "/movie/top_rated" },
-      { key: "now_playing", title: "Now Playing",          path: "/movie/now_playing" },
-      { key: "upcoming",    title: "Coming Soon",          path: "/movie/upcoming" }
+      { key: "trending",    title: "Trending Now",        path: "/trending/movie/week" },
+      { key: "popular",     title: "Popular on Darkflix", path: "/movie/popular" },
+      { key: "top_rated",   title: "Top Rated",           path: "/movie/top_rated" },
+      { key: "now_playing", title: "Now Playing",         path: "/movie/now_playing" },
+      { key: "upcoming",    title: "Coming Soon",         path: "/movie/upcoming" },
     ];
 
-    // =========================
-    // DOM REFERENCES
-    // =========================
     const rowsContainer   = document.getElementById("rowsContainer");
     const statusEl        = document.getElementById("statusMessage");
     const heroBackdropEl  = document.getElementById("heroBackdrop");
@@ -380,33 +273,18 @@
     let currentHeroMovie = null;
     let heroSet = false;
 
-    // =========================
-    // UTILITIES
-    // =========================
+    function setStatus(msg, show = true) {
+      statusEl.textContent = msg;
+      statusEl.classList.toggle("hidden", !show);
+    }
+
     async function fetchJson(url) {
       const res = await fetch(url);
       if (!res.ok) throw new Error("Network error");
       return res.json();
     }
 
-    function setStatus(msg, show = true) {
-      statusEl.textContent = msg;
-      statusEl.classList.toggle("hidden", !show);
-    }
-
-    function escapeHtml(str) {
-      if (!str) return "";
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    // =========================
-    // NAVBAR SCROLL EFFECT
-    // =========================
+    // Nav scroll effect
     window.addEventListener("scroll", () => {
       if (window.scrollY > 40) {
         mainNav.classList.add(
@@ -427,110 +305,37 @@
       }
     });
 
-    // =========================
-    // ROW CREATION / RENDERING
-    // =========================
-    function createRowElement(title, rowKey, description) {
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function createRowElement(title, key) {
       const wrapper = document.createElement("section");
       wrapper.className = "space-y-2 js-row opacity-0 translate-y-3 transition-all duration-500";
-
-      const headingHtml =
-        '<div class="flex items-center justify-between">' +
-          '<div class="flex flex-col gap-0.5">' +
-            '<h2 class="text-base md:text-lg font-semibold">' + escapeHtml(title) + '</h2>';
-
-      const descHtml = description
-        ? '<p class="text-[11px] text-slate-400">' + escapeHtml(description) + "</p>"
-        : "";
-
-      const headingClose =
-          '</div>' +
-          '<button type="button" class="hidden sm:inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-slate-100">' +
-            '<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>' +
-            'Explore all' +
-          "</button>" +
-        "</div>";
-
-      wrapper.innerHTML =
-        headingHtml + descHtml + headingClose +
-        '<div id="row-' + rowKey + '" class="row-scroll flex gap-3 overflow-x-auto pb-2"></div>';
-
+      wrapper.innerHTML = `
+        <div class="flex items-center justify-between">
+          <h2 class="text-base md:text-lg font-semibold">${escapeHtml(title)}</h2>
+        </div>
+        <div id="row-${key}" class="row-scroll flex gap-3 overflow-x-auto pb-2"></div>
+      `;
       rowsContainer.appendChild(wrapper);
-      return document.getElementById("row-" + rowKey);
+      return document.getElementById(`row-${key}`);
     }
 
-    // =========================
-    // RECENT / CONTINUE WATCHING
-    // =========================
-    function loadRecentMoviesFromStorage() {
-      try {
-        const raw = window.localStorage.getItem(RECENT_STORAGE_KEY);
-        if (!raw) return [];
-        const arr = JSON.parse(raw);
-        if (!Array.isArray(arr)) return [];
-        return arr;
-      } catch (err) {
-        console.error("Error reading recent movies", err);
-        return [];
-      }
-    }
-
-    function saveRecentMoviesToStorage(list) {
-      try {
-        const trimmed = Array.isArray(list) ? list.slice(0, 12) : [];
-        window.localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(trimmed));
-      } catch (err) {
-        console.error("Error saving recent movies", err);
-      }
-    }
-
-    function saveRecentMovie(movie) {
-      if (!movie || !movie.id) return;
-      const recent = loadRecentMoviesFromStorage();
-      const filtered = recent.filter((m) => m && m.id !== movie.id);
-      filtered.unshift({
-        id: movie.id,
-        title: movie.title || movie.name || "",
-        name: movie.name || "",
-        release_date: movie.release_date || "",
-        first_air_date: movie.first_air_date || "",
-        vote_average: movie.vote_average || 0,
-        poster_path: movie.poster_path || movie.backdrop_path || "",
-        backdrop_path: movie.backdrop_path || "",
-      });
-      saveRecentMoviesToStorage(filtered);
-    }
-
-    function renderContinueWatchingRow() {
-      const recent = loadRecentMoviesFromStorage();
-      if (!recent || !recent.length) return;
-
-      const rowEl = createRowElement(
-        "Continue Watching",
-        "continue",
-        "Pick up where you left off."
-      );
-
-      // Show up to 10 recent items
-      recent.slice(0, 10).forEach(function (m) {
-        rowEl.appendChild(createCard(m, true));
-      });
-    }
-
-    // =========================
-    // CARD CREATION
-    // =========================
-    function createCard(movie, fromRecent) {
+    function createCard(movie) {
       const id = movie.id;
       const title = movie.title || movie.name || "Untitled";
       const date = movie.release_date || movie.first_air_date || "";
       const year = date ? date.split("-")[0] : "";
-      const vote_average = movie.vote_average || 0;
-      const rating = vote_average ? vote_average.toFixed(1) : "";
-      const poster_path = movie.poster_path || movie.backdrop_path || "";
-      const backdrop_path = movie.backdrop_path || movie.poster_path || "";
-      const imgPath = poster_path || backdrop_path;
-
+      const vote = movie.vote_average || 0;
+      const rating = vote ? vote.toFixed(1) : "";
+      const imgPath = movie.poster_path || movie.backdrop_path;
       const imgSrc = imgPath
         ? TMDB_IMG + imgPath
         : "https://via.placeholder.com/500x750/020617/ffffff?text=No+Image";
@@ -539,46 +344,25 @@
       card.className =
         "group relative flex-shrink-0 w-[42vw] sm:w-[150px] md:w-[170px] lg:w-[190px] cursor-pointer";
 
-      var ratingBadge = "";
-      if (rating) {
-        ratingBadge =
-          '<span class="px-1.5 py-0.5 rounded-full bg-black/80 text-[9px] border border-white/10">★ ' +
-          rating +
-          "</span>";
-      }
+      card.innerHTML = `
+        <div class="relative rounded-2xl-plus overflow-hidden bg-slate-900/70 border border-white/5 shadow-md shadow-black/70">
+          <img src="${imgSrc}" alt="${escapeHtml(title)}"
+               class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-110" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="absolute bottom-1.5 left-1.5 right-1.5 flex flex-col gap-0.5 text-[10px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span class="font-semibold line-clamp-1">${escapeHtml(title)}</span>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                ${rating ? `<span class="px-1.5 py-0.5 rounded-full bg-black/80 text-[9px] border border-white/10">★ ${rating}</span>` : ""}
+              </div>
+              ${year ? `<span class="text-slate-400">${year}</span>` : ""}
+            </div>
+          </div>
+        </div>
+      `;
 
-      var yearHtml = "";
-      if (year) {
-        yearHtml =
-          '<span class="text-slate-400">' + escapeHtml(year) + "</span>";
-      }
-
-      var titleHtml = escapeHtml(title);
-
-      var innerHtml =
-        '<div class="relative rounded-2xl-plus overflow-hidden bg-slate-900/70 border border-white/5 shadow-md shadow-black/70">' +
-          '<img src="' + imgSrc + '" alt="' + titleHtml + '"' +
-               ' class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-110" />' +
-          '<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>' +
-          '<div class="absolute bottom-1.5 left-1.5 right-1.5 flex flex-col gap-0.5 text-[10px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">' +
-            '<span class="font-semibold line-clamp-1">' + titleHtml + "</span>" +
-            '<div class="flex items-center justify-between">' +
-              '<div class="flex items-center gap-1">' +
-                ratingBadge +
-              "</div>" +
-              yearHtml +
-            "</div>" +
-          "</div>" +
-        "</div>";
-
-      card.innerHTML = innerHtml;
-
-      card.addEventListener("click", function () {
-        // record recent only if not already from "Continue Watching" click
-        if (!fromRecent) {
-          saveRecentMovie(movie);
-        }
-        var url = new URL("/watch", window.location.origin);
+      card.addEventListener("click", () => {
+        const url = new URL("/watch", window.location.origin);
         url.searchParams.set("type", "movie");
         url.searchParams.set("tmdbId", id);
         window.location.href = url.toString();
@@ -587,28 +371,21 @@
       return card;
     }
 
-    // =========================
-    // HERO SETUP
-    // =========================
     function setHero(movie) {
       currentHeroMovie = movie;
-
       const title = movie.title || movie.name || "Untitled";
       const overview = movie.overview || "";
-      const backdrop_path = movie.backdrop_path || movie.poster_path || "";
-      const poster_path = movie.poster_path || movie.backdrop_path || "";
+      const backdrop = movie.backdrop_path || movie.poster_path || "";
       const date = movie.release_date || movie.first_air_date || "";
       const year = date ? date.split("-")[0] : "";
-      const vote_average = movie.vote_average || 0;
-      const rating = vote_average ? vote_average.toFixed(1) : "";
+      const vote = movie.vote_average || 0;
+      const rating = vote ? vote.toFixed(1) : "";
 
-      const imgPath = backdrop_path || poster_path;
-      const imgSrc = imgPath ? TMDB_BACKDROP + imgPath : null;
-
+      const imgSrc = backdrop ? TMDB_BACKDROP + backdrop : null;
       if (imgSrc) {
-        heroBackdropEl.style.backgroundImage = "url(" + imgSrc + ")";
+        heroBackdropEl.style.backgroundImage = `url(${imgSrc})`;
         heroBackdropEl.style.transform = "scale(1.2)";
-        setTimeout(function () {
+        setTimeout(() => {
           heroBackdropEl.style.transform = "scale(1.08)";
         }, 900);
       } else {
@@ -617,96 +394,69 @@
       }
 
       heroTitleEl.textContent = title;
+      const bits = [];
+      if (year) bits.push(year);
+      if (rating) bits.push(`★ ${rating}`);
+      heroMetaEl.textContent = bits.join("  •  ");
+      heroOverviewEl.textContent = overview;
 
-      var metaParts = [];
-      if (year) metaParts.push(year);
-      if (rating) metaParts.push("★ " + rating);
-
-      heroMetaEl.textContent = metaParts.join("  •  ");
-      heroOverviewEl.textContent = overview || "";
-
-      var goToWatch = function () {
+      const goToWatch = () => {
         if (!currentHeroMovie) return;
-        var url = new URL("/watch", window.location.origin);
+        const url = new URL("/watch", window.location.origin);
         url.searchParams.set("type", "movie");
         url.searchParams.set("tmdbId", currentHeroMovie.id);
         window.location.href = url.toString();
       };
-
       heroPlayBtn.onclick = goToWatch;
       heroMoreBtn.onclick = goToWatch;
     }
 
-    // =========================
-    // CATEGORY ROW LOADING
-    // =========================
-    async function loadCategoryRow(category) {
-      var rowEl = createRowElement(
-        category.title,
-        category.key,
-        category.key === "trending"
-          ? "What everyone else is watching right now."
-          : ""
-      );
-
+    async function loadCategoryRow(cat) {
+      const rowEl = createRowElement(cat.title, cat.key);
       try {
-        var path;
-        if (category.path.indexOf("/trending") === 0) {
-          path = TMDB_BASE + category.path + "?api_key=" + TMDB_API_KEY;
-        } else {
-          path = TMDB_BASE + category.path + "?api_key=" + TMDB_API_KEY + "&page=1";
-        }
-        var data = await fetchJson(path);
-        var results = data.results || [];
+        const url = cat.path.startsWith("/trending")
+          ? `${TMDB_BASE}${cat.path}?api_key=${TMDB_API_KEY}`
+          : `${TMDB_BASE}${cat.path}?api_key=${TMDB_API_KEY}&page=1`;
+        const data = await fetchJson(url);
+        const results = data.results || [];
         if (!results.length) return;
 
-        if (!heroSet && (category.key === "trending" || category.key === "popular")) {
+        if (!heroSet && (cat.key === "trending" || cat.key === "popular")) {
           setHero(results[0]);
           heroSet = true;
         }
 
-        results.forEach(function (m) {
-          rowEl.appendChild(createCard(m, false));
-        });
+        results.forEach((m) => rowEl.appendChild(createCard(m)));
       } catch (err) {
-        console.error("Error loading category", category.key, err);
+        console.error("Error loading category", cat.key, err);
       }
     }
 
-    // =========================
-    // SEARCH LOGIC
-    // =========================
-    async function handleSearch(query) {
-      var trimmed = (query || "").trim();
-      if (!trimmed) {
+    async function handleSearch(q) {
+      const query = q.trim();
+      if (!query) {
         searchSection.classList.add("hidden");
         searchRowEl.innerHTML = "";
         return;
       }
-
       try {
         setStatus("Searching...", true);
-        var params = new URLSearchParams({
-          api_key: TMDB_API_KEY,
-          query: trimmed,
-          page: "1",
-        });
-        var url = TMDB_BASE + "/search/movie?" + params.toString();
-        var data = await fetchJson(url);
-        var results = data.results || [];
-
+        const url = `${TMDB_BASE}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+          query
+        )}&page=1`;
+        const data = await fetchJson(url);
+        const results = data.results || [];
         searchRowEl.innerHTML = "";
+
         if (!results.length) {
-          searchTitleEl.textContent = 'No results for "' + trimmed + '"';
+          searchTitleEl.textContent = `No results for "${query}"`;
           searchSection.classList.remove("hidden");
           setStatus("", false);
           return;
         }
 
-        searchTitleEl.textContent = 'Search results for "' + trimmed + '"';
-        results.forEach(function (m) {
-          searchRowEl.appendChild(createCard(m, false));
-        });
+        searchTitleEl.textContent = `Search results for "${query}"`;
+        results.forEach((m) => searchRowEl.appendChild(createCard(m)));
         searchSection.classList.remove("hidden");
         setStatus("", false);
       } catch (err) {
@@ -715,72 +465,34 @@
       }
     }
 
-    // =========================
-    // ROW ENTRANCE ANIMATION
-    // =========================
-    var rowObserver;
-    if ("IntersectionObserver" in window) {
-      rowObserver = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              entry.target.classList.remove("opacity-0", "translate-y-3");
-              entry.target.classList.add("animate-fade-up");
-              rowObserver.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.15 }
-      );
-    }
+    // row animations
+    const rowObserver = "IntersectionObserver" in window
+      ? new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.remove("opacity-0", "translate-y-3");
+                entry.target.classList.add("animate-fade-up");
+                rowObserver.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.15 }
+        )
+      : null;
 
     function observeRows() {
       if (!rowObserver) return;
-      var rows = document.querySelectorAll(".js-row");
-      Array.prototype.forEach.call(rows, function (row) {
-        rowObserver.observe(row);
-      });
+      document.querySelectorAll(".js-row").forEach((row) => rowObserver.observe(row));
     }
 
-    // =========================
-    // QUICK FILTERS (SCROLL TO ROW)
-    // =========================
-    function setupQuickFilters() {
-      var buttons = document.querySelectorAll(".quick-filter");
-      Array.prototype.forEach.call(buttons, function (btn) {
-        btn.addEventListener("click", function () {
-          var targetKey = btn.getAttribute("data-row-target");
-          if (!targetKey) return;
-          var section = document.querySelector('#row-' + targetKey);
-          if (!section) return;
-          var wrapper = section.closest("section");
-          if (!wrapper) return;
-          window.scrollTo({
-            top: wrapper.getBoundingClientRect().top + window.scrollY - 96,
-            behavior: "smooth",
-          });
-
-          // Update active visual
-          Array.prototype.forEach.call(buttons, function (b) {
-            b.classList.remove("bg-white/10", "text-slate-100");
-            b.classList.add("bg-white/5", "text-slate-200");
-          });
-          btn.classList.remove("bg-white/5", "text-slate-200");
-          btn.classList.add("bg-white/10", "text-slate-100");
-        });
-      });
-    }
-
-    // =========================
-    // EVENT LISTENERS
-    // =========================
+    // events
     if (searchForm && searchInput) {
-      searchForm.addEventListener("submit", function (e) {
+      searchForm.addEventListener("submit", (e) => {
         e.preventDefault();
         handleSearch(searchInput.value);
       });
-
-      searchInput.addEventListener("input", function () {
+      searchInput.addEventListener("input", () => {
         if (!searchInput.value.trim()) {
           searchSection.classList.add("hidden");
           searchRowEl.innerHTML = "";
@@ -789,8 +501,8 @@
     }
 
     if (mobileSearchBtn) {
-      mobileSearchBtn.addEventListener("click", function () {
-        var q = window.prompt("Search titles:");
+      mobileSearchBtn.addEventListener("click", () => {
+        const q = prompt("Search movies:");
         if (q !== null) {
           if (searchInput) searchInput.value = q;
           handleSearch(q);
@@ -799,36 +511,22 @@
     }
 
     if (clearSearchBtn) {
-      clearSearchBtn.addEventListener("click", function () {
+      clearSearchBtn.addEventListener("click", () => {
         if (searchInput) searchInput.value = "";
         searchSection.classList.add("hidden");
         searchRowEl.innerHTML = "";
       });
     }
 
-    // =========================
-    // INITIALIZATION
-    // =========================
     (async function init() {
       try {
-        setStatus("Loading titles...", true);
-
-        // Render "Continue watching" first (if available)
-        renderContinueWatchingRow();
-
-        // Load categories in parallel
-        await Promise.all(
-          CATEGORIES.map(function (cat) {
-            return loadCategoryRow(cat);
-          })
-        );
-
+        setStatus("Loading movies...", true);
+        await Promise.all(CATEGORIES.map(loadCategoryRow));
         observeRows();
-        setupQuickFilters();
         setStatus("", false);
       } catch (err) {
         console.error(err);
-        setStatus("Failed to load titles. Please refresh.", true);
+        setStatus("Failed to load movies.", true);
       }
     })();
   </script>
