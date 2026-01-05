@@ -15,18 +15,18 @@
             sans: ["system-ui", "SF Pro Text", "Inter", "sans-serif"],
           },
           colors: {
-            srBg: "#040714",
-            srPanel: "#0b1120",
-            srPanelSoft: "#111827",
-            srSidebar: "#020617",
-            srAccent: "#00e0ff",
+            srBg: "#020617",
+            srCard: "#020617",
+            srCardSoft: "#0f172a",
+            srAccent: "#22d3ee",
             srAccentSoft: "#38bdf8",
           },
-          boxShadow: {
-            "sr-lg": "0 22px 50px rgba(0,0,0,0.85)",
-          },
           borderRadius: {
-            "2xl-plus": "1.5rem",
+            "3xl": "1.75rem",
+          },
+          boxShadow: {
+            "sr-xl": "0 32px 80px rgba(15,23,42,0.9)",
+            "sr-soft": "0 18px 50px rgba(15,23,42,0.85)",
           },
           keyframes: {
             "fade-up": {
@@ -41,16 +41,11 @@
               "0%,100%": { opacity: 0.4 },
               "50%": { opacity: 1 },
             },
-            "hero-pan": {
-              "0%": { backgroundPosition: "0% 50%" },
-              "100%": { backgroundPosition: "100% 50%" },
-            },
           },
           animation: {
-            "fade-up": "fade-up 0.5s ease-out forwards",
+            "fade-up": "fade-up 0.45s ease-out forwards",
             "loader-spin": "loader-spin 1.1s linear infinite",
             "loader-pulse": "loader-pulse 2s ease-in-out infinite",
-            "hero-pan": "hero-pan 18s ease-in-out infinite alternate",
           },
         },
       },
@@ -60,9 +55,9 @@
   <style>
     body {
       background:
-        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.6), transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(0, 184, 255, 0.5), transparent 60%),
-        #040714;
+        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.35), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.45), transparent 60%),
+        #020617;
     }
     .row-scroll {
       scrollbar-width: none;
@@ -75,19 +70,19 @@
       position: fixed;
       inset: 0;
       mix-blend-mode: soft-light;
-      opacity: 0.17;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+      opacity: 0.22;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
     }
   </style>
 </head>
-<body class="min-h-screen font-sans text-white antialiased bg-srBg">
+<body class="min-h-screen font-sans text-white antialiased">
   <div class="noise-layer -z-10"></div>
 
-  <!-- ================= LOADER ================= -->
+  <!-- LOADER -->
   <div id="appLoader"
-       class="fixed inset-0 z-40 flex flex-col items-center justify-center bg-srBg transition-opacity duration-500">
+       class="fixed inset-0 z-40 flex flex-col items-center justify-center bg-[#020617] transition-opacity duration-500">
     <div class="relative mb-6">
-      <div class="w-32 h-32 rounded-full bg-gradient-to-br from-srAccent/40 via-transparent to-srAccentSoft/45 blur-3xl opacity-80"></div>
+      <div class="w-32 h-32 rounded-full bg-gradient-to-br from-srAccent/40 via-transparent to-srAccentSoft/50 blur-3xl opacity-80"></div>
       <div class="absolute inset-0 flex items-center justify-center">
         <div class="w-16 h-16 rounded-full border-[3px] border-slate-700 border-t-srAccent animate-loader-spin"></div>
       </div>
@@ -96,84 +91,52 @@
       <div class="text-2xl font-semibold tracking-tight">
         StreamRealm<span class="text-srAccent align-super text-sm">+</span>
       </div>
-      <p class="text-xs text-slate-300 uppercase tracking-[0.28em]">
-        LOADING
+      <p class="text-xs text-slate-300 uppercase tracking-[0.26em]">
+        LOADING LIBRARY
       </p>
     </div>
   </div>
 
-  <div class="min-h-screen flex">
-    <!-- =============== LEFT SIDEBAR (TV-style) =============== -->
-    <aside class="hidden md:flex fixed left-0 top-0 bottom-0 w-16 bg-srSidebar/95 border-r border-white/10 flex-col items-center py-6 space-y-4">
-      <!-- Brand mini logo -->
-      <div class="h-9 w-9 rounded-2xl-plus bg-gradient-to-br from-srAccent to-srAccentSoft flex items-center justify-center text-[13px] font-bold shadow-sr-lg">
-        SR
-      </div>
-
-      <!-- Icons column -->
-      <div class="mt-6 flex flex-col items-center space-y-3 text-slate-300 text-xs">
-        <!-- Search -->
-        <button id="sidebarSearch" class="p-2 rounded-xl hover:bg-white/10">
-          <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-               viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
-          </svg>
-        </button>
-
-        <!-- Home -->
-        <button class="p-2 rounded-xl bg-white text-slate-900 shadow-sr-lg">
-          <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-               viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M3 12l9-9 9 9M5 10v10h5V14h4v6h5V10" />
-          </svg>
-        </button>
-
-        <!-- Categories -->
-        <button class="p-2 rounded-xl hover:bg-white/10">
-          <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-               viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4 6h7M4 10h7M4 14h7M4 18h7M13 6h7M13 12h7M13 18h7" />
-          </svg>
-        </button>
-
-        <!-- Settings -->
-        <button class="mt-auto p-2 rounded-xl hover:bg-white/10">
-          <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-               viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M11.25 4.5l.75-2.25.75 2.25M6 7.5l-2.25-.75L6 6l.75-2.25L7.5 6m9 1.5l2.25-.75L18 6l-.75-2.25L16.5 6m-5.25 7.5l.75 2.25.75-2.25M6 16.5L3.75 15.75 6 15l.75-2.25L7.5 15m9 1.5l2.25-.75L18 15l-.75-2.25L16.5 15" />
-          </svg>
-        </button>
-      </div>
-    </aside>
-
-    <!-- =============== MAIN CONTENT AREA =============== -->
-    <div class="flex-1 md:ml-16 flex flex-col">
-      <!-- TOP BAR (profile + search for mobile) -->
-      <header class="fixed md:left-16 left-0 right-0 top-0 z-20 bg-gradient-to-b from-black/70 to-transparent backdrop-blur-md">
-        <div class="max-w-6xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
-          <div class="flex md:hidden items-center gap-2">
-            <span class="text-xl font-semibold">
-              StreamRealm<span class="text-srAccent align-super text-xs">+</span>
-            </span>
+  <div class="min-h-screen flex items-center justify-center px-4 py-6 md:py-10">
+    <div class="max-w-6xl w-full mx-auto">
+      <!-- APP SHELL -->
+      <div class="rounded-[32px] md:rounded-[36px] bg-slate-900/70 border border-slate-200/10 backdrop-blur-2xl shadow-sr-xl overflow-hidden">
+        <!-- HEADER -->
+        <header class="px-5 md:px-9 pt-5 pb-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-3xl bg-gradient-to-br from-srAccent to-srAccentSoft flex items-center justify-center text-xs font-bold text-slate-900 shadow-sr-soft">
+              SR
+            </div>
+            <div class="flex flex-col">
+              <span class="text-lg md:text-xl font-semibold tracking-tight">
+                StreamRealm<span class="text-srAccent">+</span>
+              </span>
+              <span class="text-[11px] text-slate-400 -mt-0.5">
+                Cinema, in your browser
+              </span>
+            </div>
           </div>
 
-          <div class="flex-1 flex justify-end items-center gap-3">
-            <!-- Search shortcut on small -->
-            <button id="mobileSearchBtn" class="md:hidden p-2 rounded-full bg-black/40 border border-white/10">
-              <svg class="w-4 h-4 text-slate-100" xmlns="http://www.w3.org/2000/svg" fill="none"
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
-              </svg>
-            </button>
+          <div class="flex items-center gap-4">
+            <!-- Segmented control (Movies / Series / Originals) -->
+            <div class="hidden sm:flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10">
+              <a href="/movies"
+                 class="px-3 py-1.5 rounded-full bg-white text-slate-900 text-xs font-semibold shadow">
+                Movies
+              </a>
+              <a href="/tv"
+                 class="px-3 py-1.5 rounded-full text-xs text-slate-200 hover:bg-white/10">
+                Series
+              </a>
+              <button
+                 class="px-3 py-1.5 rounded-full text-xs text-slate-200 hover:bg-white/10">
+                Originals
+              </button>
+            </div>
 
-            <!-- Desktop search inline -->
+            <!-- Search -->
             <form id="searchForm"
-                  class="hidden md:flex items-center bg-black/50 rounded-full px-3 py-1 border border-white/15 shadow-sm shadow-black/50">
+                  class="hidden md:flex items-center bg-slate-900/80 rounded-full px-3 py-1 border border-white/10">
               <svg class="w-4 h-4 text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none"
                    viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -187,13 +150,23 @@
               />
             </form>
 
+            <!-- Mobile search icon -->
+            <button id="mobileSearchBtn"
+                    class="md:hidden h-8 w-8 rounded-full bg-slate-900/80 border border-white/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-slate-100" xmlns="http://www.w3.org/2000/svg" fill="none"
+                   viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+              </svg>
+            </button>
+
             <!-- Profile -->
             <div class="flex items-center gap-3">
               <% if (currentUser) { %>
                 <div class="relative group">
                   <button type="button"
                           class="flex items-center gap-2 text-xs text-slate-200 hover:text-white">
-                    <span class="inline-flex h-8 w-8 rounded-full overflow-hidden bg-[#111827] items-center justify-center text-[11px] font-semibold border border-white/15">
+                    <span class="inline-flex h-8 w-8 rounded-full overflow-hidden bg-slate-800 items-center justify-center text-[11px] font-semibold border border-white/15">
                       <%= currentUser.name.charAt(0).toUpperCase() %>
                     </span>
                     <span class="hidden sm:inline"><%= currentUser.name %></span>
@@ -203,7 +176,7 @@
                             d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
-                  <div class="absolute right-0 mt-1 w-44 bg-[#050819]/98 border border-white/10 rounded-xl shadow-xl shadow-black/80 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all origin-top-right backdrop-blur">
+                  <div class="absolute right-0 mt-1 w-44 bg-slate-900/98 border border-white/10 rounded-xl shadow-xl shadow-black/80 py-1 text-xs opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all origin-top-right backdrop-blur">
                     <a href="/profile" class="block px-3 py-2 hover:bg-white/10 rounded-t-xl">
                       Account
                     </a>
@@ -227,45 +200,50 @@
               <% } %>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <!-- Offset content under fixed header -->
-      <main class="flex-1 pt-16 pb-12">
-        <div class="max-w-6xl mx-auto px-4 md:px-8 space-y-10">
+        <!-- MAIN CONTENT -->
+        <main class="px-5 md:px-9 pb-7 space-y-7">
+          <!-- HERO ROW -->
+          <section class="space-y-5 mt-1">
+            <div class="grid md:grid-cols-[minmax(0,1.3fr)_minmax(0,0.9fr)] gap-4 md:gap-6">
+              <!-- Hero card -->
+              <article
+                class="relative rounded-[24px] md:rounded-[26px] overflow-hidden bg-slate-900/90 border border-white/10 shadow-sr-soft">
+                <div id="heroBackdrop"
+                     class="absolute inset-0 bg-cover bg-center opacity-70"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-transparent"></div>
 
-          <!-- =========== HERO: BIG BANNER + STRIP =========== -->
-          <section class="mt-4">
-            <div
-              id="heroPanel"
-              class="relative bg-gradient-to-r from-emerald-500 via-srAccentSoft to-teal-500 rounded-2xl-plus shadow-sr-lg overflow-hidden border border-emerald-200/40">
-              <div class="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.15),transparent_55%),radial-gradient(circle_at_120%_0%,rgba(15,23,42,0.9),transparent_60%)] mix-blend-soft-light"></div>
-              <div class="absolute inset-0 bg-black/20"></div>
+                <div class="relative z-10 p-5 md:p-8 flex flex-col justify-between min-h-[220px] md:min-h-[260px]">
+                  <div class="flex items-center gap-2 text-[11px] text-slate-200 mb-2">
+                    <span class="inline-flex items-center gap-1 rounded-full bg-black/40 border border-white/15 px-2 py-[3px]">
+                      <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Now Streaming
+                    </span>
+                  </div>
 
-              <div class="relative z-10 flex flex-col lg:flex-row">
-                <!-- Left text -->
-                <div class="flex-1 p-6 md:p-8 lg:p-10 flex flex-col justify-center">
-                  <p class="text-[11px] uppercase tracking-[0.3em] text-emerald-100 mb-2">
-                    NOW STREAMING
-                  </p>
-                  <h1 id="heroTitle" class="text-2xl md:text-[2.35rem] font-bold leading-tight mb-2 drop-shadow-xl">
-                    Featured Highlight
-                  </h1>
-                  <p id="heroMeta" class="text-xs md:text-sm text-emerald-50/90 mb-2"></p>
-                  <p id="heroOverview"
-                     class="hidden sm:block text-[13px] md:text-sm text-emerald-50/90 mb-4 line-clamp-3 max-w-xl">
-                  </p>
+                  <div class="space-y-2">
+                    <h1 id="heroTitle" class="text-2xl md:text-[2.1rem] font-bold leading-tight drop-shadow-2xl">
+                      Featured Movie
+                    </h1>
+                    <p id="heroMeta"
+                       class="text-xs md:text-[13px] text-slate-200/90">
+                    </p>
+                    <p id="heroOverview"
+                       class="hidden sm:block text-xs md:text-[13px] text-slate-100/90 max-w-xl line-clamp-3">
+                    </p>
+                  </div>
 
-                  <div class="flex flex-wrap items-center gap-3">
+                  <div class="mt-4 flex flex-wrap items-center gap-3">
                     <button id="heroPlayBtn"
                             class="flex items-center gap-2 bg-white text-black font-semibold text-xs md:text-[13px] px-4 py-2 rounded-full shadow shadow-black/40 hover:bg-slate-100">
                       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M6 4.5v11l8-5.5-8-5.5z" />
                       </svg>
-                      Play
+                      Play Movie
                     </button>
                     <button id="heroMoreBtn"
-                            class="flex items-center gap-2 bg-black/30 text-white font-semibold text-[11px] md:text-[12px] px-4 py-2 rounded-full hover:bg-black/45 border border-white/30">
+                            class="flex items-center gap-2 bg-white/10 text-white font-semibold text-[11px] md:text-[12px] px-4 py-2 rounded-full hover:bg-white/18 border border-white/30">
                       <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -275,51 +253,36 @@
                     </button>
                   </div>
                 </div>
+              </article>
 
-                <!-- Right hero strip -->
-                <div class="flex-1 lg:max-w-[50%] p-4 md:p-6 flex flex-col">
-                  <div class="text-[11px] uppercase tracking-[0.2em] text-emerald-50/80 mb-2">
-                    FEATURED THIS WEEK
-                  </div>
-                  <div id="heroStrip"
-                       class="row-scroll flex gap-3 overflow-x-auto pb-1 pt-1">
-                    <!-- Small cards inserted via JS -->
-                  </div>
+              <!-- Up next list -->
+              <aside class="hidden md:flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                  <h2 class="text-sm font-semibold text-slate-100">
+                    Up next
+                  </h2>
+                  <span class="text-[11px] text-slate-400">Auto-play queue</span>
                 </div>
-              </div>
-
-              <!-- Backdrop image as subtle moving texture -->
-              <div id="heroBackdrop"
-                   class="pointer-events-none absolute inset-0 bg-cover bg-center mix-blend-soft-light opacity-40 animate-hero-pan"></div>
+                <div id="upNextList" class="flex flex-col gap-2">
+                  <!-- Items injected by JS -->
+                </div>
+              </aside>
             </div>
-          </section>
 
-          <!-- =========== BRAND ROW (FAKE “CHANNELS”) =========== -->
-          <section class="space-y-3">
-            <div class="flex items-center gap-2 text-[12px] text-slate-100">
-              <span class="uppercase tracking-[0.25em] text-slate-300 text-[11px]">
-                CHANNELS
-              </span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
-              <% const tiles = ["Realm", "Nova", "Pulse", "Voyage", "Origins"]; %>
-              <% tiles.forEach(function(tile) { %>
+            <!-- Genre / tag pills -->
+            <div class="flex flex-wrap gap-2 md:gap-3">
+              <% const pills = ["Trending", "Action", "Romance", "Animation", "Horror", "Sci-Fi", "Family"]; %>
+              <% pills.forEach(function(pill, idx) { %>
                 <button
                   type="button"
-                  class="relative rounded-2xl-plus overflow-hidden bg-srPanelSoft/80 border border-white/10 aspect-[16/9] group shadow-sr-lg">
-                  <div class="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(56,189,248,0.3),transparent_55%),radial-gradient(circle_at_100%_0%,rgba(59,130,246,0.25),transparent_55%)] opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                  <div class="absolute inset-0 flex items-center justify-center">
-                    <span class="text-xs sm:text-sm font-semibold tracking-[0.22em] uppercase text-slate-50">
-                      <%= tile %>
-                    </span>
-                  </div>
-                  <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-35 transition-opacity"></div>
+                  class="<%= idx === 0 ? 'bg-slate-100 text-slate-900' : 'bg-slate-900/60 text-slate-200' %> px-3 md:px-4 py-1.5 rounded-full text-[11px] md:text-xs border border-white/10 backdrop-blur hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                  <%= pill %>
                 </button>
               <% }) %>
             </div>
           </section>
 
-          <!-- =========== SEARCH RAIL =========== -->
+          <!-- SEARCH RESULTS -->
           <section id="searchSection" class="hidden space-y-2">
             <div class="flex items-center justify-between">
               <div class="flex flex-col gap-0.5">
@@ -327,7 +290,7 @@
                   Search results
                 </h2>
                 <p class="text-[11px] text-slate-400">
-                  Titles that match your search.
+                  Titles matching your search.
                 </p>
               </div>
               <button
@@ -336,16 +299,16 @@
                 Clear
               </button>
             </div>
-            <div id="searchRow" class="row-scroll flex gap-3 overflow-x-auto pb-2"></div>
+            <div id="searchRow" class="row-scroll flex gap-3 overflow-x-auto pb-1"></div>
           </section>
 
-          <!-- Status text -->
+          <!-- STATUS MESSAGE -->
           <p id="statusMessage" class="text-sm text-slate-300 hidden"></p>
 
-          <!-- =========== MOVIE ROWS =========== -->
-          <section id="rowsContainer" class="space-y-8"></section>
-        </div>
-      </main>
+          <!-- MOVIE ROWS -->
+          <section id="rowsContainer" class="space-y-7"></section>
+        </main>
+      </div>
     </div>
   </div>
 
@@ -357,11 +320,11 @@
     const TMDB_BACKDROP = "https://image.tmdb.org/t/p/original";
 
     const CATEGORIES = [
-      { key: "trending",    title: "Trending Now",      path: "/trending/movie/week" },
-      { key: "popular",     title: "Popular Movies",    path: "/movie/popular" },
-      { key: "top_rated",   title: "Top Rated",         path: "/movie/top_rated" },
-      { key: "now_playing", title: "In Theatres",       path: "/movie/now_playing" },
-      { key: "upcoming",    title: "Coming Soon",       path: "/movie/upcoming" },
+      { key: "trending",    title: "Trending now",    path: "/trending/movie/week" },
+      { key: "popular",     title: "Popular movies",  path: "/movie/popular" },
+      { key: "top_rated",   title: "Top rated",       path: "/movie/top_rated" },
+      { key: "now_playing", title: "In theatres",     path: "/movie/now_playing" },
+      { key: "upcoming",    title: "Coming soon",     path: "/movie/upcoming" },
     ];
 
     // ===== DOM =====
@@ -373,14 +336,13 @@
     const heroOverviewEl  = document.getElementById("heroOverview");
     const heroPlayBtn     = document.getElementById("heroPlayBtn");
     const heroMoreBtn     = document.getElementById("heroMoreBtn");
-    const heroStripEl     = document.getElementById("heroStrip");
+    const upNextListEl    = document.getElementById("upNextList");
     const searchSection   = document.getElementById("searchSection");
     const searchTitleEl   = document.getElementById("searchTitle");
     const searchRowEl     = document.getElementById("searchRow");
     const searchForm      = document.getElementById("searchForm");
     const searchInput     = document.getElementById("searchInput");
     const mobileSearchBtn = document.getElementById("mobileSearchBtn");
-    const sidebarSearch   = document.getElementById("sidebarSearch");
     const clearSearchBtn  = document.getElementById("clearSearchBtn");
     const appLoader       = document.getElementById("appLoader");
 
@@ -419,100 +381,117 @@
       }
     }
 
-    // ===== ROW CREATION =====
-    function createRowElement(title, key) {
-      const wrapper = document.createElement("section");
-      wrapper.className = "space-y-2 js-row opacity-0 translate-y-3 transition-all duration-500";
+    function goToWatch(movieId) {
+      const url = new URL("/watch", window.location.origin);
+      url.searchParams.set("type", "movie");
+      url.searchParams.set("tmdbId", movieId);
+      window.location.href = url.toString();
+    }
 
-      wrapper.innerHTML = `
+    // ===== ROW / CARD CREATION =====
+    function createRowElement(title, key) {
+      const section = document.createElement("section");
+      section.className = "space-y-2 js-row opacity-0 translate-y-3 transition-all duration-500";
+
+      section.innerHTML = `
         <div class="flex items-center justify-between">
-          <h2 class="text-[13px] md:text-sm font-semibold text-slate-100 uppercase tracking-[0.12em]">
+          <h2 class="text-sm md:text-[15px] font-semibold text-slate-100">
             ${escapeHtml(title)}
           </h2>
+          <button type="button"
+                  class="text-[11px] text-slate-400 hover:text-slate-200 flex items-center gap-1">
+            <span>See all</span>
+            <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
-        <div id="row-${key}" class="row-scroll flex gap-3 overflow-x-auto pb-2"></div>
+        <div id="row-${key}" class="row-scroll flex gap-3 overflow-x-auto pb-1"></div>
       `;
 
-      rowsContainer.appendChild(wrapper);
+      rowsContainer.appendChild(section);
       return document.getElementById("row-" + key);
     }
 
-    function createRailCard(movie) {
+    function createPosterCard(movie) {
       const id = movie.id;
       const title = movie.title || movie.name || "Untitled";
       const date = movie.release_date || movie.first_air_date || "";
       const year = date ? date.split("-")[0] : "";
       const vote = movie.vote_average || 0;
       const rating = vote ? vote.toFixed(1) : "";
-      const imgPath = movie.backdrop_path || movie.poster_path;
+      const imgPath = movie.poster_path || movie.backdrop_path;
       const imgSrc = imgPath
         ? TMDB_IMG + imgPath
-        : "https://via.placeholder.com/800x450/020617/ffffff?text=No+Image";
+        : "https://via.placeholder.com/400x600/020617/ffffff?text=No+Image";
 
       const card = document.createElement("article");
       card.className =
-        "group relative flex-shrink-0 w-[75vw] sm:w-[220px] md:w-[260px] lg:w-[280px] cursor-pointer";
+        "group relative flex-shrink-0 w-[110px] sm:w-[130px] md:w-[145px] cursor-pointer";
 
       card.innerHTML = `
-        <div class="relative rounded-2xl overflow-hidden bg-srPanel border border-transparent hover:border-srAccent/60 transition-colors duration-200 shadow-sr-lg">
+        <div class="relative rounded-[18px] overflow-hidden bg-srCardSoft border border-white/10 shadow-sr-soft">
           <img src="${imgSrc}" alt="${escapeHtml(title)}"
-               class="w-full aspect-[16/9] object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+               class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-[1.04]" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-80"></div>
 
-          <div class="absolute top-2 left-2 flex items-center gap-1 text-[10px] text-yellow-200">
-            ${rating ? `<span class="px-2 py-[2px] rounded-full bg-black/70 border border-white/15">★ ${rating}</span>` : ""}
-          </div>
+          ${
+            rating
+              ? `<div class="absolute top-2 left-2 h-7 w-7 rounded-full bg-black/70 border border-amber-300/70 flex items-center justify-center text-[10px] text-amber-200 font-semibold">
+                  ${rating}
+                 </div>`
+              : ""
+          }
 
-          <div class="absolute bottom-2 left-2 right-2 flex flex-col gap-0.5 text-[11px] text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
-            <span class="font-semibold line-clamp-1">${escapeHtml(title)}</span>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-300">${year || ""}</span>
-              <span class="text-[10px] text-slate-400">Movie</span>
+          <div class="absolute bottom-2 left-2 right-2 text-[11px] text-slate-100 space-y-0.5">
+            <p class="font-semibold line-clamp-1">${escapeHtml(title)}</p>
+            <div class="flex items-center justify-between text-[10px] text-slate-300">
+              <span>${year || ""}</span>
+              <span class="inline-flex items-center gap-1">
+                <span class="h-1.5 w-1.5 rounded-full bg-srAccent"></span>
+                Movie
+              </span>
             </div>
           </div>
         </div>
       `;
 
-      card.addEventListener("click", () => {
-        const url = new URL("/watch", window.location.origin);
-        url.searchParams.set("type", "movie");
-        url.searchParams.set("tmdbId", id);
-        window.location.href = url.toString();
-      });
-
+      card.addEventListener("click", () => goToWatch(id));
       return card;
     }
 
-    function createHeroStripCard(movie) {
+    function createUpNextItem(movie, index) {
       const id = movie.id;
       const title = movie.title || movie.name || "Untitled";
-      const imgPath = movie.poster_path || movie.backdrop_path;
+      const date = movie.release_date || movie.first_air_date || "";
+      const year = date ? date.split("-")[0] : "";
+      const imgPath = movie.backdrop_path || movie.poster_path;
       const imgSrc = imgPath
         ? TMDB_IMG + imgPath
-        : "https://via.placeholder.com/500x750/020617/ffffff?text=No+Image";
+        : "https://via.placeholder.com/600x338/020617/ffffff?text=No+Image";
 
-      const card = document.createElement("button");
-      card.type = "button";
-      card.className =
-        "group relative flex-shrink-0 w-[110px] sm:w-[120px] md:w-[130px] lg:w-[140px] rounded-2xl bg-black/25 border border-white/30 overflow-hidden backdrop-blur";
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className =
+        "flex items-center gap-3 rounded-2xl bg-slate-900/70 border border-white/10 px-3 py-2 hover:bg-slate-800/90 transition-colors";
 
-      card.innerHTML = `
-        <img src="${imgSrc}" alt="${escapeHtml(title)}"
-             class="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div class="absolute bottom-1 left-1 right-1 text-[10px] text-slate-100 line-clamp-1 text-left px-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          ${escapeHtml(title)}
+      el.innerHTML = `
+        <div class="h-9 w-9 rounded-2xl overflow-hidden bg-slate-800 flex-shrink-0">
+          <img src="${imgSrc}" alt="${escapeHtml(title)}" class="w-full h-full object-cover" />
         </div>
+        <div class="flex flex-col items-start text-left">
+          <span class="text-[12px] font-medium text-slate-100 line-clamp-1">${escapeHtml(title)}</span>
+          <span class="text-[10px] text-slate-400">${year || ""}</span>
+        </div>
+        <span class="ml-auto text-[11px] text-slate-400">
+          #${index + 1}
+        </span>
       `;
 
-      card.addEventListener("click", () => {
-        const url = new URL("/watch", window.location.origin);
-        url.searchParams.set("type", "movie");
-        url.searchParams.set("tmdbId", id);
-        window.location.href = url.toString();
-      });
-
-      return card;
+      el.addEventListener("click", () => goToWatch(id));
+      return el;
     }
 
     function setHero(movie) {
@@ -524,37 +503,41 @@
       const year     = date ? date.split("-")[0] : "";
       const vote     = movie.vote_average || 0;
       const rating   = vote ? vote.toFixed(1) : "";
+      const genres   = movie.genre_ids || [];
 
       const imgSrc = backdrop ? TMDB_BACKDROP + backdrop : null;
       if (imgSrc) {
         heroBackdropEl.style.backgroundImage = `url(${imgSrc})`;
       } else {
         heroBackdropEl.style.backgroundImage = "none";
+        heroBackdropEl.style.backgroundColor = "#020617";
       }
 
       heroTitleEl.textContent = title;
 
       const metaBits = [];
-      if (year) metaBits.push(year);
       if (rating) metaBits.push(`★ ${rating}`);
-      heroMetaEl.textContent = metaBits.join("  •  ");
+      if (year) metaBits.push(year);
+      if (genres && genres.length) metaBits.push("Movie");
+      heroMetaEl.textContent = metaBits.join("   •   ");
+
       heroOverviewEl.textContent = overview;
 
-      const goToWatch = () => {
+      const go = () => {
         if (!currentHeroMovie) return;
-        const url = new URL("/watch", window.location.origin);
-        url.searchParams.set("type", "movie");
-        url.searchParams.set("tmdbId", currentHeroMovie.id);
-        window.location.href = url.toString();
+        goToWatch(currentHeroMovie.id);
       };
 
-      heroPlayBtn.onclick = goToWatch;
-      heroMoreBtn.onclick = goToWatch;
+      heroPlayBtn.onclick = go;
+      heroMoreBtn.onclick = go;
     }
 
-    function populateHeroStrip(movies) {
-      heroStripEl.innerHTML = "";
-      movies.slice(0, 8).forEach((m) => heroStripEl.appendChild(createHeroStripCard(m)));
+    function populateUpNext(movies) {
+      if (!upNextListEl) return;
+      upNextListEl.innerHTML = "";
+      movies.slice(1, 5).forEach((m, i) => {
+        upNextListEl.appendChild(createUpNextItem(m, i));
+      });
     }
 
     async function loadCategoryRow(category) {
@@ -563,19 +546,17 @@
         const url = category.path.startsWith("/trending")
           ? `${TMDB_BASE}${category.path}?api_key=${TMDB_API_KEY}`
           : `${TMDB_BASE}${category.path}?api_key=${TMDB_API_KEY}&page=1`;
-
         const data = await fetchJson(url);
         const results = data.results || [];
         if (!results.length) return;
 
-        // Use trending row to power hero + top strip
         if (!heroSet && category.key === "trending") {
           setHero(results[0]);
-          populateHeroStrip(results);
+          populateUpNext(results);
           heroSet = true;
         }
 
-        results.forEach((m) => rowEl.appendChild(createRailCard(m)));
+        results.forEach((m) => rowEl.appendChild(createPosterCard(m)));
 
         if (!firstRowLoaded) {
           firstRowLoaded = true;
@@ -611,7 +592,7 @@
         }
 
         searchTitleEl.textContent = `Search results for "${query}"`;
-        results.forEach((m) => searchRowEl.appendChild(createRailCard(m)));
+        results.forEach((m) => searchRowEl.appendChild(createPosterCard(m)));
         searchSection.classList.remove("hidden");
         setStatus("", false);
       } catch (err) {
@@ -620,7 +601,7 @@
       }
     }
 
-    // ===== ROW ANIMATIONS =====
+    // ===== ROW ANIMATION =====
     const rowObserver = "IntersectionObserver" in window
       ? new IntersectionObserver(
           (entries) => {
@@ -641,7 +622,7 @@
       document.querySelectorAll(".js-row").forEach((row) => rowObserver.observe(row));
     }
 
-    // ===== EVENT WIRING =====
+    // ===== EVENTS =====
     if (searchForm && searchInput) {
       searchForm.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -655,7 +636,7 @@
       });
     }
 
-    function openSearchPrompt() {
+    function openPromptSearch() {
       const q = prompt("Search movies:");
       if (q !== null) {
         if (searchInput) searchInput.value = q;
@@ -663,12 +644,7 @@
       }
     }
 
-    if (mobileSearchBtn) {
-      mobileSearchBtn.addEventListener("click", openSearchPrompt);
-    }
-    if (sidebarSearch) {
-      sidebarSearch.addEventListener("click", openSearchPrompt);
-    }
+    if (mobileSearchBtn) mobileSearchBtn.addEventListener("click", openPromptSearch);
 
     if (clearSearchBtn) {
       clearSearchBtn.addEventListener("click", () => {
